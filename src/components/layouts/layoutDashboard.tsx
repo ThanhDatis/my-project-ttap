@@ -30,14 +30,15 @@ const LayoutDashboard = () => {
             flexGrow: 1,
             backgroundColor: '#ffffff',
             minHeight: '100vh',
-            ml: `${DRAWER_WIDTH}px`,
+            // width: `calc(100% - ${DRAWER_WIDTH}px)`,
+            // ml: `${DRAWER_WIDTH}px`,
           }}
         >
           <Box sx={{ p: 3, maxWidth: '100%', mx: 'auto' }}>
 
             <BreadcrumbPage />
 
-            <Box
+            {/* <Box
               sx={{
                 backgroundColor: '#ffffff',
                 borderRadius: 2,
@@ -46,8 +47,8 @@ const LayoutDashboard = () => {
                 p: 3,
               }}
             >
+            </Box> */}
               <Outlet />
-            </Box>
           </Box>
         </Box>
       </Box>

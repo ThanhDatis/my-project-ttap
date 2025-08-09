@@ -78,7 +78,7 @@ const Sidebar = () => {
         <Box sx={{ flex: 1 }}>
           <List sx={{ pt: 2 }}>
             {menuItems.map((item) => (
-              <ListItem key={item.text} disablePadding sx={{ px: 2, mb: 1 }}>
+              <ListItem key={item.text} disablePadding sx={{ mb: 1 }}>
                 <ListItemButton
                   onClick={() => handleNavigation(item.path)}
                   sx={{
@@ -96,7 +96,7 @@ const Sidebar = () => {
                     },
                   }}
                 >
-                  <ListItemIcon sx={{ minWidth: 40 }}>
+                  <ListItemIcon sx={{ minWidth: 50 }}>
                     {item.icon}
                   </ListItemIcon>
                   <ListItemText primary={item.text} />
@@ -109,7 +109,7 @@ const Sidebar = () => {
         <Box>
             <List>
               {bottomMenuItems.map((item) => (
-                <ListItem key={item.text} disablePadding sx={{ px: 2, mb: 1 }}>
+                <ListItem key={item.text} disablePadding sx={{ mb: 1 }}>
                   <ListItemButton
                     onClick={() => handleNavigation(item.path)}
                     sx={{
@@ -127,7 +127,7 @@ const Sidebar = () => {
                       },
                     }}
                   >
-                    <ListItemIcon sx={{ minWidth: 40 }}>
+                    <ListItemIcon sx={{ minWidth: 50 }}>
                       {item.icon}
                     </ListItemIcon>
                     <ListItemText primary={item.text} />
