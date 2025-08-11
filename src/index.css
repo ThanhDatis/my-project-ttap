@@ -32,9 +32,9 @@ a:hover {
 body {
   margin: 0;
   /* display: flex; */
-  place-items: center;
+  /* place-items: center; */
   background-color: var(--animationColorBody);
-  /* min-width: 320px; */
+  width: 100%;
   height: 100vh;
   overflow: hidden;
 }

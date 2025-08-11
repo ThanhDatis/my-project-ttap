@@ -1,4 +1,4 @@
-import { ThemeProvider, CssBaseline, Box, Breadcrumbs, createTheme } from '@mui/material';
+import { ThemeProvider, CssBaseline, Box, createTheme } from '@mui/material';
 import { Outlet } from 'react-router-dom';
 import Sidebar from './components/sidebar';
 import BreadcrumbPage from '../breadcrumbPage';
@@ -21,34 +21,23 @@ const LayoutDashboard = () => {
     <ThemeProvider theme={theme}>
       <CssBaseline />
       <Box sx={{ display: 'flex', minHeight: '100vh' }}>
-
         <Sidebar />
 
         <Box
-          component='main'
+          component="main"
           sx={{
             flexGrow: 1,
             backgroundColor: '#ffffff',
             minHeight: '100vh',
-            // width: `calc(100% - ${DRAWER_WIDTH}px)`,
+            display: 'flex',
+            flexDirection: 'column',
+            // width: `calc(100vw - ${DRAWER_WIDTH}px)`,
             // ml: `${DRAWER_WIDTH}px`,
           }}
         >
-          <Box sx={{ p: 3, maxWidth: '100%', mx: 'auto' }}>
-
+          <Box sx={{ p: 3, flexGrow: 1 }}>
             <BreadcrumbPage />
-
-            {/* <Box
-              sx={{
-                backgroundColor: '#ffffff',
-                borderRadius: 2,
-                boxShadow: '0 2px 8px rgba(0,0,0,0.1)',
-                minHeight: 'calc(100vh - 140px)',
-                p: 3,
-              }}
-            >
-            </Box> */}
-              <Outlet />
+            <Outlet />
           </Box>
         </Box>
       </Box>
