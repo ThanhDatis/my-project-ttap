@@ -59,7 +59,7 @@ const BreadcrumbPage = () => {
                 sx={{
                   color: '#333',
                   fontWeight: 500,
-                  fontSize: '0.875rem',
+                  fontSize: '16px',
                 }}
               >
                 {breadcrumb.label}
@@ -75,9 +75,9 @@ const BreadcrumbPage = () => {
               sx={{
                 color: '#999',
                 textDecoration: 'none',
-                fontSize: '0.875rem',
+                fontSize: '16px',
                 '&:hover': {
-                  color: '#1976d2',
+                  color: '#757575',
                   textDecoration: 'underline',
                 },
               }}

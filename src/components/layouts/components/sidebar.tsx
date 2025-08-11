@@ -1,10 +1,8 @@
-import {
-  Dashboard as DashboardIcon,
-  People as PeopleIcon,
-  ShoppingCart as OrdersIcon,
-  Settings as SettingsIcon,
-  Person as PersonIcon,
-} from '@mui/icons-material';
+import { Person as PersonIcon } from '@mui/icons-material';
+import SpaceDashboardRoundedIcon from '@mui/icons-material/SpaceDashboardRounded';
+import GroupRoundedIcon from '@mui/icons-material/GroupRounded';
+import SellRoundedIcon from '@mui/icons-material/SellRounded';
+import SettingsRoundedIcon from '@mui/icons-material/SettingsRounded';
 import {
   Avatar,
   Box,
@@ -16,8 +14,9 @@ import {
   ListItemText,
   Typography
 } from '@mui/material';
+import { primaryBackgroundSidebar, borderLine } from '../../../common/color';
+import { DRAWER_WIDTH, HEIGHT_HEADER_SIDE_BAR } from '../../../common/constant';
 import { useLocation, useNavigate } from 'react-router-dom';
-const DRAWER_WIDTH = 240;
 
 interface MenuItem {
   text: string;
@@ -26,13 +25,13 @@ interface MenuItem {
 }
 
 const menuItems: MenuItem[] = [
-  { text: 'Dashboard', icon: <DashboardIcon />, path: '/dashboard' },
-  { text: 'Customers', icon: <PeopleIcon />, path: '/customers' },
-  { text: 'Orders', icon: <OrdersIcon />, path: '/orders' },
+  { text: 'Dashboard', icon: <SpaceDashboardRoundedIcon />, path: '/dashboard' },
+  { text: 'Customers', icon: <GroupRoundedIcon />, path: '/customers' },
+  { text: 'Orders', icon: <SellRoundedIcon />, path: '/orders' },
 ];
 
 const bottomMenuItems: MenuItem[] = [
-  { text: 'Setting', icon: <SettingsIcon />, path: '/setting' },
+  { text: 'Setting', icon: <SettingsRoundedIcon />, path: '/setting' },
 ];
 
 const Sidebar = () => {
@@ -56,8 +55,9 @@ const Sidebar = () => {
         '& .MuiDrawer-paper': {
           width: DRAWER_WIDTH,
           boxSizing: 'border-box',
-          backgroundColor: '#f8f9fa',
-          borderRight: '1px solid #e0e0e0',
+          backgroundColor: primaryBackgroundSidebar,
+          borderRight: '1px solid',
+          borderColor: borderLine,
         },
       }}
     >
@@ -69,7 +69,13 @@ const Sidebar = () => {
           flexDirection: 'column',
         }}
       >
-        <Box sx={{ p: 3, textAlign: 'center', borderBottom: '1px solid #e0e0e0' }}>
+        <Box sx={{
+          height: HEIGHT_HEADER_SIDE_BAR,
+          alignContent: 'center',
+          borderBottom: '1px solid',
+          borderColor: borderLine,
+          }}
+        >
           <Typography variant='h6' sx={{ fontWeight: 'bold', color: '#1976d2' }}>
             LOGO
           </Typography>
@@ -138,10 +144,11 @@ const Sidebar = () => {
             <Box
               sx={{
                 p: 2,
-                borderTop: '1px solid #e0e0e0',
+                borderTop: '1px solid',
+                borderColor: borderLine,
                 cursor: 'pointer',
                 '&:hover': {
-                  backgroundColor: '#f5f5f5',
+                  backgroundColor: '#e0e0e0',
                 }
               }}
               onClick={() => handleNavigation('/profile')}

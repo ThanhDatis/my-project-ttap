@@ -2,8 +2,7 @@ import { ThemeProvider, CssBaseline, Box, createTheme } from '@mui/material';
 import { Outlet } from 'react-router-dom';
 import Sidebar from './components/sidebar';
 import BreadcrumbPage from '../breadcrumbPage';
-
-const DRAWER_WIDTH = 240;
+// import { DRAWER_WIDTH } from '../../common/constant';
 
 const theme = createTheme({
   palette: {
@@ -31,8 +30,6 @@ const LayoutDashboard = () => {
             minHeight: '100vh',
             display: 'flex',
             flexDirection: 'column',
-            // width: `calc(100vw - ${DRAWER_WIDTH}px)`,
-            // ml: `${DRAWER_WIDTH}px`,
           }}
         >
           <Box sx={{ p: 3, flexGrow: 1 }}>
