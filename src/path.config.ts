@@ -1,6 +1,10 @@
 export const paths = {
   home: '/',
   signIn: '/auth',
-  // signUp: 
-
+  // signUp:
+  dashboard: '/dashboard',
+  customers: '/customers',
+  orders: '/orders',
+  setting: '/setting',
+  profile: '/profile',
 }
