@@ -15,7 +15,6 @@ import {
 import {
   Visibility,
   VisibilityOff,
-  Person as PersonIcon,
   Lock as LockIcon,
   Email as EmailIcon,
 } from '@mui/icons-material';

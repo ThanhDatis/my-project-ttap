@@ -1,7 +1,8 @@
 import { Box, CircularProgress, Typography } from "@mui/material";
-import React, { useState, useEffect, Component } from "react";
+import React, { useState, useEffect } from "react";
 import { Navigate, useLocation } from 'react-router-dom';
 // import { paths } from "../../path.config";
+import { useAuthStore } from '../../store/auth.store';
 
 interface GuestGuardProps {
   children: React.ReactNode;
@@ -62,7 +63,7 @@ export const GuestGuard: React.FC<GuestGuardProps> = ({
   return <>{children}</>;
 };
 
-export const withAuthGuard = (
+export const withGuestGuard = (
   Component: React.ComponentType,
   redirectTo?: string
 ) => {

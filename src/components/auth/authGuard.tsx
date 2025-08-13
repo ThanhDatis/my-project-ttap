@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { Navigate, useLocation } from "react-router-dom";
 import { Box, CircularProgress, Typography } from "@mui/material";
-
+import { useAuthStore } from '../../store/auth.store';
 interface AuthGuardProps {
   children: React.ReactNode;
   roles?: string[];
@@ -56,7 +56,7 @@ export const AuthGuard: React.FC<AuthGuardProps> = ({ children, roles }) => {
     );
   }
 
-  if (!isAuthenicated) {
+  if (!isAuthenticated) {
     return (
       <Navigate
         to='/auth/login'
