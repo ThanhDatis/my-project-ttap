@@ -1,4 +1,5 @@
-import { Person as PersonIcon } from '@mui/icons-material';
+import { useState } from 'react';
+import { Person as PersonIcon, Logout as LogoutIcon } from '@mui/icons-material';
 import SpaceDashboardRoundedIcon from '@mui/icons-material/SpaceDashboardRounded';
 import GroupRoundedIcon from '@mui/icons-material/GroupRounded';
 import SellRoundedIcon from '@mui/icons-material/SellRounded';
@@ -12,11 +13,15 @@ import {
   ListItemButton,
   ListItemIcon,
   ListItemText,
-  Typography
+  Typography,
+  Divider,
+  Menu,
+  MenuItem,
 } from '@mui/material';
 import { primaryBackgroundSidebar, borderLine } from '../../../common/color';
 import { DRAWER_WIDTH, HEIGHT_HEADER_SIDE_BAR } from '../../../common/constant';
 import { useLocation, useNavigate } from 'react-router-dom';
+import toast from 'react-toastify';
 
 interface MenuItem {
   text: string;
@@ -38,12 +43,35 @@ const Sidebar = () => {
   const navigate = useNavigate();
   const location = useLocation();
 
+  const { user, logout } = useAuthStore();
+  const [ anchorEL, setAnchorEl ] = useState<null | HTMLElement>(null);
+
   const handleNavigation = (path: string) => {
     navigate(path);
-  }
+  };
 
-  const isActive = (path: string) => {
+  const isActive = (path: string ) => {
     return location.pathname === path;
+  };
+
+  const handleUserMenuOpen = (event: React.MouseEvent<HTMLElement>) => {
+    setAnchorEl(event.currentTarget);
+  };
+
+  const handleUserMenuClose = () => {
+    setAnchorEl(null);
+  };
+
+  const handleProfile = () => {
+    handleUserMenuClose();
+    navigate('/profile');
+  };
+
+  const handleLogout = () => {
+    handleUserMenuClose();
+    logout();
+    toast.success('Logout successfully');
+    navigate('/auth/login');
   };
 
   return (
@@ -141,17 +169,19 @@ const Sidebar = () => {
                 </ListItem>
               ))}
             </List>
+
+            <Divider sx={{ mx: 2 }} />
             <Box
               sx={{
                 p: 2,
-                borderTop: '1px solid',
-                borderColor: borderLine,
+                // borderTop: '1px solid',
+                // borderColor: borderLine,
                 cursor: 'pointer',
                 '&:hover': {
                   backgroundColor: '#e0e0e0',
                 }
               }}
-              onClick={() => handleNavigation('/profile')}
+              onClick={handleUserMenuOpen}
             >
               <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
                 <Avatar sx={{ width: 32, height: 32, bgcolor: '#1976d2' }}>
@@ -159,14 +189,44 @@ const Sidebar = () => {
                 </Avatar>
                 <Box>
                   <Typography variant='body2' sx={{ fontWeight: 600, color: '#333' }}>
-                    Admin ABCD
+                     {user?.name || 'Admin ABCD'}
                   </Typography>
                   <Typography variant='caption' sx={{ color: '#666' }}>
-                    admin@gmail.com
+                     {user?.email || 'admin@gmail.com'}
                   </Typography>
                 </Box>
               </Box>
             </Box>
+
+            <Menu
+              anchorEl={anchorEL}
+              open={Boolean(anchorEL)}
+              onClose={handleUserMenuClose}
+              transformOrigin={{ horizontal: 'center', vertical: 'bottom'}}
+              anchorOrigin={{ horizontal: 'center', vertical: 'top' }}
+              slotProps={{
+                paper: {
+                  sx: {
+                    width: 200,
+                    mt: -1,
+                  },
+                },
+              }}
+            >
+              <MenuItem onClick={handleProfile}>
+              <ListItemIcon>
+                <PersonIcon fontSize='small'/>
+              </ListItemIcon>
+              <ListItemText>Profile</ListItemText>
+              </MenuItem>
+              <Divider />
+              <MenuItem onClick={handleLogout} sx={{ color: 'error.main'}}>
+                <ListItemIcon>
+                  <LogoutIcon fontSize='small' color='error' />
+                </ListItemIcon>
+                <ListItemText>Logout</ListItemText>
+              </MenuItem>
+            </Menu>
         </Box>
       </Box>
     </Drawer>

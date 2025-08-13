@@ -1,6 +1,6 @@
-import { Box, CircularProgress, Typography } from "@mui/material";
 import React, { useEffect, useState } from "react";
 import { Navigate, useLocation } from "react-router-dom";
+import { Box, CircularProgress, Typography } from "@mui/material";
 
 interface AuthGuardProps {
   children: React.ReactNode;
