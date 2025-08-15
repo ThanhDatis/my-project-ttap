@@ -22,15 +22,12 @@ import { Formik, Form, Field } from 'formik';
 import * as Yup from 'yup';
 import { useNavigate, useLocation, Link as RouterLink } from 'react-router-dom';
 import { useAuthStore } from '../../store/auth.store';
-import { validateEmail } from '../../common/validate';
+import { validateEmail, validatePassword } from '../../common/validate';
 import { toast } from 'react-toastify';
 
-// Validation schema
 const signInSchema = Yup.object({
   email: validateEmail,
-  password: Yup.string()
-    .min(6, 'Password must be at least 6 characters')
-    .required('Password is required'),
+  password: validatePassword
 });
 
 interface SignInFormValues {
@@ -47,7 +44,6 @@ const SignIn: React.FC = () => {
   const navigate = useNavigate();
   const location = useLocation();
 
-  // Mock login function - replace with actual API call
   const mockLogin = async (email: string, password: string) => {
     return new Promise<{ user: any; token: string; refreshToken: string }>((resolve, reject) => {
       setTimeout(() => {
@@ -118,7 +114,6 @@ const SignIn: React.FC = () => {
           borderRadius: 3,
         }}
       >
-        {/* Header */}
         <Box sx={{ textAlign: 'center', mb: 4 }}>
           <Typography variant="h4" sx={{ fontWeight: 'bold', color: '#1976d2', mb: 1 }}>
             LOGO
@@ -131,7 +126,6 @@ const SignIn: React.FC = () => {
           </Typography>
         </Box>
 
-        {/* Error Alert */}
         {error && (
           <Alert severity="error" sx={{ mb: 3 }}>
             {error}

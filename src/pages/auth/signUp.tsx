@@ -25,22 +25,22 @@ import { Formik, Form, Field } from 'formik';
 import * as Yup from 'yup';
 import { useNavigate, Link as RouterLink } from 'react-router-dom';
 import { useAuthStore } from '../../store/auth.store';
-import { validateEmail, validateName } from '../../common/validate';
+import {
+  validateEmail,
+  validatePassword,
+  validateName,
+  validateConfirmPassword,
+  validateAcceptTerms
+} from '../../common/validate';
 import { toast } from 'react-toastify';
 
 // Validation schema
 const signUpSchema = Yup.object({
   name: validateName,
   email: validateEmail,
-  password: Yup.string()
-    .min(6, 'Password must be at least 6 characters')
-    .required('Password is required'),
-  confirmPassword: Yup.string()
-    .oneOf([Yup.ref('password')], 'Passwords must match')
-    .required('Confirm password is required'),
-  acceptTerms: Yup.boolean()
-    .oneOf([true], 'You must accept the terms and conditions')
-    .required('You must accept the terms and conditions'),
+  password: validatePassword,
+  confirmPassword: validateConfirmPassword,
+  acceptTerms: validateAcceptTerms,
 });
 
 interface SignUpFormValues {
@@ -174,7 +174,7 @@ const SignUp: React.FC = () => {
                     <TextField
                       {...field}
                       fullWidth
-                      label="Họ và tên"
+                      label="Username"
                       type="text"
                       error={touched.name && Boolean(errors.name)}
                       helperText={touched.name && errors.name}
@@ -295,7 +295,7 @@ const SignUp: React.FC = () => {
                       <Link href="#" sx={{ textDecoration: 'none' }}>
                         Terms of service
                       </Link>{' '}
-                      và{' '}
+                      and{' '}
                       <Link href="#" sx={{ textDecoration: 'none' }}>
                         privacy policy
                       </Link>
