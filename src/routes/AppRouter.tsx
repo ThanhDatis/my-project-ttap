@@ -9,7 +9,8 @@ import Orders from '../pages/cms/orders';
 import Setting from '../pages/cms/setting';
 import Profile from '../pages/cms/profile';
 
-import { SignIn, SignUp } from '../pages/auth';
+import SignIn from '../pages/auth/signIn';
+import SignUp from '../pages/auth/signUp';
 
 import { AuthGuard } from '../components/auth/authGuard';
 import { GuestGuard } from '../components/auth/guestGuard';

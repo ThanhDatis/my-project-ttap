@@ -7,6 +7,7 @@ import {
   type Theme,
 } from "@mui/material";
 import { errorColor } from "../../common/color";
+import { TextTypography } from "../textTypography";
 
 interface InputProps {
   sx?: SxProps<Theme> | undefined;
