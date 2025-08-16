@@ -4,11 +4,10 @@ import { Box, CircularProgress, Typography } from "@mui/material";
 import { useAuthStore } from '../../store/auth.store';
 interface AuthGuardProps {
   children: React.ReactNode;
-  roles?: string[];
 }
 
-export const AuthGuard: React.FC<AuthGuardProps> = ({ children, roles }) => {
-  const { isAuthenticated, user, checkAuth, setLoading, isLoading } = useAuthStore();
+export const AuthGuard: React.FC<AuthGuardProps> = ({ children }) => {
+  const { isAuthenticated, checkAuth, setLoading, isLoading } = useAuthStore();
   const [isChecking, setIsChecking] = useState(true);
   const location = useLocation();
 
@@ -66,39 +65,12 @@ export const AuthGuard: React.FC<AuthGuardProps> = ({ children, roles }) => {
     );
   }
 
-  if (roles && roles.length > 0 && user) {
-    const hasRequiredRole = roles.includes(user.role);
-    if (!hasRequiredRole) {
-      return (
-        <Box
-          sx={{
-          display: 'flex',
-          flexDirection: 'column',
-          justifyContent: 'center',
-          alignContent: 'center',
-          minHeight: '100vh',
-          backgroundColor: '#f5f5f5',
-        }}
-        >
-          <Typography variant="h5" color="error" sx={{ mb: 2 }}>
-            Access Denied
-          </Typography>
-          <Typography variant="body1" color="text.secondary">
-            You do not have permission to view this page
-          </Typography>
-        </Box>
-      );
-    }
-  }
   return <>{children}</>;
 };
 
-export const withAuthGuard = (
-  Component: React.ComponentType,
-  roles?: string[]
-) => {
+export const withAuthGuard = ( Component: React.ComponentType ) => {
   const WrappedComponent = (props: any) => (
-    <AuthGuard roles={roles}>
+    <AuthGuard>
       <Component {...props} />
     </AuthGuard>
   );
