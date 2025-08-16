@@ -2,7 +2,9 @@ import { ThemeProvider, CssBaseline, Box, createTheme } from '@mui/material';
 import { Outlet } from 'react-router-dom';
 import Sidebar from './components/sidebar';
 import BreadcrumbPage from '../breadcrumbPage';
+import { AuthGuard } from '../auth';
 // import { DRAWER_WIDTH } from '../../common/constant';
+
 
 const theme = createTheme({
   palette: {
@@ -17,28 +19,30 @@ const theme = createTheme({
 
 const LayoutDashboard = () => {
   return (
-    <ThemeProvider theme={theme}>
-      <CssBaseline />
-      <Box sx={{ display: 'flex', minHeight: '100vh' }}>
-        <Sidebar />
+    <AuthGuard>
+      <ThemeProvider theme={theme}>
+        <CssBaseline />
+        <Box sx={{ display: 'flex', minHeight: '100vh' }}>
+          <Sidebar />
 
-        <Box
-          component="main"
-          sx={{
-            flexGrow: 1,
-            backgroundColor: '#ffffff',
-            minHeight: '100vh',
-            display: 'flex',
-            flexDirection: 'column',
-          }}
-        >
-          <Box sx={{ p: 3, flexGrow: 1 }}>
-            <BreadcrumbPage />
-            <Outlet />
+          <Box
+            component="main"
+            sx={{
+              flexGrow: 1,
+              backgroundColor: '#ffffff',
+              minHeight: '100vh',
+              display: 'flex',
+              flexDirection: 'column',
+            }}
+          >
+            <Box sx={{ p: 3, flexGrow: 1 }}>
+              <BreadcrumbPage />
+              <Outlet />
+            </Box>
           </Box>
         </Box>
-      </Box>
-    </ThemeProvider>
+      </ThemeProvider>
+    </AuthGuard>
   );
 };
 
