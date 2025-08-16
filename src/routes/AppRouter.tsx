@@ -13,9 +13,6 @@ import Profile from '../pages/cms/profile';
 import SignIn from '../pages/auth/signIn';
 import SignUp from '../pages/auth/signUp';
 
-import { AuthGuard } from '../components/auth/authGuard';
-// import { GuestGuard } from '../components/auth/guestGuard';
-
 const AppRouter = () => {
   return (
     <BrowserRouter>
@@ -26,13 +23,7 @@ const AppRouter = () => {
           <Route path='signup' element={<SignUp />}/>
         </Route>
 
-        <Route path="/"
-          element={
-            <AuthGuard>
-              <LayoutDashboard />
-            </AuthGuard>
-          }
-        >
+        <Route path="/" element={<LayoutDashboard /> }>
           <Route index element={<Navigate to="/dashboard" replace />} />
           <Route path="dashboard" element={<Dashboard />} />
           <Route path="customers" element={<Customers />} />

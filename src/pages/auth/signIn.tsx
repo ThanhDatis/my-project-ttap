@@ -11,7 +11,7 @@ const SignIn: React.FC = () => {
         alignItems: 'center',
         justifyContent: 'center',
         backgroundColor: '#f5f5f5',
-        padding: 2,
+        // padding: 2,
       }}
     >
       <SignInForm />
