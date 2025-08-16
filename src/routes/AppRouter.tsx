@@ -2,6 +2,7 @@ import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
+import LayoutAuth from '../components/layouts/layoutAuth';
 import LayoutDashboard from '../components/layouts/layoutDashboard';
 import Dashboard from '../pages/cms/dashboard';
 import Customers from '../pages/cms/customers';
@@ -13,33 +14,17 @@ import SignIn from '../pages/auth/signIn';
 import SignUp from '../pages/auth/signUp';
 
 import { AuthGuard } from '../components/auth/authGuard';
-import { GuestGuard } from '../components/auth/guestGuard';
+// import { GuestGuard } from '../components/auth/guestGuard';
 
 const AppRouter = () => {
   return (
     <BrowserRouter>
       <Routes>
-        <Route
-          path="/auth/signin"
-          element={
-            <GuestGuard>
-              <SignIn />
-            </GuestGuard>
-          }
-        />
-        <Route
-          path="/auth/signup"
-          element={
-            <GuestGuard>
-              <SignUp />
-            </GuestGuard>
-          }
-        />
-
-        <Route
-          path="/auth"
-          element={<Navigate to="/auth/signin" replace />}
-        />
+        <Route path="/auth" element={<LayoutAuth />}>
+          <Route index element={<Navigate to='signIn' replace />} />
+          <Route path='signin' element={<SignIn />}/>
+          <Route path='signup' element={<SignUp />}/>
+        </Route>
 
         <Route path="/"
           element={
@@ -54,28 +39,6 @@ const AppRouter = () => {
           <Route path="orders" element={<Orders />} />
           <Route path="setting" element={<Setting />} />
           <Route path="profile" element={<Profile />} />
-        </Route>
-
-        <Route
-          path="/admin"
-          element={
-            <AuthGuard roles={['admin', 'super_admin']}>
-              <LayoutDashboard />
-            </AuthGuard>
-          }
-        >
-          <Route path="users" element={
-            <div style={{ padding: '20px' }}>
-              <h2>Admin - User Management</h2>
-              <p>Chỉ admin mới có thể truy cập trang này.</p>
-            </div>
-          } />
-          <Route path="system" element={
-            <div style={{ padding: '20px' }}>
-              <h2>Admin - System Settings</h2>
-              <p>Cấu hình hệ thống dành cho admin.</p>
-            </div>
-          } />
         </Route>
 
         <Route path="*" element={<Navigate to="/auth/signin" replace />} />
