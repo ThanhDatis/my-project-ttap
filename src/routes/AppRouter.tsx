@@ -1,6 +1,6 @@
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
-import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import { ToastContainerComponent } from '../components/toastMessage';
 
 import LayoutAuth from '../components/layouts/layoutAuth';
 import LayoutDashboard from '../components/layouts/layoutDashboard';
@@ -12,6 +12,7 @@ import Profile from '../pages/cms/profile';
 
 import SignIn from '../pages/auth/signIn';
 import SignUp from '../pages/auth/signUp';
+
 
 const AppRouter = () => {
   return (
@@ -35,21 +36,7 @@ const AppRouter = () => {
         <Route path="*" element={<Navigate to="/auth/signin" replace />} />
       </Routes>
 
-      <ToastContainer
-        position="top-right"
-        autoClose={3000}
-        hideProgressBar={false}
-        newestOnTop
-        closeOnClick
-        rtl={false}
-        pauseOnFocusLoss
-        draggable
-        pauseOnHover
-        theme="light"
-        toastStyle={{
-          fontSize: '14px',
-        }}
-      />
+      <ToastContainerComponent />
     </BrowserRouter>
   );
 };

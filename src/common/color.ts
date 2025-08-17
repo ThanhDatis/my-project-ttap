@@ -18,6 +18,7 @@ export const labelColor = '#808080';
 // Error
 export const errorColor = "#c82828";
 export const successColor = "#53a653";
+export const warningColor = '#ff9800';
 
 //Border
 export const borderLine = gray [400];
