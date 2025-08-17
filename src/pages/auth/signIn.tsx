@@ -1,7 +1,7 @@
 import React from 'react';
 import { Box } from '@mui/material';
 
-import { SignInForm } from './components/signInForm';
+import { SignInForm } from '../../components/forms';
 const SignIn: React.FC = () => {
   return (
     <Box

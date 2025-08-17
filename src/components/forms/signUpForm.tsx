@@ -24,14 +24,14 @@ import {
 import { Formik, Form, Field } from 'formik';
 import * as Yup from 'yup';
 import { useNavigate, Link as RouterLink } from 'react-router-dom';
-import { useAuthStore } from '../../../store/auth.store';
+import { useAuthStore } from '../../store/auth.store';
 import {
   validateEmail,
   validatePassword,
   validateName,
   validateConfirmPassword,
   validateAcceptTerms
-} from '../../../common/validate';
+} from '../../common/validate';
 import { toast } from 'react-toastify';
 
 // Validation schema

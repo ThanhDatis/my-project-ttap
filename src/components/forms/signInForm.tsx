@@ -21,8 +21,8 @@ import {
 import { Formik, Form, Field } from 'formik';
 import * as Yup from 'yup';
 import { useNavigate, useLocation, Link as RouterLink } from 'react-router-dom';
-import { useAuthStore } from '../../../store/auth.store';
-import { validateEmail, validatePassword } from '../../../common/validate';
+import { useAuthStore } from '../../store/auth.store';
+import { validateEmail, validatePassword } from '../../common/validate';
 import { toast } from 'react-toastify';
 
 const signInSchema = Yup.object({
