@@ -22,7 +22,9 @@ import { primaryBackgroundSidebar, borderLine } from '../../../common/color';
 import { DRAWER_WIDTH, HEIGHT_HEADER_SIDE_BAR } from '../../../common/constant';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useAuthStore } from '../../../store/auth.store';
-import { toast } from 'react-toastify';
+import ToastMessage from '../../toastMessage';
+// import { toast } from 'react-toastify';
+
 
 interface MenuItem {
   text: string;
@@ -71,7 +73,8 @@ const Sidebar = () => {
   const handleLogout = () => {
     handleUserMenuClose();
     logout();
-    toast.success('Logout successfully!');
+    // toast.success('Logout successfully!');
+    ToastMessage('success', 'Logout successfully!');
     navigate('/auth/signin');
   };
 

@@ -23,7 +23,8 @@ import * as Yup from 'yup';
 import { useNavigate, useLocation, Link as RouterLink } from 'react-router-dom';
 import { useAuthStore } from '../../store/auth.store';
 import { validateEmail, validatePassword } from '../../common/validate';
-import { toast } from 'react-toastify';
+// import { toast } from 'react-toastify';
+import { ToastMessage } from '../toastMessage';
 
 const signInSchema = Yup.object({
   email: validateEmail,
@@ -75,7 +76,8 @@ export const SignInForm: React.FC = () => {
 
       login(user, token, refreshToken);
 
-      toast.success('Sign in success!');
+      // toast.success('Sign in success!');
+      ToastMessage('success', 'Sign in success!');
 
       // Redirect to intended page or dashboard
       const from = (location.state as any)?.from?.pathname || '/dashboard';
@@ -83,7 +85,8 @@ export const SignInForm: React.FC = () => {
 
     } catch (error: any) {
       setError(error.message || 'Login failed. Please try again..');
-      toast.error('Login failed!');
+      // toast.error('Login failed!');
+      ToastMessage('error', 'Login failed!');
     } finally {
       setIsLoading(false);
     }

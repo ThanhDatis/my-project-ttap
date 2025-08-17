@@ -32,7 +32,8 @@ import {
   validateConfirmPassword,
   validateAcceptTerms
 } from '../../common/validate';
-import { toast } from 'react-toastify';
+// import { toast } from 'react-toastify';
+import ToastMessage from '../toastMessage';
 
 // Validation schema
 const signUpSchema = Yup.object({
@@ -98,14 +99,16 @@ export const SignUpForm: React.FC = () => {
 
       login(user, token, refreshToken);
 
-      toast.success('Registration successful! Welcome to the system.');
+      // toast.success('Registration successful! Welcome to the system.');
+      ToastMessage('success', 'Registration successful! Welcome to the system.');
 
       // Redirect to dashboard
       navigate('/dashboard', { replace: true });
 
     } catch (error: any) {
       setError(error.message || 'Register failed. Please try again.');
-      toast.error('Register failed!');
+      // toast.error('Register failed!');
+      ToastMessage('error', 'Register failed!')
     } finally {
       setIsLoading(false);
     }
