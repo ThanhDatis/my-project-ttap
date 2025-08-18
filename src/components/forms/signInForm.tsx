@@ -4,9 +4,7 @@ import {
   Paper,
   Typography,
   TextField,
-  Button,
   Alert,
-  CircularProgress,
   InputAdornment,
   IconButton,
   Link,
@@ -22,13 +20,16 @@ import { Formik, Form, Field } from 'formik';
 import * as Yup from 'yup';
 import { useNavigate, useLocation, Link as RouterLink } from 'react-router-dom';
 import { useAuthStore } from '../../store/auth.store';
-import { validateEmail, validatePassword } from '../../common/validate';
-// import { toast } from 'react-toastify';
+import { validateEmail, validatePasswordSignIn } from '../../common/validate';
 import { ToastMessage } from '../toastMessage';
+
+import { ROUTES } from '../../common/constant';
+
+import LoadingButton from '../loadingButton';
 
 const signInSchema = Yup.object({
   email: validateEmail,
-  password: validatePassword
+  password: validatePasswordSignIn
 });
 
 export interface SignInFormValues {
@@ -76,16 +77,13 @@ export const SignInForm: React.FC = () => {
 
       login(user, token, refreshToken);
 
-      // toast.success('Sign in success!');
       ToastMessage('success', 'Sign in success!');
 
-      // Redirect to intended page or dashboard
-      const from = (location.state as any)?.from?.pathname || '/dashboard';
+      const from = (location.state as any)?.from?.pathname || ROUTES.DASHBOARD;
       navigate(from, { replace: true });
 
     } catch (error: any) {
       setError(error.message || 'Login failed. Please try again..');
-      // toast.error('Login failed!');
       ToastMessage('error', 'Login failed!');
     } finally {
       setIsLoading(false);
@@ -93,8 +91,8 @@ export const SignInForm: React.FC = () => {
   };
 
   const initialValues: SignInFormValues = {
-    email: 'admin@gmail.com', // Pre-fill for demo
-    password: '123456', // Pre-fill for demo
+    email: 'admin@gmail.com',
+    password: '123456',
   };
 
   return (
@@ -125,7 +123,6 @@ export const SignInForm: React.FC = () => {
         </Alert>
       )}
 
-      {/* Form */}
       <Formik
         initialValues={initialValues}
         validationSchema={signInSchema}
@@ -187,11 +184,10 @@ export const SignInForm: React.FC = () => {
               </Field>
             </Box>
 
-            {/* Forgot Password Link */}
             <Box sx={{ textAlign: 'right', mb: 3 }}>
               <Link
                 component={RouterLink}
-                to="/auth/forgot-password"
+                to={ROUTES.AUTH.FORGOT_PASSWORD}
                 sx={{
                   fontSize: '14px',
                   textDecoration: 'none',
@@ -202,41 +198,29 @@ export const SignInForm: React.FC = () => {
               </Link>
             </Box>
 
-            {/* Submit Button */}
-            <Button
+            <LoadingButton
               type="submit"
               fullWidth
               variant="contained"
               size="large"
-              disabled={isLoading || isSubmitting}
+              loading={isLoading || isSubmitting}
+              loadingText="Signing in..."
               sx={{
                 py: 1.5,
                 fontSize: '16px',
                 fontWeight: 600,
-                mb: 3,
+                mb: 1
               }}
-            >
-              {isLoading ? (
-                <CircularProgress size={24} color="inherit" />
-              ) : (
-                'Sign In'
-              )}
-            </Button>
+            >Sign In</LoadingButton>
 
-            {/* Divider */}
-            <Divider sx={{ my: 3 }}>
-              <Typography variant="body2" color="text.secondary">
-                OR
-              </Typography>
-            </Divider>
+            {/* <Divider sx={{ my: 1 }} /> */}
 
-            {/* Sign Up Link */}
             <Box sx={{ textAlign: 'center' }}>
               <Typography variant="body2" color="text.secondary">
                 No account?{' '}
                 <Link
                   component={RouterLink}
-                  to="/auth/signup"
+                  to={ROUTES.AUTH.SIGNUP}
                   sx={{
                     fontWeight: 600,
                     textDecoration: 'none',

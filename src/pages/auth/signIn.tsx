@@ -1,6 +1,6 @@
 import React from 'react';
 import { Box } from '@mui/material';
-
+import { gray } from '../../common/color';
 import { SignInForm } from '../../components/forms';
 const SignIn: React.FC = () => {
   return (
@@ -10,7 +10,7 @@ const SignIn: React.FC = () => {
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
-        backgroundColor: '#f5f5f5',
+        backgroundColor: gray[100],
         // padding: 2,
       }}
     >

@@ -3,6 +3,12 @@ export const DRAWER_WIDTH_PRODUCT_MOBILE = "90%";
 export const HEIGHT_HEADER_SIDE_BAR = 70;
 
 export const ROUTES = {
+  AUTH: {
+    SIGNIN: '/auth/signin',
+    SIGNUP: '/auth/signup',
+    FORGOT_PASSWORD: '/auth/forgot-password',
+    RESET_PASSWORD: '/auth/reset-password',
+  },
   DASHBOARD: '/dashboard',
   CUSTOMERS: '/customers',
   ORDERS: '/orders',

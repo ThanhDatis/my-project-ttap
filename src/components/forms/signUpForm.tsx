@@ -25,21 +25,23 @@ import { Formik, Form, Field } from 'formik';
 import * as Yup from 'yup';
 import { useNavigate, Link as RouterLink } from 'react-router-dom';
 import { useAuthStore } from '../../store/auth.store';
+
 import {
   validateEmail,
-  validatePassword,
+  validatePasswordSignUp,
   validateName,
   validateConfirmPassword,
   validateAcceptTerms
 } from '../../common/validate';
-// import { toast } from 'react-toastify';
 import ToastMessage from '../toastMessage';
 
-// Validation schema
+import { ROUTES } from '../../common/constant';
+
+
 const signUpSchema = Yup.object({
   name: validateName,
   email: validateEmail,
-  password: validatePassword,
+  password: validatePasswordSignUp,
   confirmPassword: validateConfirmPassword,
   acceptTerms: validateAcceptTerms,
 });
@@ -61,11 +63,9 @@ export const SignUpForm: React.FC = () => {
   const { login } = useAuthStore();
   const navigate = useNavigate();
 
-  // Mock signup function - replace with actual API call
   const mockSignUp = async (data: Omit<SignUpFormValues, 'confirmPassword' | 'acceptTerms'>) => {
     return new Promise<{ user: any; token: string; refreshToken: string }>((resolve, reject) => {
       setTimeout(() => {
-        // Check if email already exists (mock check)
         if (data.email === 'existing@gmail.com') {
           reject(new Error('The email has already been used.'));
           return;
@@ -99,15 +99,12 @@ export const SignUpForm: React.FC = () => {
 
       login(user, token, refreshToken);
 
-      // toast.success('Registration successful! Welcome to the system.');
       ToastMessage('success', 'Registration successful! Welcome to the system.');
 
-      // Redirect to dashboard
-      navigate('/dashboard', { replace: true });
+      navigate(ROUTES.DASHBOARD, { replace: true });
 
     } catch (error: any) {
       setError(error.message || 'Register failed. Please try again.');
-      // toast.error('Register failed!');
       ToastMessage('error', 'Register failed!')
     } finally {
       setIsLoading(false);
@@ -145,14 +142,12 @@ export const SignUpForm: React.FC = () => {
         </Typography>
       </Box>
 
-      {/* Error Alert */}
       {error && (
         <Alert severity="error" sx={{ mb: 3 }}>
           {error}
         </Alert>
       )}
 
-      {/* Form */}
       <Formik
         initialValues={initialValues}
         validationSchema={signUpSchema}
@@ -160,7 +155,6 @@ export const SignUpForm: React.FC = () => {
       >
         {({ errors, touched, values, setFieldValue, isSubmitting }) => (
           <Form>
-            {/* Name Field */}
             <Box sx={{ mb: 3 }}>
               <Field name="name">
                 {({ field }: any) => (
@@ -183,7 +177,6 @@ export const SignUpForm: React.FC = () => {
               </Field>
             </Box>
 
-            {/* Email Field */}
             <Box sx={{ mb: 3 }}>
               <Field name="email">
                 {({ field }: any) => (
@@ -206,7 +199,6 @@ export const SignUpForm: React.FC = () => {
               </Field>
             </Box>
 
-            {/* Password Field */}
             <Box sx={{ mb: 3 }}>
               <Field name="password">
                 {({ field }: any) => (
@@ -239,8 +231,7 @@ export const SignUpForm: React.FC = () => {
               </Field>
             </Box>
 
-            {/* Confirm Password Field */}
-            <Box sx={{ mb: 3 }}>
+            <Box sx={{ mb: 1 }}>
               <Field name="confirmPassword">
                 {({ field }: any) => (
                   <TextField
@@ -272,8 +263,7 @@ export const SignUpForm: React.FC = () => {
               </Field>
             </Box>
 
-            {/* Terms and Conditions */}
-            <Box sx={{ mb: 3 }}>
+            <Box sx={{ mb: 1 }}>
               <FormControlLabel
                 control={
                   <Checkbox
@@ -302,7 +292,6 @@ export const SignUpForm: React.FC = () => {
               )}
             </Box>
 
-            {/* Submit Button */}
             <Button
               type="submit"
               fullWidth
@@ -313,7 +302,7 @@ export const SignUpForm: React.FC = () => {
                 py: 1.5,
                 fontSize: '16px',
                 fontWeight: 600,
-                mb: 3,
+                mb: 2,
               }}
             >
               {isLoading ? (
@@ -323,20 +312,18 @@ export const SignUpForm: React.FC = () => {
               )}
             </Button>
 
-            {/* Divider */}
-            <Divider sx={{ my: 3 }}>
+            {/* <Divider sx={{ my: 1 }}>
               <Typography variant="body2" color="text.secondary">
                 OR
               </Typography>
-            </Divider>
+            </Divider> */}
 
-            {/* Sign In Link */}
             <Box sx={{ textAlign: 'center' }}>
               <Typography variant="body2" color="text.secondary">
                 Already have an account?{' '}
                 <Link
                   component={RouterLink}
-                  to="/auth/signin"
+                  to={ROUTES.AUTH.SIGNIN}
                   sx={{
                     fontWeight: 600,
                     textDecoration: 'none',

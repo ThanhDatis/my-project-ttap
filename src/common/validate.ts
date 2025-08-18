@@ -4,7 +4,10 @@ const validateEmail = Yup.string()
   .email('Email is not valid')
   .required('Email is required');
 
-const validatePassword = Yup.string()
+  const validatePasswordSignIn = Yup.string()
+  .required('Password is required');
+
+const validatePasswordSignUp = Yup.string()
   .min(6, 'Password must be at least 6 characters')
   .required('Password is required');
 
@@ -28,7 +31,8 @@ const validateAcceptTerms = Yup.boolean()
 
 export {
   validateEmail,
-  validatePassword,
+  validatePasswordSignIn,
+  validatePasswordSignUp,
   validatePhone,
   validateName,
   validateConfirmPassword,
