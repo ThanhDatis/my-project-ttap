@@ -8,6 +8,7 @@ import {
 } from "@mui/material";
 import { errorColor } from "../../common/color";
 import { TextTypography } from "../textTypography";
+import { defaultStyleInput, errorStyleInput } from "./styles";
 
 interface InputProps {
   sx?: SxProps<Theme> | undefined;

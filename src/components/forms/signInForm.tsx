@@ -3,20 +3,22 @@ import {
   Box,
   Paper,
   Typography,
-  TextField,
   Alert,
   InputAdornment,
   IconButton,
   Link,
-  Divider,
+  FormControl,
+  FormLabel
+  // Divider,
 } from '@mui/material';
 import {
   Visibility,
   VisibilityOff,
   Lock as LockIcon,
-  Email as EmailIcon,
 } from '@mui/icons-material';
-import { Formik, Form, Field } from 'formik';
+
+import EmailRoundedIcon from '@mui/icons-material/EmailRounded';
+import { Formik, Form } from 'formik';
 import * as Yup from 'yup';
 import { useNavigate, useLocation, Link as RouterLink } from 'react-router-dom';
 import { useAuthStore } from '../../store/auth.store';
@@ -26,6 +28,7 @@ import { ToastMessage } from '../toastMessage';
 import { ROUTES } from '../../common/constant';
 
 import LoadingButton from '../loadingButton';
+import { Input } from '../fields';
 
 const signInSchema = Yup.object({
   email: validateEmail,
@@ -74,9 +77,7 @@ export const SignInForm: React.FC = () => {
 
     try {
       const { user, token, refreshToken } = await mockLogin(values.email, values.password);
-
       login(user, token, refreshToken);
-
       ToastMessage('success', 'Sign in success!');
 
       const from = (location.state as any)?.from?.pathname || ROUTES.DASHBOARD;
@@ -101,7 +102,7 @@ export const SignInForm: React.FC = () => {
       sx={{
         padding: 4,
         width: '100%',
-        maxWidth: 420,
+        maxWidth: 450,
         borderRadius: 3,
       }}
     >
@@ -128,61 +129,76 @@ export const SignInForm: React.FC = () => {
         validationSchema={signInSchema}
         onSubmit={handleSubmit}
       >
-        {({ errors, touched, isSubmitting }) => (
-          <Form>
-            <Box sx={{ mb: 3 }}>
-              <Field name="email">
-                {({ field }: any) => (
-                  <TextField
-                    {...field}
-                    fullWidth
-                    label="Email"
-                    type="email"
-                    error={touched.email && Boolean(errors.email)}
-                    helperText={touched.email && errors.email}
-                    InputProps={{
-                      startAdornment: (
-                        <InputAdornment position="start">
-                          <EmailIcon color="action" />
-                        </InputAdornment>
-                      ),
-                    }}
-                  />
-                )}
-              </Field>
-            </Box>
-
-            <Box sx={{ mb: 3 }}>
-              <Field name="password">
-                {({ field }: any) => (
-                  <TextField
-                    {...field}
-                    fullWidth
-                    label="Password"
-                    type={showPassword ? 'text' : 'password'}
-                    error={touched.password && Boolean(errors.password)}
-                    helperText={touched.password && errors.password}
-                    InputProps={{
-                      startAdornment: (
-                        <InputAdornment position="start">
-                          <LockIcon color="action" />
-                        </InputAdornment>
-                      ),
-                      endAdornment: (
-                        <InputAdornment position="end">
-                          <IconButton
-                            onClick={() => setShowPassword(!showPassword)}
-                            edge="end"
-                          >
-                            {showPassword ? <VisibilityOff /> : <Visibility />}
-                          </IconButton>
-                        </InputAdornment>
-                      ),
-                    }}
-                  />
-                )}
-              </Field>
-            </Box>
+        {({ values, errors, touched, isSubmitting, handleBlur, handleChange }) => (
+          <Form
+            style={{ display: 'flex', flexDirection: 'column', gap: 10 }}
+          >
+            <FormControl>
+              <FormLabel htmlFor='email'>Email</FormLabel>
+              <Input
+                id='email'
+                name='email'
+                label=''
+                value={values.email}
+                typeInput='email'
+                placeholder='Enter your email'
+                isError={!!(touched.email && errors.email)}
+                errorText=''
+                prefixIcon={
+                  <InputAdornment position='start'>
+                    <EmailRoundedIcon />
+                  </InputAdornment>
+                }
+                onChange={handleChange}
+                onBlur={handleBlur}
+                autoComplete='email'
+                size='medium'
+                sx={{}}
+              />
+            </FormControl>
+            <FormControl>
+              <FormLabel htmlFor='password'>Password</FormLabel>
+              <Input
+                id='password'
+                name='password'
+                label=''
+                value={values.password}
+                typeInput={showPassword ? 'text' : 'password'}
+                placeholder='Enter your password'
+                isError={!!(touched.password && errors.password)}
+                errorText=''
+                prefixIcon={
+                  <InputAdornment position='start'>
+                    <LockIcon color='action' />
+                  </InputAdornment>
+                }
+                suffixIcon={
+                  <InputAdornment position='start'>
+                    <IconButton
+                      onClick={() => setShowPassword(!showPassword)}
+                      // edge='start'
+                      aria-label={showPassword ? 'Hide password' : 'Show password'}
+                    >
+                      {showPassword ? <VisibilityOff /> : <Visibility />}
+                    </IconButton>
+                  </InputAdornment>
+                }
+                onChange={handleChange}
+                onBlur={handleBlur}
+                handleEnter={(e) => {
+                  const form = e.currentTarget.closest('form');
+                  if (form) {
+                    const submitButton = form.querySelector('button[type="submit"]') as HTMLButtonElement;
+                    if (submitButton && !submitButton.disabled) {
+                      submitButton.click();
+                    }
+                  }
+                }}
+                autoComplete='current-password'
+                size='medium'
+                sx={{}}
+              />
+            </FormControl>
 
             <Box sx={{ textAlign: 'right', mb: 3 }}>
               <Link
@@ -213,8 +229,6 @@ export const SignInForm: React.FC = () => {
               }}
             >Sign In</LoadingButton>
 
-            {/* <Divider sx={{ my: 1 }} /> */}
-
             <Box sx={{ textAlign: 'center' }}>
               <Typography variant="body2" color="text.secondary">
                 No account?{' '}
@@ -236,13 +250,13 @@ export const SignInForm: React.FC = () => {
       </Formik>
 
       {/* Demo Info */}
-      <Box sx={{ mt: 3, p: 2, backgroundColor: '#f9f9f9', borderRadius: 1 }}>
+      {/* <Box sx={{ mt: 3, p: 2, backgroundColor: '#f9f9f9', borderRadius: 1 }}>
         <Typography variant="caption" color="text.secondary" sx={{ display: 'block', textAlign: 'center' }}>
           <strong>Demo Account:</strong><br />
           Email: admin@gmail.com<br />
           Password: 123456
         </Typography>
-      </Box>
+      </Box> */}
     </Paper>
   );
 };

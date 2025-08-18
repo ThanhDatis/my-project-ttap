@@ -10,7 +10,7 @@ import {
   InputAdornment,
   IconButton,
   Link,
-  Divider,
+  // Divider,
   FormControlLabel,
   Checkbox,
 } from '@mui/material';
