@@ -3,7 +3,6 @@ import { Outlet } from 'react-router-dom';
 import Sidebar from './components/sidebar';
 import BreadcrumbPage from '../breadcrumbPage';
 import { AuthGuard } from '../auth';
-// import { DRAWER_WIDTH } from '../../common/constant';
 
 
 const theme = createTheme({
