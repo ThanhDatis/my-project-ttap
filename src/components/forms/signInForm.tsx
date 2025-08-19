@@ -133,7 +133,7 @@ export const SignInForm: React.FC = () => {
             style={{ display: 'flex', flexDirection: 'column', gap: 20 }}
           >
             <FormControl>
-              <FormLabel htmlFor='email'>Email</FormLabel>
+              <FormLabel htmlFor='email' sx={{ textAlign: 'left', mb: 1, fontSize: 16, display: 'block' }}>Email</FormLabel>
               <Input
                 id='email'
                 name='email'
@@ -156,7 +156,7 @@ export const SignInForm: React.FC = () => {
               />
             </FormControl>
             <FormControl>
-              <FormLabel htmlFor='password'>Password</FormLabel>
+              <FormLabel htmlFor='password' sx={{ textAlign: 'left', mb: 1, fontSize: 16, display: 'block' }}>Password</FormLabel>
               <Input
                 id='password'
                 name='password'

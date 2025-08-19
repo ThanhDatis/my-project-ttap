@@ -23,7 +23,8 @@ import { DRAWER_WIDTH, HEIGHT_HEADER_SIDE_BAR } from '../../../common/constant';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useAuthStore } from '../../../store/auth.store';
 import ToastMessage from '../../toastMessage';
-// import { toast } from 'react-toastify';
+
+import { ROUTES } from '../../../common/constant';
 
 
 interface MenuItem {
@@ -33,13 +34,13 @@ interface MenuItem {
 }
 
 const menuItems: MenuItem[] = [
-  { text: 'Dashboard', icon: <SpaceDashboardRoundedIcon />, path: '/dashboard' },
-  { text: 'Customers', icon: <GroupRoundedIcon />, path: '/customers' },
-  { text: 'Orders', icon: <SellRoundedIcon />, path: '/orders' },
+  { text: 'Dashboard', icon: <SpaceDashboardRoundedIcon />, path: ROUTES.DASHBOARD },
+  { text: 'Customers', icon: <GroupRoundedIcon />, path: ROUTES.CUSTOMERS },
+  { text: 'Orders', icon: <SellRoundedIcon />, path: ROUTES.ORDERS },
 ];
 
 const bottomMenuItems: MenuItem[] = [
-  { text: 'Setting', icon: <SettingsRoundedIcon />, path: '/setting' },
+  { text: 'Setting', icon: <SettingsRoundedIcon />, path: ROUTES.SETTING },
 ];
 
 const Sidebar = () => {
@@ -67,15 +68,14 @@ const Sidebar = () => {
 
   const handleProfile = () => {
     handleUserMenuClose();
-    navigate('/profile');
+    navigate(ROUTES.PROFILE);
   };
 
   const handleLogout = () => {
     handleUserMenuClose();
     logout();
-    // toast.success('Logout successfully!');
     ToastMessage('success', 'Logout successfully!');
-    navigate('/auth/signin');
+    navigate(ROUTES.AUTH.SIGNIN);
   };
 
   return (
@@ -126,10 +126,10 @@ const Sidebar = () => {
                       backgroundColor: isActive(item.path) ? '#e3f2fd' : '#f5f5f5',
                     },
                     '& .MuiListItemIcon-root': {
-                      color: isActive(item.path) ? '#1976d2' : '#666',
+                      color: isActive(item.path) ? '#333' : '#666',
                     },
                     '& .MuiListItemText-primary': {
-                      color: isActive(item.path) ? '#1976d2' : '#333',
+                      color: isActive(item.path) ? '#333' : '#333',
                       fontWeight: isActive(item.path) ? 600 : 400,
                     },
                   }}
@@ -157,10 +157,10 @@ const Sidebar = () => {
                         backgroundColor: isActive(item.path) ? '#e3f2fd' : '#f5f5f5',
                       },
                       '& .MuiListItemIcon-root': {
-                        color: isActive(item.path) ? '#1976d2' : '#666',
+                        color: isActive(item.path) ? '#333' : '#666',
                       },
                       '& .MuiListItemText-primary': {
-                        color: isActive(item.path) ? '#1976d2' : '#333',
+                        color: isActive(item.path) ? '#333' : '#333',
                         fontWeight: isActive(item.path) ? 600 : 400,
                       },
                     }}
