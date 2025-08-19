@@ -3,25 +3,20 @@ import {
   Box,
   Paper,
   Typography,
-  TextField,
-  Button,
   Alert,
-  CircularProgress,
   InputAdornment,
   IconButton,
   Link,
-  // Divider,
-  FormControlLabel,
-  Checkbox,
+  FormControl,
+  FormLabel,
 } from '@mui/material';
 import {
   Visibility,
   VisibilityOff,
-  Person as PersonIcon,
   Lock as LockIcon,
   Email as EmailIcon,
 } from '@mui/icons-material';
-import { Formik, Form, Field } from 'formik';
+import { Formik, Form } from 'formik';
 import * as Yup from 'yup';
 import { useNavigate, Link as RouterLink } from 'react-router-dom';
 import { useAuthStore } from '../../store/auth.store';
@@ -36,6 +31,8 @@ import {
 import ToastMessage from '../toastMessage';
 
 import { ROUTES } from '../../common/constant';
+import { Input } from '../fields';
+import LoadingButton from '../loadingButton';
 
 
 const signUpSchema = Yup.object({
@@ -125,11 +122,10 @@ export const SignUpForm: React.FC = () => {
       sx={{
         padding: 4,
         width: '100%',
-        maxWidth: 420,
+        maxWidth: 450,
         borderRadius: 3,
       }}
     >
-      {/* Header */}
       <Box sx={{ textAlign: 'center', mb: 4 }}>
         <Typography variant="h4" sx={{ fontWeight: 'bold', color: '#1976d2', mb: 1 }}>
           LOGO
@@ -153,170 +149,91 @@ export const SignUpForm: React.FC = () => {
         validationSchema={signUpSchema}
         onSubmit={handleSubmit}
       >
-        {({ errors, touched, values, setFieldValue, isSubmitting }) => (
-          <Form>
-            <Box sx={{ mb: 3 }}>
-              <Field name="name">
-                {({ field }: any) => (
-                  <TextField
-                    {...field}
-                    fullWidth
-                    label="Username"
-                    type="text"
-                    error={touched.name && Boolean(errors.name)}
-                    helperText={touched.name && errors.name}
-                    InputProps={{
-                      startAdornment: (
-                        <InputAdornment position="start">
-                          <PersonIcon color="action" />
-                        </InputAdornment>
-                      ),
-                    }}
-                  />
-                )}
-              </Field>
-            </Box>
-
-            <Box sx={{ mb: 3 }}>
-              <Field name="email">
-                {({ field }: any) => (
-                  <TextField
-                    {...field}
-                    fullWidth
-                    label="Email"
-                    type="email"
-                    error={touched.email && Boolean(errors.email)}
-                    helperText={touched.email && errors.email}
-                    InputProps={{
-                      startAdornment: (
-                        <InputAdornment position="start">
-                          <EmailIcon color="action" />
-                        </InputAdornment>
-                      ),
-                    }}
-                  />
-                )}
-              </Field>
-            </Box>
-
-            <Box sx={{ mb: 3 }}>
-              <Field name="password">
-                {({ field }: any) => (
-                  <TextField
-                    {...field}
-                    fullWidth
-                    label="Password"
-                    type={showPassword ? 'text' : 'password'}
-                    error={touched.password && Boolean(errors.password)}
-                    helperText={touched.password && errors.password}
-                    InputProps={{
-                      startAdornment: (
-                        <InputAdornment position="start">
-                          <LockIcon color="action" />
-                        </InputAdornment>
-                      ),
-                      endAdornment: (
-                        <InputAdornment position="end">
-                          <IconButton
-                            onClick={() => setShowPassword(!showPassword)}
-                            edge="end"
-                          >
-                            {showPassword ? <VisibilityOff /> : <Visibility />}
-                          </IconButton>
-                        </InputAdornment>
-                      ),
-                    }}
-                  />
-                )}
-              </Field>
-            </Box>
-
-            <Box sx={{ mb: 1 }}>
-              <Field name="confirmPassword">
-                {({ field }: any) => (
-                  <TextField
-                    {...field}
-                    fullWidth
-                    label="Confirm password"
-                    type={showConfirmPassword ? 'text' : 'password'}
-                    error={touched.confirmPassword && Boolean(errors.confirmPassword)}
-                    helperText={touched.confirmPassword && errors.confirmPassword}
-                    InputProps={{
-                      startAdornment: (
-                        <InputAdornment position="start">
-                          <LockIcon color="action" />
-                        </InputAdornment>
-                      ),
-                      endAdornment: (
-                        <InputAdornment position="end">
-                          <IconButton
-                            onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                            edge="end"
-                          >
-                            {showConfirmPassword ? <VisibilityOff /> : <Visibility />}
-                          </IconButton>
-                        </InputAdornment>
-                      ),
-                    }}
-                  />
-                )}
-              </Field>
-            </Box>
-
-            <Box sx={{ mb: 1 }}>
-              <FormControlLabel
-                control={
-                  <Checkbox
-                    checked={values.acceptTerms}
-                    onChange={(e) => setFieldValue('acceptTerms', e.target.checked)}
-                    color="primary"
-                  />
+        {({ errors, touched, values, handleChange, handleBlur }) => (
+          <Form style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
+            <FormControl>
+              <FormLabel htmlFor='email'>Email</FormLabel>
+              <Input
+                id="email"
+                name="email"
+                label=""
+                value={values.email}
+                typeInput="email"
+                placeholder="Enter your email address"
+                isError={!!(touched.email && errors.email)}
+                errorText=""
+                prefixIcon={
+                  <InputAdornment position="start">
+                    <EmailIcon color="action" />
+                  </InputAdornment>
                 }
-                label={
-                  <Typography variant="body2">
-                    I agree with{' '}
-                    <Link href="#" sx={{ textDecoration: 'none' }}>
-                      Terms of service
-                    </Link>{' '}
-                    and{' '}
-                    <Link href="#" sx={{ textDecoration: 'none' }}>
-                      privacy policy
-                    </Link>
-                  </Typography>
-                }
+                onChange={handleChange}
+                onBlur={handleBlur}
               />
-              {touched.acceptTerms && errors.acceptTerms && (
-                <Typography variant="caption" color="error" sx={{ display: 'block', mt: 1 }}>
-                  {errors.acceptTerms}
-                </Typography>
-              )}
-            </Box>
 
-            <Button
-              type="submit"
-              fullWidth
-              variant="contained"
-              size="large"
-              disabled={isLoading || isSubmitting}
-              sx={{
-                py: 1.5,
-                fontSize: '16px',
-                fontWeight: 600,
-                mb: 2,
-              }}
-            >
-              {isLoading ? (
-                <CircularProgress size={24} color="inherit" />
-              ) : (
-                'Register'
-              )}
-            </Button>
+            </FormControl>
+            <FormControl>
+              <FormLabel htmlFor='password'>Password</FormLabel>
+              <Input
+                id="password"
+                name="password"
+                label=""
+                value={values.password}
+                typeInput={showPassword ? 'text' : 'password'}
+                placeholder="Create a strong password"
+                isError={!!(touched.password && errors.password)}
+                errorText=""
+                prefixIcon={
+                  <InputAdornment position="start">
+                    <LockIcon color="action" />
+                  </InputAdornment>
+                }
+                suffixIcon={
+                  <InputAdornment position="start">
+                    <IconButton
+                      onClick={() => setShowPassword(!showPassword)}
+                      aria-label={showPassword ? 'Hide password' : 'Show password'}
+                    >
+                      {showPassword ? <VisibilityOff /> : <Visibility />}
+                    </IconButton>
+                  </InputAdornment>
+                }
+                onChange={handleChange}
+                onBlur={handleBlur}
+              />
+            </FormControl>
+            <FormControl>
+              <FormLabel htmlFor='confirmPassword'>Confirm Password</FormLabel>
+              <Input
+                id="confirmPassword"
+                name="confirmPassword"
+                label=""
+                value={values.confirmPassword}
+                typeInput={showConfirmPassword ? 'text' : 'password'}
+                placeholder="Confirm your password"
+                isError={!!(touched.confirmPassword && errors.confirmPassword)}
+                errorText=""
+                prefixIcon={
+                  <InputAdornment position="start">
+                    <LockIcon color="action" />
+                  </InputAdornment>
+                }
+                suffixIcon={
+                  <InputAdornment position="start">
+                    <IconButton
+                      onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                      aria-label={showConfirmPassword ? 'Hide password' : 'Show password'}
+                    >
+                      {showConfirmPassword ? <VisibilityOff /> : <Visibility />}
+                    </IconButton>
+                  </InputAdornment>
+                }
+                onChange={handleChange}
+                onBlur={handleBlur}
+              />
+            </FormControl>
 
-            {/* <Divider sx={{ my: 1 }}>
-              <Typography variant="body2" color="text.secondary">
-                OR
-              </Typography>
-            </Divider> */}
+            <LoadingButton />
 
             <Box sx={{ textAlign: 'center' }}>
               <Typography variant="body2" color="text.secondary">

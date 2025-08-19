@@ -26,7 +26,6 @@ import { validateEmail, validatePasswordSignIn } from '../../common/validate';
 import { ToastMessage } from '../toastMessage';
 
 import { ROUTES } from '../../common/constant';
-
 import LoadingButton from '../loadingButton';
 import { Input } from '../fields';
 
@@ -129,9 +128,9 @@ export const SignInForm: React.FC = () => {
         validationSchema={signInSchema}
         onSubmit={handleSubmit}
       >
-        {({ values, errors, touched, isSubmitting, handleBlur, handleChange }) => (
+        {({ values, errors, touched, handleBlur, handleChange }) => (
           <Form
-            style={{ display: 'flex', flexDirection: 'column', gap: 10 }}
+            style={{ display: 'flex', flexDirection: 'column', gap: 20 }}
           >
             <FormControl>
               <FormLabel htmlFor='email'>Email</FormLabel>
@@ -176,7 +175,6 @@ export const SignInForm: React.FC = () => {
                   <InputAdornment position='start'>
                     <IconButton
                       onClick={() => setShowPassword(!showPassword)}
-                      // edge='start'
                       aria-label={showPassword ? 'Hide password' : 'Show password'}
                     >
                       {showPassword ? <VisibilityOff /> : <Visibility />}
@@ -200,7 +198,7 @@ export const SignInForm: React.FC = () => {
               />
             </FormControl>
 
-            <Box sx={{ textAlign: 'right', mb: 3 }}>
+            <Box sx={{ textAlign: 'right' }}>
               <Link
                 component={RouterLink}
                 to={ROUTES.AUTH.FORGOT_PASSWORD}
@@ -214,20 +212,7 @@ export const SignInForm: React.FC = () => {
               </Link>
             </Box>
 
-            <LoadingButton
-              type="submit"
-              fullWidth
-              variant="contained"
-              size="large"
-              loading={isLoading || isSubmitting}
-              loadingText="Signing in..."
-              sx={{
-                py: 1.5,
-                fontSize: '16px',
-                fontWeight: 600,
-                mb: 1
-              }}
-            >Sign In</LoadingButton>
+            <LoadingButton loading={isLoading} />
 
             <Box sx={{ textAlign: 'center' }}>
               <Typography variant="body2" color="text.secondary">
@@ -249,14 +234,10 @@ export const SignInForm: React.FC = () => {
         )}
       </Formik>
 
-      {/* Demo Info */}
-      {/* <Box sx={{ mt: 3, p: 2, backgroundColor: '#f9f9f9', borderRadius: 1 }}>
-        <Typography variant="caption" color="text.secondary" sx={{ display: 'block', textAlign: 'center' }}>
-          <strong>Demo Account:</strong><br />
+      {/*
           Email: admin@gmail.com<br />
           Password: 123456
-        </Typography>
-      </Box> */}
+       */}
     </Paper>
   );
 };

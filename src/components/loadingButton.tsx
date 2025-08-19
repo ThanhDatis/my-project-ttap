@@ -1,83 +1,72 @@
-import React from 'react';
-import {
-  Button,
-  CircularProgress,
-  type ButtonProps,
-} from '@mui/material';
+import React from "react";
+import { Box, Button, type SxProps, type Theme } from "@mui/material";
+import CircularProgress from "@mui/material/CircularProgress";
+import { gray } from "../common/color";
 
-export interface LoadingButtonProps extends ButtonProps {
+interface LoadingButtonProps {
+  size?: number;
+  sxButton?: SxProps<Theme> | undefined;
+  textButton?: string;
+  type?: "button" | "reset" | "submit" | undefined;
   loading?: boolean;
-  loadingText?: string;
-  loadingPosition?: 'start' | 'end' | 'center';
+  disabled?: boolean;
+  onClick?: () => void;
+  variant?: "text" | "contained" | "outlined";
+  color?: "inherit" | "primary" | "secondary";
 }
 
 export const LoadingButton: React.FC<LoadingButtonProps> = ({
+  sxButton = {
+    py: 1.5,
+    fontSize: '16px',
+    fontWeight: 600,
+    mb: 1,
+  },
+  textButton = "Sign In",
+  type = "submit",
   loading = false,
-  loadingText,
-  loadingPosition = 'center',
-  children,
-  disabled,
-  startIcon,
-  endIcon,
-  sx,
-  ...buttonProps
-}) => {
-  const isDisabled = disabled || loading;
-
-  const renderLoadingIcon = () => (
-    <CircularProgress
-      size={16}
-      color="inherit"
-      sx={{
-        mr: loadingPosition === 'start' ? 1 : 0,
-        ml: loadingPosition === 'end' ? 1 : 0,
-      }}
-    />
-  );
-
-  const getStartIcon = () => {
-    if (loading && loadingPosition === 'start') {
-      return renderLoadingIcon();
-    }
-    return startIcon;
-  };
-
-  const getEndIcon = () => {
-    if (loading && loadingPosition === 'end') {
-      return renderLoadingIcon();
-    }
-    return endIcon;
-  };
-
-  const getButtonContent = () => {
-    if (loading && loadingPosition === 'center') {
-      return (
-        <>
-          {renderLoadingIcon()}
-          {loadingText && <span style={{ marginLeft: 8 }}>{loadingText}</span>}
-        </>
-      );
-    }
-
-    if (loading && loadingText) {
-      return loadingText;
-    }
-
-    return children;
-  };
-
+  onClick,
+  variant = "contained",
+  disabled = false,
+  size = 20,
+  // color = "primary",
+}: LoadingButtonProps): React.JSX.Element => {
   return (
     <Button
-      {...buttonProps}
-      disabled={isDisabled}
-      startIcon={getStartIcon()}
-      endIcon={getEndIcon()}
+      variant={variant}
+      // color={color}
       sx={{
+        ...sxButton,
+        color: loading ? "transparent" : "",
         position: 'relative',
-        ...sx,
       }}
+      type={type}
+      onClick={onClick}
+      disabled={disabled || loading}
     >
-      {getButtonContent()}
+      {textButton}
+      {loading && (
+        <Box
+          sx={{
+            position: "absolute",
+            width: "100%",
+            height: "100%",
+            background: "transparent",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+          }}
+        >
+          <CircularProgress
+            size={size}
+            thickness={4}
+            style={{
+              color: variant != 'text' ? gray[500] : 'White'
+            }}
+            // color="inherit"
+          />
+        </Box>
+      )}
     </Button>
   );
 };
