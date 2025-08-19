@@ -1,5 +1,4 @@
 import { ListItem, ListItemButton, ListItemIcon, ListItemText } from "@mui/material";
-import { useLocation, useNavigate } from "react-router-dom";
 
 interface MenuItem {
   text: string;
@@ -10,39 +9,32 @@ interface MenuItem {
 interface SidebarMenuItemProps {
   item: MenuItem;
   borderRadius?: number;
+  isActive: boolean;
+  onNavigate: (path: string) => void;
 }
 
 export const SidebarMenuItem: React.FC<SidebarMenuItemProps> = ({
   item,
-  borderRadius = 2
+  borderRadius = 2,
+  isActive,
+  onNavigate
 }) => {
-  const navigate = useNavigate();
-  const location = useLocation();
-
-  const handleNavigation = (path: string) => {
-    navigate(path);
-  };
-
-  const isActive = (path: string ) => {
-    return location.pathname === path;
-  };
-
   return (
     <ListItem disablePadding sx={{ mb : 1 }}>
       <ListItemButton
-        onClick={() => handleNavigation(item.path)}
+        onClick={() => onNavigate(item.path)}
         sx={{
           borderRadius,
-          backgroundColor: isActive(item.path) ? '#e3f2fd' : 'transparent',
+          backgroundColor: isActive ? '#e3f2fd' : 'transparent',
           '&:hover': {
-            backgroundColor: isActive(item.path) ? '#e3f2fd' : '#f5f5f5',
+            backgroundColor: isActive ? '#e3f2fd' : '#f5f5f5',
           },
           '& .MuiListItemIcon-root': {
-            color: isActive(item.path) ? '#333' : '#666',
+            color: isActive ? '#333' : '#666',
           },
           '& .MuiListItemText-primary': {
-            color: isActive(item.path) ? '#333' : '#333',
-            fontWeight: isActive(item.path) ? 600 : 400,
+            color: isActive ? '#333' : '#333',
+            fontWeight: isActive ? 600 : 400,
           },
         }}
       >

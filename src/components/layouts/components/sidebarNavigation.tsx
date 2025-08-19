@@ -1,3 +1,5 @@
+import { useLocation, useNavigate } from "react-router-dom";
+
 import { Box, List } from '@mui/material';
 import SpaceDashboardRoundedIcon from '@mui/icons-material/SpaceDashboardRounded';
 import GroupRoundedIcon from '@mui/icons-material/GroupRounded';
@@ -24,6 +26,17 @@ const bottomMenuItems: MenuItem[] = [
 ];
 
 export const SidebarNavigation = () => {
+  const navigate = useNavigate();
+  const location = useLocation();
+
+  const handleNavigation = (path: string) => {
+    navigate(path);
+  };
+
+  const isActive = (path: string ) => {
+    return location.pathname === path;
+  };
+
   return (
     <>
       <Box sx={{ flex: 1 }}>
@@ -32,6 +45,8 @@ export const SidebarNavigation = () => {
             <SidebarMenuItem
               key={item.text}
               item={item}
+              isActive={isActive(item.path)}
+              onNavigate={handleNavigation}
               // borderRadius={2}
             />
           ))}
@@ -43,6 +58,8 @@ export const SidebarNavigation = () => {
             <SidebarMenuItem
               key={item.text}
               item={item}
+              isActive={isActive(item.path)}
+              onNavigate={handleNavigation}
               borderRadius={2}
             />
           ))}
