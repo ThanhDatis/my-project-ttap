@@ -13,6 +13,7 @@ export const ROUTES = {
   CUSTOMERS: '/customers',
   ORDERS: '/orders',
   SETTING: '/setting',
+  PROFILE: '/profile',
 } as const;
 
 export const PAGE_SIZES = [ 10, 20, 30, 50 ] as const;
