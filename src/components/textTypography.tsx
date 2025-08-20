@@ -1,5 +1,5 @@
+import { Typography, type SxProps, type Theme } from '@mui/material';
 import React from 'react';
-import { Typography, type SxProps, type Theme } from "@mui/material";
 
 interface TextTypographyProps {
   sx?: SxProps<Theme> | undefined;
@@ -7,11 +7,7 @@ interface TextTypographyProps {
   component?: React.ElementType;
 }
 
-export function TextTypography ({
-  sx = {},
-  children,
-  component = 'p',
-}: TextTypographyProps) : React.JSX.Element {
+export function TextTypography({ sx = {}, children, component = 'p' }: TextTypographyProps): React.JSX.Element {
   return (
     <Typography
       component={component}
@@ -20,10 +16,10 @@ export function TextTypography ({
         fontSize: '1rem',
         color: 'text.primary',
         lineHeight: 1.5,
-        ...sx
+        ...sx,
       }}
     >
       {children}
     </Typography>
-  )
+  );
 }

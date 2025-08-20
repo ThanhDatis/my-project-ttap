@@ -7,8 +7,8 @@ const Customers = () => {
         THIS IS CUSTOMERS
       </Typography>
       <Typography variant="body1" color="text.secondary">
-        Manage your customers here. You can view customer information,
-        add new customers, edit existing records, and track customer activities.
+        Manage your customers here. You can view customer information, add new customers, edit existing records, and
+        track customer activities.
       </Typography>
     </Box>
   );

@@ -1,6 +1,9 @@
-import React, { useEffect, useState } from "react";
-import { Navigate, useLocation } from "react-router-dom";
-import { Box, CircularProgress, Typography } from "@mui/material";
+/* eslint-disable react-refresh/only-export-components */
+/* eslint-disable @typescript-eslint/no-explicit-any */
+import { Box, CircularProgress, Typography } from '@mui/material';
+import React, { useEffect, useState } from 'react';
+import { Navigate, useLocation } from 'react-router-dom';
+
 import { useAuthStore } from '../../store/auth.store';
 interface AuthGuardProps {
   children: React.ReactNode;
@@ -12,7 +15,7 @@ export const AuthGuard: React.FC<AuthGuardProps> = ({ children }) => {
   const location = useLocation();
 
   useEffect(() => {
-    const verifyAuth = async () =>{
+    const verifyAuth = async () => {
       setLoading(true);
 
       try {
@@ -56,19 +59,13 @@ export const AuthGuard: React.FC<AuthGuardProps> = ({ children }) => {
   }
 
   if (!isAuthenticated) {
-    return (
-      <Navigate
-        to='/auth/signin'
-        state={{ from : location }}
-        replace
-      />
-    );
+    return <Navigate to="/auth/signin" state={{ from: location }} replace />;
   }
 
   return <>{children}</>;
 };
 
-export const withAuthGuard = ( Component: React.ComponentType ) => {
+export const withAuthGuard = (Component: React.ComponentType) => {
   const WrappedComponent = (props: any) => (
     <AuthGuard>
       <Component {...props} />
@@ -77,4 +74,4 @@ export const withAuthGuard = ( Component: React.ComponentType ) => {
 
   WrappedComponent.displayName = `withAuthGuard(${Component.displayName || Component.name})`;
   return WrappedComponent;
-}
+};

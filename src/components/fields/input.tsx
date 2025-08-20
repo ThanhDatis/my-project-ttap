@@ -1,14 +1,11 @@
-import React, { forwardRef, type InputHTMLAttributes } from "react";
-import {
-  Box,
-  TextField,
-  type AlertColor,
-  type SxProps,
-  type Theme,
-} from "@mui/material";
-import { errorColor } from "../../common/color";
-import { TextTypography } from "../textTypography";
-import { defaultStyleInput, errorStyleInput } from "./styles";
+/* eslint-disable no-unused-vars */
+import { Box, TextField, type AlertColor, type SxProps, type Theme } from '@mui/material';
+import React, { forwardRef, type InputHTMLAttributes } from 'react';
+
+import { errorColor } from '../../common/color';
+import { TextTypography } from '../textTypography';
+
+import { defaultStyleInput, errorStyleInput } from './styles';
 
 interface InputProps {
   sx?: SxProps<Theme> | undefined;
@@ -44,7 +41,6 @@ interface InputProps {
 
   inputRef?: React.Ref<HTMLInputElement>;
   autoComplete?: string;
-
 }
 
 export const Input = forwardRef<HTMLInputElement, InputProps>(
@@ -67,10 +63,10 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
       prefixIcon,
       suffixIcon,
       placeholder,
-      size = "medium",
-      typeInput = "text",
-      errorText = "Something went wrong",
-      autoComplete = "off",
+      size = 'medium',
+      typeInput = 'text',
+      errorText = 'Something went wrong',
+      autoComplete = 'off',
       minRows = 1,
       inputRef,
       multiline = false,
@@ -106,24 +102,18 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
           value={value}
           defaultValue={defaultValue}
           placeholder={placeholder}
-
           sx={combinedSx}
           fullWidth
           size={size}
-
           error={isError}
           disabled={disabled}
-
           type={typeInput}
           autoComplete={autoComplete}
-
           multiline={multiline}
           rows={rows}
           maxRows={maxRows}
           minRows={minRows}
-
           helperText={!isError ? helperText : undefined}
-
           onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
             onChange?.(event);
           }}
@@ -134,7 +124,6 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
             onFocus?.(event);
           }}
           onKeyDown={handleKeyPress}
-
           slotProps={{
             input: {
               startAdornment: prefixIcon,
@@ -145,17 +134,17 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
         />
         {isError ? (
           <TextTypography
-          sx={{
-            color: errorColor,
-            fontSize: "12px",
-            marginTop: "4px",
-            lineHeight: 1.4,
-            ...errorStyleInput,
-            ...sxError,
-          }}
-        >
-          {errorText}
-        </TextTypography>
+            sx={{
+              color: errorColor,
+              fontSize: '12px',
+              marginTop: '4px',
+              lineHeight: 1.4,
+              ...errorStyleInput,
+              ...sxError,
+            }}
+          >
+            {errorText}
+          </TextTypography>
         ) : null}
       </Box>
     );

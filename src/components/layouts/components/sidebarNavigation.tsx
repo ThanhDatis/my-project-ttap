@@ -1,12 +1,12 @@
-import { useLocation, useNavigate } from "react-router-dom";
-
-import { Box, List } from '@mui/material';
-import SpaceDashboardRoundedIcon from '@mui/icons-material/SpaceDashboardRounded';
 import GroupRoundedIcon from '@mui/icons-material/GroupRounded';
 import SellRoundedIcon from '@mui/icons-material/SellRounded';
 import SettingsRoundedIcon from '@mui/icons-material/SettingsRounded';
+import SpaceDashboardRoundedIcon from '@mui/icons-material/SpaceDashboardRounded';
+import { Box, List } from '@mui/material';
+import { useLocation, useNavigate } from 'react-router-dom';
 
 import { ROUTES } from '../../../common';
+
 import { SidebarMenuItem } from './sidebarMenuItem';
 
 interface MenuItem {
@@ -21,9 +21,7 @@ const menuItems: MenuItem[] = [
   { text: 'Orders', icon: <SellRoundedIcon />, path: ROUTES.ORDERS },
 ];
 
-const bottomMenuItems: MenuItem[] = [
-  { text: 'Setting', icon: <SettingsRoundedIcon />, path: ROUTES.SETTING },
-];
+const bottomMenuItems: MenuItem[] = [{ text: 'Setting', icon: <SettingsRoundedIcon />, path: ROUTES.SETTING }];
 
 export const SidebarNavigation = () => {
   const navigate = useNavigate();
@@ -33,7 +31,7 @@ export const SidebarNavigation = () => {
     navigate(path);
   };
 
-  const isActive = (path: string ) => {
+  const isActive = (path: string) => {
     return location.pathname === path;
   };
 

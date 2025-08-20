@@ -1,6 +1,6 @@
-import React, { useCallback, useMemo } from "react";
-import { Box, Breadcrumbs, Typography, Link } from "@mui/material";
 import { NavigateNext as NavigateNextIcon } from '@mui/icons-material';
+import { Box, Breadcrumbs, Typography, Link } from '@mui/material';
+import React, { useCallback, useMemo } from 'react';
 import { Link as RouterLink, useLocation } from 'react-router-dom';
 
 interface BreadcrumbItem {
@@ -35,109 +35,115 @@ const BreadcrumbPage: React.FC<BreadcrumbPageProps> = ({
 }) => {
   const location = useLocation();
 
-  const routeLabels = useMemo(() => ({
-    ...DEFAULT_ROUTE_LABELS,
-    ...customRouteLabels,
-  }), [customRouteLabels]);
+  const routeLabels = useMemo(
+    () => ({
+      ...DEFAULT_ROUTE_LABELS,
+      ...customRouteLabels,
+    }),
+    [customRouteLabels],
+  );
 
   const breadcrumbs = useMemo((): BreadcrumbItem[] => {
-    const pathSegments = location.pathname
-      .split('/')
-      .filter(segment => segment && segment.trim());
+    const pathSegments = location.pathname.split('/').filter((segment) => segment && segment.trim());
 
-      if (pathSegments.length === 0) {
-        return [{ label: routeLabels.dashboard || 'Dashboard', isLast: true}];
-      }
-      const breadcrumbItems: BreadcrumbItem[] = [];
+    if (pathSegments.length === 0) {
+      return [{ label: routeLabels.dashboard || 'Dashboard', isLast: true }];
+    }
+    const breadcrumbItems: BreadcrumbItem[] = [];
 
-      if (pathSegments[0] !== 'dashboard') {
-        breadcrumbItems.push({
-          label: routeLabels.dashboard || 'Dashboard',
-          path: '/dashboard',
-          isLast: false,
-        });
-      }
+    if (pathSegments[0] !== 'dashboard') {
+      breadcrumbItems.push({
+        label: routeLabels.dashboard || 'Dashboard',
+        path: '/dashboard',
+        isLast: false,
+      });
+    }
 
-      pathSegments.forEach((segment, index) => {
-        const path = '/' + pathSegments.slice(0, index + 1).join('/');
-        const isLast = index === pathSegments.length - 1;
+    pathSegments.forEach((segment, index) => {
+      const path = '/' + pathSegments.slice(0, index + 1).join('/');
+      const isLast = index === pathSegments.length - 1;
 
-        let label = routeLabels[segment] || segment
+      let label =
+        routeLabels[segment] ||
+        segment
           .replace(/-/g, ' ')
           .replace(/([A-Z])/g, ' $1')
           .trim()
           .split(' ')
-          .map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
+          .map((word) => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
           .join(' ');
-        if (isLast && lastBreadcrumb) {
-          label = lastBreadcrumb;
-        }
+      if (isLast && lastBreadcrumb) {
+        label = lastBreadcrumb;
+      }
 
-        breadcrumbItems.push({
-          label,
-          path: isLast ? undefined : path,
-          isLast,
-        });
+      breadcrumbItems.push({
+        label,
+        path: isLast ? undefined : path,
+        isLast,
       });
-      return breadcrumbItems;
+    });
+    return breadcrumbItems;
   }, [location.pathname, routeLabels, lastBreadcrumb]);
 
-  const renderBreadcrumbItem = useCallback((breadcrumb: BreadcrumbItem, index: number) => {
-    const { label, path, isLast } = breadcrumb;
-    const key = `${path || label}-${index}`;
+  const renderBreadcrumbItem = useCallback(
+    (breadcrumb: BreadcrumbItem, index: number) => {
+      const { label, path, isLast } = breadcrumb;
+      const key = `${path || label}-${index}`;
 
-    if (isLast || !path) {
-      return (
-        <Typography
-          key={key}
-          sx={{
-            color: '#333',
-            fontWeight: 500,
-            fontSize,
-            userSelect: 'none',
-          }}
-        >
-          {label}
-        </Typography>
-      );
-    }
+      if (isLast || !path) {
+        return (
+          <Typography
+            key={key}
+            sx={{
+              color: '#333',
+              fontWeight: 500,
+              fontSize,
+              userSelect: 'none',
+            }}
+          >
+            {label}
+          </Typography>
+        );
+      }
 
-    if (path === '/dashboard' && !isDashboardClickable) {
+      if (path === '/dashboard' && !isDashboardClickable) {
+        return (
+          <Typography
+            key={key}
+            sx={{
+              color: '#999',
+              fontSize,
+              userSelect: 'none',
+            }}
+          >
+            {label}
+          </Typography>
+        );
+      }
+
       return (
-        <Typography
+        <Link
           key={key}
+          component={RouterLink}
+          to={path}
           sx={{
             color: '#999',
+            textDecoration: 'none',
             fontSize,
-            userSelect: 'none',
+            transition: 'color 0.3s ease-in-out',
+            '&:hover': {
+              color: '#757575',
+              textDecoration: 'underline',
+            },
           }}
+          aria-label={`Navigate to ${label}`}
         >
           {label}
-        </Typography>
+        </Link>
       );
-    }
-
-    return (
-      <Link
-        key={key}
-        component={RouterLink}
-        to={path}
-        sx={{
-          color: '#999',
-          textDecoration: 'none',
-          fontSize,
-          transition: 'color 0.3s ease-in-out',
-          '&:hover': {
-            color: '#757575',
-            textDecoration: 'underline',
-          },
-        }}
-        aria-label={`Navigate to ${label}`}
-      >
-        {label}
-      </Link>
-    );
-  }, [fontSize, isDashboardClickable]);
+    },
+    [fontSize, isDashboardClickable],
+  );
 
   if (showOnlyLast) {
     const lastItem = breadcrumbs[breadcrumbs.length - 1];
@@ -172,12 +178,13 @@ const BreadcrumbPage: React.FC<BreadcrumbPageProps> = ({
   }
 
   return (
-    <Box sx={{ mb: 3, gap: 1, display: 'flex', alignItems: 'center' }}
-      role='navigation'
-      aria-label='Breadcrumb navigation'
+    <Box
+      sx={{ mb: 3, gap: 1, display: 'flex', alignItems: 'center' }}
+      role="navigation"
+      aria-label="Breadcrumb navigation"
     >
       <Breadcrumbs
-        separator={<NavigateNextIcon fontSize='small' sx={{ color: '#999' }} />}
+        separator={<NavigateNextIcon fontSize="small" sx={{ color: '#999' }} />}
         // sx={{
         //   '& .MuiBreadcrumbs-separator': { mx: 1 },
         //   '& .MuiBreadcrumbs-ol': { alignItems: 'center' }

@@ -1,37 +1,25 @@
-import React, { useState } from 'react';
-import {
-  Box,
-  Paper,
-  Typography,
-  Alert,
-  InputAdornment,
-  IconButton,
-  Link,
-  FormControl,
-  FormLabel
-  // Divider,
-} from '@mui/material';
-import {
-  Visibility,
-  VisibilityOff,
-  Lock as LockIcon,
-} from '@mui/icons-material';
-
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import EmailRoundedIcon from '@mui/icons-material/EmailRounded';
+import LockRoundedIcon from '@mui/icons-material/LockRounded';
+import VisibilityOffRoundedIcon from '@mui/icons-material/VisibilityOffRounded';
+import VisibilityRoundedIcon from '@mui/icons-material/VisibilityRounded';
+import { Box, Paper, Typography, Alert, InputAdornment, IconButton, Link, FormControl, FormLabel } from '@mui/material';
 import { Formik, Form } from 'formik';
-import * as Yup from 'yup';
+import React, { useState } from 'react';
 import { useNavigate, useLocation, Link as RouterLink } from 'react-router-dom';
-import { useAuthStore } from '../../store/auth.store';
-import { validateEmail, validatePasswordSignIn } from '../../common/validate';
-import { ToastMessage } from '../toastMessage';
+import * as Yup from 'yup';
 
 import { ROUTES } from '../../common/constant';
-import LoadingButton from '../loadingButton';
+import { fontWeight } from '../../common/text';
+import { validateEmail, validatePasswordSignIn } from '../../common/validate';
+import { useAuthStore } from '../../store/auth.store';
 import { Input } from '../fields';
+import LoadingButton from '../loadingButton';
+import { ToastMessage } from '../toastMessage';
 
 const signInSchema = Yup.object({
   email: validateEmail,
-  password: validatePasswordSignIn
+  password: validatePasswordSignIn,
 });
 
 export interface SignInFormValues {
@@ -81,7 +69,6 @@ export const SignInForm: React.FC = () => {
 
       const from = (location.state as any)?.from?.pathname || ROUTES.DASHBOARD;
       navigate(from, { replace: true });
-
     } catch (error: any) {
       setError(error.message || 'Login failed. Please try again..');
       ToastMessage('error', 'Login failed!');
@@ -109,7 +96,7 @@ export const SignInForm: React.FC = () => {
         <Typography variant="h4" sx={{ fontWeight: 'bold', color: '#1976d2', mb: 1 }}>
           LOGO
         </Typography>
-        <Typography variant="h5" sx={{ fontWeight: 600, mb: 1 }}>
+        <Typography variant="h5" sx={{ fontWeight: fontWeight.L, mb: 1 }}>
           Sign In
         </Typography>
         <Typography variant="body2" color="text.secondary">
@@ -123,61 +110,59 @@ export const SignInForm: React.FC = () => {
         </Alert>
       )}
 
-      <Formik
-        initialValues={initialValues}
-        validationSchema={signInSchema}
-        onSubmit={handleSubmit}
-      >
+      <Formik initialValues={initialValues} validationSchema={signInSchema} onSubmit={handleSubmit}>
         {({ values, errors, touched, handleBlur, handleChange }) => (
-          <Form
-            style={{ display: 'flex', flexDirection: 'column', gap: 20 }}
-          >
+          <Form style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
             <FormControl>
-              <FormLabel htmlFor='email' sx={{ textAlign: 'left', mb: 1, fontSize: 16, display: 'block' }}>Email</FormLabel>
+              <FormLabel htmlFor="email" sx={{ textAlign: 'left', mb: 1, fontWeight: fontWeight.L, display: 'block' }}>
+                Email
+              </FormLabel>
               <Input
-                id='email'
-                name='email'
-                label=''
+                id="email"
+                name="email"
+                label=""
                 value={values.email}
-                typeInput='email'
-                placeholder='Enter your email'
+                typeInput="email"
+                placeholder="Enter your email"
                 isError={!!(touched.email && errors.email)}
-                errorText=''
+                errorText=""
                 prefixIcon={
-                  <InputAdornment position='start'>
+                  <InputAdornment position="start">
                     <EmailRoundedIcon />
                   </InputAdornment>
                 }
                 onChange={handleChange}
                 onBlur={handleBlur}
-                autoComplete='email'
-                size='medium'
-                sx={{}}
               />
             </FormControl>
             <FormControl>
-              <FormLabel htmlFor='password' sx={{ textAlign: 'left', mb: 1, fontSize: 16, display: 'block' }}>Password</FormLabel>
+              <FormLabel
+                htmlFor="password"
+                sx={{ textAlign: 'left', mb: 1, fontWeight: fontWeight.L, display: 'block' }}
+              >
+                Password
+              </FormLabel>
               <Input
-                id='password'
-                name='password'
-                label=''
+                id="password"
+                name="password"
+                label=""
                 value={values.password}
                 typeInput={showPassword ? 'text' : 'password'}
-                placeholder='Enter your password'
+                placeholder="Enter your password"
                 isError={!!(touched.password && errors.password)}
-                errorText=''
+                errorText=""
                 prefixIcon={
-                  <InputAdornment position='start'>
-                    <LockIcon color='action' />
+                  <InputAdornment position="start">
+                    <LockRoundedIcon color="action" />
                   </InputAdornment>
                 }
                 suffixIcon={
-                  <InputAdornment position='start'>
+                  <InputAdornment position="start">
                     <IconButton
                       onClick={() => setShowPassword(!showPassword)}
                       aria-label={showPassword ? 'Hide password' : 'Show password'}
                     >
-                      {showPassword ? <VisibilityOff /> : <Visibility />}
+                      {showPassword ? <VisibilityOffRoundedIcon /> : <VisibilityRoundedIcon />}
                     </IconButton>
                   </InputAdornment>
                 }
@@ -192,9 +177,6 @@ export const SignInForm: React.FC = () => {
                     }
                   }
                 }}
-                autoComplete='current-password'
-                size='medium'
-                sx={{}}
               />
             </FormControl>
 
@@ -205,7 +187,7 @@ export const SignInForm: React.FC = () => {
                 sx={{
                   fontSize: '14px',
                   textDecoration: 'none',
-                  '&:hover': { textDecoration: 'underline' }
+                  '&:hover': { textDecoration: 'underline' },
                 }}
               >
                 Forgot password?
@@ -223,7 +205,7 @@ export const SignInForm: React.FC = () => {
                   sx={{
                     fontWeight: 600,
                     textDecoration: 'none',
-                    '&:hover': { textDecoration: 'underline' }
+                    '&:hover': { textDecoration: 'underline' },
                   }}
                 >
                   Register Now

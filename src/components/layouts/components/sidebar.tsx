@@ -1,15 +1,16 @@
-import { Box, Drawer, } from '@mui/material';
+import { Box, Drawer } from '@mui/material';
+
 import { primaryBackgroundSidebar, borderLine } from '../../../common/color';
 import { DRAWER_WIDTH } from '../../../common/constant';
+
 import { SidebarHeader } from './sidebarHeader';
 import { SidebarNavigation } from './sidebarNavigation';
 import { SidebarUserMenu } from './sidebarUserMenu';
 
 const Sidebar = () => {
-
   return (
     <Drawer
-      variant='permanent'
+      variant="permanent"
       sx={{
         width: DRAWER_WIDTH,
         flexShrink: 0,

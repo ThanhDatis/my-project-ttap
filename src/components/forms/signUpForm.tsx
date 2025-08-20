@@ -1,39 +1,27 @@
-import React, { useState } from 'react';
-import {
-  Box,
-  Paper,
-  Typography,
-  Alert,
-  InputAdornment,
-  IconButton,
-  Link,
-  FormControl,
-  FormLabel,
-} from '@mui/material';
-import {
-  Visibility,
-  VisibilityOff,
-  Lock as LockIcon,
-  Email as EmailIcon,
-} from '@mui/icons-material';
+/* eslint-disable @typescript-eslint/no-explicit-any */
+import EmailRoundedIcon from '@mui/icons-material/EmailRounded';
+import LockRoundedIcon from '@mui/icons-material/LockRounded';
+import VisibilityOffRoundedIcon from '@mui/icons-material/VisibilityOffRounded';
+import VisibilityRoundedIcon from '@mui/icons-material/VisibilityRounded';
+import { Box, Paper, Typography, Alert, InputAdornment, IconButton, Link, FormControl, FormLabel } from '@mui/material';
 import { Formik, Form } from 'formik';
-import * as Yup from 'yup';
+import React, { useState } from 'react';
 import { useNavigate, Link as RouterLink } from 'react-router-dom';
-import { useAuthStore } from '../../store/auth.store';
+import * as Yup from 'yup';
 
+import { ROUTES } from '../../common/constant';
+import { fontWeight } from '../../common/text';
 import {
   validateEmail,
   validatePasswordSignUp,
   validateName,
   validateConfirmPassword,
-  validateAcceptTerms
+  validateAcceptTerms,
 } from '../../common/validate';
-import ToastMessage from '../toastMessage';
-
-import { ROUTES } from '../../common/constant';
+import { useAuthStore } from '../../store/auth.store';
 import { Input } from '../fields';
 import LoadingButton from '../loadingButton';
-
+import ToastMessage from '../toastMessage';
 
 const signUpSchema = Yup.object({
   name: validateName,
@@ -99,10 +87,9 @@ export const SignUpForm: React.FC = () => {
       ToastMessage('success', 'Registration successful! Welcome to the system.');
 
       navigate(ROUTES.DASHBOARD, { replace: true });
-
     } catch (error: any) {
       setError(error.message || 'Register failed. Please try again.');
-      ToastMessage('error', 'Register failed!')
+      ToastMessage('error', 'Register failed!');
     } finally {
       setIsLoading(false);
     }
@@ -130,7 +117,7 @@ export const SignUpForm: React.FC = () => {
         <Typography variant="h4" sx={{ fontWeight: 'bold', color: '#1976d2', mb: 1 }}>
           LOGO
         </Typography>
-        <Typography variant="h5" sx={{ fontWeight: 600, mb: 1 }}>
+        <Typography variant="h5" sx={{ fontWeight: fontWeight.L, mb: 1 }}>
           Register
         </Typography>
         <Typography variant="body2" color="text.secondary">
@@ -144,15 +131,13 @@ export const SignUpForm: React.FC = () => {
         </Alert>
       )}
 
-      <Formik
-        initialValues={initialValues}
-        validationSchema={signUpSchema}
-        onSubmit={handleSubmit}
-      >
+      <Formik initialValues={initialValues} validationSchema={signUpSchema} onSubmit={handleSubmit}>
         {({ errors, touched, values, handleChange, handleBlur }) => (
           <Form style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
             <FormControl>
-              <FormLabel htmlFor='email'>Email</FormLabel>
+              <FormLabel htmlFor="email" sx={{ textAlign: 'left', mb: 1, fontWeight: fontWeight.L, display: 'block' }}>
+                Email
+              </FormLabel>
               <Input
                 id="email"
                 name="email"
@@ -164,16 +149,20 @@ export const SignUpForm: React.FC = () => {
                 errorText=""
                 prefixIcon={
                   <InputAdornment position="start">
-                    <EmailIcon color="action" />
+                    <EmailRoundedIcon color="action" />
                   </InputAdornment>
                 }
                 onChange={handleChange}
                 onBlur={handleBlur}
               />
-
             </FormControl>
             <FormControl>
-              <FormLabel htmlFor='password'>Password</FormLabel>
+              <FormLabel
+                htmlFor="password"
+                sx={{ textAlign: 'left', mb: 1, fontWeight: fontWeight.L, display: 'block' }}
+              >
+                Password
+              </FormLabel>
               <Input
                 id="password"
                 name="password"
@@ -185,7 +174,7 @@ export const SignUpForm: React.FC = () => {
                 errorText=""
                 prefixIcon={
                   <InputAdornment position="start">
-                    <LockIcon color="action" />
+                    <LockRoundedIcon color="action" />
                   </InputAdornment>
                 }
                 suffixIcon={
@@ -194,7 +183,7 @@ export const SignUpForm: React.FC = () => {
                       onClick={() => setShowPassword(!showPassword)}
                       aria-label={showPassword ? 'Hide password' : 'Show password'}
                     >
-                      {showPassword ? <VisibilityOff /> : <Visibility />}
+                      {showPassword ? <VisibilityOffRoundedIcon /> : <VisibilityRoundedIcon />}
                     </IconButton>
                   </InputAdornment>
                 }
@@ -203,7 +192,12 @@ export const SignUpForm: React.FC = () => {
               />
             </FormControl>
             <FormControl>
-              <FormLabel htmlFor='confirmPassword'>Confirm Password</FormLabel>
+              <FormLabel
+                htmlFor="confirmPassword"
+                sx={{ textAlign: 'left', mb: 1, fontWeight: fontWeight.L, display: 'block' }}
+              >
+                Confirm Password
+              </FormLabel>
               <Input
                 id="confirmPassword"
                 name="confirmPassword"
@@ -215,7 +209,7 @@ export const SignUpForm: React.FC = () => {
                 errorText=""
                 prefixIcon={
                   <InputAdornment position="start">
-                    <LockIcon color="action" />
+                    <LockRoundedIcon color="action" />
                   </InputAdornment>
                 }
                 suffixIcon={
@@ -224,7 +218,7 @@ export const SignUpForm: React.FC = () => {
                       onClick={() => setShowConfirmPassword(!showConfirmPassword)}
                       aria-label={showConfirmPassword ? 'Hide password' : 'Show password'}
                     >
-                      {showConfirmPassword ? <VisibilityOff /> : <Visibility />}
+                      {showConfirmPassword ? <VisibilityOffRoundedIcon /> : <VisibilityRoundedIcon />}
                     </IconButton>
                   </InputAdornment>
                 }
@@ -233,7 +227,7 @@ export const SignUpForm: React.FC = () => {
               />
             </FormControl>
 
-            <LoadingButton />
+            <LoadingButton loading={isLoading} />
 
             <Box sx={{ textAlign: 'center' }}>
               <Typography variant="body2" color="text.secondary">
@@ -244,7 +238,7 @@ export const SignUpForm: React.FC = () => {
                   sx={{
                     fontWeight: 600,
                     textDecoration: 'none',
-                    '&:hover': { textDecoration: 'underline' }
+                    '&:hover': { textDecoration: 'underline' },
                   }}
                 >
                   Sign in now

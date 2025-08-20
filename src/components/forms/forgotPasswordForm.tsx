@@ -1,29 +1,19 @@
-import React, { useState } from 'react';
-import {
-  Box,
-  Paper,
-  Typography,
-  Alert,
-  InputAdornment,
-  Link,
-  FormControl,
-  FormLabel,
-} from '@mui/material';
-
-import EmailRoundedIcon from '@mui/icons-material/EmailRounded';
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
+import EmailRoundedIcon from '@mui/icons-material/EmailRounded';
+import { Box, Paper, Typography, Alert, InputAdornment, Link, FormControl, FormLabel } from '@mui/material';
 import { Formik, Form } from 'formik';
-import * as Yup from 'yup';
+import React, { useState } from 'react';
 import { useNavigate, Link as RouterLink } from 'react-router-dom';
+import * as Yup from 'yup';
 
+import { gray } from '../../common/color';
 import { ROUTES } from '../../common/constant';
-import { fontWeight, gray } from '../../common/color';
+import { fontWeight } from '../../common/text';
 import { validateEmail } from '../../common/validate';
-
 import { Input } from '../fields';
-
-import { ToastMessage } from '../toastMessage';
 import LoadingButton from '../loadingButton';
+import { ToastMessage } from '../toastMessage';
 
 const forgotPasswordSchema = Yup.object({
   email: validateEmail,
@@ -65,7 +55,6 @@ export const ForgotPasswordForm: React.FC = () => {
 
       setIsSuccess(true);
       ToastMessage('success', response.message);
-
     } catch (error: any) {
       setError(error.message || 'Failed to send reset email. Please try again.');
       ToastMessage('error', 'Failed to send reset email!');
@@ -106,23 +95,22 @@ export const ForgotPasswordForm: React.FC = () => {
           </Typography>
         </Box>
 
-        <Box sx={{
-          p: 3,
-          backgroundColor: 'success.light',
-          borderRadius: 2,
-          mb: 3,
-          border: '1px solid',
-          borderColor: 'success.main',
-        }}>
+        <Box
+          sx={{
+            p: 3,
+            backgroundColor: 'success.light',
+            borderRadius: 2,
+            mb: 3,
+            border: '1px solid',
+            borderColor: 'success.main',
+          }}
+        >
           <Typography variant="body2" sx={{ color: 'success.dark' }}>
             Check your inbox or spam for the reset link. It expires in 24 hours.
           </Typography>
         </Box>
 
-        <LoadingButton
-          textButton="Back to Sign In"
-          onClick={handleBackToSignIn}
-        />
+        <LoadingButton textButton="Back to Sign In" onClick={handleBackToSignIn} />
 
         <Typography variant="body2" color="text.secondary">
           Didn't receive the email?{' '}
@@ -132,7 +120,7 @@ export const ForgotPasswordForm: React.FC = () => {
             sx={{
               fontWeight: 600,
               textDecoration: 'none',
-              '&:hover': { textDecoration: 'underline' }
+              '&:hover': { textDecoration: 'underline' },
             }}
           >
             Try again
@@ -170,37 +158,34 @@ export const ForgotPasswordForm: React.FC = () => {
         </Alert>
       )}
 
-      <Formik
-        initialValues={initialValues}
-        validationSchema={forgotPasswordSchema}
-        onSubmit={handleSubmit}
-      >
+      <Formik initialValues={initialValues} validationSchema={forgotPasswordSchema} onSubmit={handleSubmit}>
         {({ values, errors, touched, handleBlur, handleChange }) => (
           <Form style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
             <FormControl error={touched.email && Boolean(errors.email)}>
-              <FormLabel htmlFor='email'
+              <FormLabel
+                htmlFor="email"
                 sx={{
                   textAlign: 'left',
                   mb: 1,
                   display: 'block',
                   fontWeight: fontWeight.L,
-                  '&.Mui-error': { color: 'error.main' }
+                  '&.Mui-error': { color: 'error.main' },
                 }}
               >
                 Email Address
               </FormLabel>
 
               <Input
-                id='email'
-                name='email'
-                label=''
+                id="email"
+                name="email"
+                label=""
                 value={values.email}
-                typeInput='email'
-                placeholder='Enter your email address'
+                typeInput="email"
+                placeholder="Enter your email address"
                 isError={!!(touched.email && errors.email)}
-                errorText=''
+                errorText=""
                 prefixIcon={
-                  <InputAdornment position='start'>
+                  <InputAdornment position="start">
                     <EmailRoundedIcon color="action" />
                   </InputAdornment>
                 }
@@ -218,10 +203,7 @@ export const ForgotPasswordForm: React.FC = () => {
               />
             </FormControl>
 
-            <LoadingButton
-              loading={isLoading}
-              textButton="Send Reset Instructions"
-            />
+            <LoadingButton loading={isLoading} textButton="Send Reset Instructions" />
 
             <Box sx={{ textAlign: 'center' }}>
               <Link
@@ -236,7 +218,7 @@ export const ForgotPasswordForm: React.FC = () => {
                   '&:hover': {
                     textDecoration: 'underline',
                     color: gray[900],
-                  }
+                  },
                 }}
               >
                 <ArrowBackIcon fontSize="small" />

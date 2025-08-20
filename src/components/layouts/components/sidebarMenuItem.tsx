@@ -1,4 +1,5 @@
-import { ListItem, ListItemButton, ListItemIcon, ListItemText } from "@mui/material";
+/* eslint-disable no-unused-vars */
+import { ListItem, ListItemButton, ListItemIcon, ListItemText } from '@mui/material';
 
 interface MenuItem {
   text: string;
@@ -13,14 +14,9 @@ interface SidebarMenuItemProps {
   onNavigate: (path: string) => void;
 }
 
-export const SidebarMenuItem: React.FC<SidebarMenuItemProps> = ({
-  item,
-  borderRadius = 2,
-  isActive,
-  onNavigate
-}) => {
+export const SidebarMenuItem: React.FC<SidebarMenuItemProps> = ({ item, borderRadius = 2, isActive, onNavigate }) => {
   return (
-    <ListItem disablePadding sx={{ mb : 1 }}>
+    <ListItem disablePadding sx={{ mb: 1 }}>
       <ListItemButton
         onClick={() => onNavigate(item.path)}
         sx={{
@@ -38,9 +34,7 @@ export const SidebarMenuItem: React.FC<SidebarMenuItemProps> = ({
           },
         }}
       >
-        <ListItemIcon sx={{ minWidth: 50 }}>
-          {item.icon}
-        </ListItemIcon>
+        <ListItemIcon sx={{ minWidth: 50 }}>{item.icon}</ListItemIcon>
         <ListItemText primary={item.text} />
       </ListItemButton>
     </ListItem>

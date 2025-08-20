@@ -1,6 +1,9 @@
-import { Box, CircularProgress, Typography } from "@mui/material";
-import React, { useState, useEffect } from "react";
+/* eslint-disable react-refresh/only-export-components */
+/* eslint-disable @typescript-eslint/no-explicit-any */
+import { Box, CircularProgress, Typography } from '@mui/material';
+import React, { useState, useEffect } from 'react';
 import { Navigate, useLocation } from 'react-router-dom';
+
 // import { paths } from "../../path.config";
 import { useAuthStore } from '../../store/auth.store';
 
@@ -9,12 +12,9 @@ interface GuestGuardProps {
   redirectTo?: string;
 }
 
-export const GuestGuard: React.FC<GuestGuardProps> = ({
-  children,
-  redirectTo = '/dashboard',
-}) => {
+export const GuestGuard: React.FC<GuestGuardProps> = ({ children, redirectTo = '/dashboard' }) => {
   const { isAuthenticated, checkAuth, setLoading, isLoading } = useAuthStore();
-  const [ isChecking, setIsChecking ] = useState(true);
+  const [isChecking, setIsChecking] = useState(true);
   const location = useLocation();
 
   useEffect(() => {
@@ -22,7 +22,7 @@ export const GuestGuard: React.FC<GuestGuardProps> = ({
       setLoading(true);
 
       try {
-        const isAuth = checkAuth();
+        // const isAuth = checkAuth();
 
         setIsChecking(false);
         setLoading(false);
@@ -63,10 +63,7 @@ export const GuestGuard: React.FC<GuestGuardProps> = ({
   return <>{children}</>;
 };
 
-export const withGuestGuard = (
-  Component: React.ComponentType,
-  redirectTo?: string
-) => {
+export const withGuestGuard = (Component: React.ComponentType, redirectTo?: string) => {
   const WrappedComponent = (props: any) => (
     <GuestGuard redirectTo={redirectTo}>
       <Component {...props} />

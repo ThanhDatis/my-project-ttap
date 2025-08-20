@@ -1,9 +1,10 @@
 import { ThemeProvider, CssBaseline, Box, createTheme } from '@mui/material';
 import { Outlet } from 'react-router-dom';
-import Sidebar from './components/sidebar';
-import BreadcrumbPage from '../breadcrumbPage';
-import { AuthGuard } from '../auth';
 
+import { AuthGuard } from '../auth';
+import BreadcrumbPage from '../breadcrumbPage';
+
+import Sidebar from './components/sidebar';
 
 const theme = createTheme({
   palette: {

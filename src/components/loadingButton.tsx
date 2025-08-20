@@ -1,18 +1,19 @@
-import React from "react";
-import { Box, Button, type SxProps, type Theme } from "@mui/material";
-import CircularProgress from "@mui/material/CircularProgress";
-import { gray } from "../common/color";
+import { Box, Button, type SxProps, type Theme } from '@mui/material';
+import CircularProgress from '@mui/material/CircularProgress';
+import React from 'react';
+
+import { gray } from '../common/color';
 
 interface LoadingButtonProps {
   size?: number;
   sxButton?: SxProps<Theme> | undefined;
   textButton?: string;
-  type?: "button" | "reset" | "submit" | undefined;
+  type?: 'button' | 'reset' | 'submit' | undefined;
   loading?: boolean;
   disabled?: boolean;
   onClick?: () => void;
-  variant?: "text" | "contained" | "outlined";
-  color?: "inherit" | "primary" | "secondary";
+  variant?: 'text' | 'contained' | 'outlined';
+  color?: 'inherit' | 'primary' | 'secondary';
 }
 
 export const LoadingButton: React.FC<LoadingButtonProps> = ({
@@ -22,11 +23,11 @@ export const LoadingButton: React.FC<LoadingButtonProps> = ({
     fontWeight: 600,
     mb: 1,
   },
-  textButton = "Sign In",
-  type = "submit",
+  textButton = 'Sign In',
+  type = 'submit',
   loading = false,
   onClick,
-  variant = "contained",
+  variant = 'contained',
   disabled = false,
   size = 20,
   // color = "primary",
@@ -37,7 +38,7 @@ export const LoadingButton: React.FC<LoadingButtonProps> = ({
       // color={color}
       sx={{
         ...sxButton,
-        color: loading ? "transparent" : "",
+        color: loading ? 'transparent' : '',
         position: 'relative',
       }}
       type={type}
@@ -48,20 +49,20 @@ export const LoadingButton: React.FC<LoadingButtonProps> = ({
       {loading && (
         <Box
           sx={{
-            position: "absolute",
-            width: "100%",
-            height: "100%",
-            background: "transparent",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
+            position: 'absolute',
+            width: '100%',
+            height: '100%',
+            background: 'transparent',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
           }}
         >
           <CircularProgress
             size={size}
             thickness={4}
             style={{
-              color: variant != 'text' ? gray[500] : 'White'
+              color: variant != 'text' ? gray[500] : 'White',
             }}
             // color="inherit"
           />

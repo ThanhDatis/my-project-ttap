@@ -1,5 +1,6 @@
-import { GuestGuard } from "../auth/guestGuard";
-import { Outlet } from "react-router-dom";
+import { Outlet } from 'react-router-dom';
+
+import { GuestGuard } from '../auth/guestGuard';
 
 const LayoutAuth = () => {
   return (

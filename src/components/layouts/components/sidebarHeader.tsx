@@ -1,6 +1,7 @@
-import { Box, Typography } from "@mui/material";
-import { HEIGHT_HEADER_SIDE_BAR } from "../../../common/constant";
+import { Box, Typography } from '@mui/material';
+
 import { borderLine } from '../../../common/color';
+import { HEIGHT_HEADER_SIDE_BAR } from '../../../common/constant';
 
 export const SidebarHeader = () => {
   return (
@@ -12,7 +13,7 @@ export const SidebarHeader = () => {
         borderColor: borderLine,
       }}
     >
-      <Typography variant='h6' sx={{ fontWeight: 'bold', color: '#1976d2' }}>
+      <Typography variant="h6" sx={{ fontWeight: 'bold', color: '#1976d2' }}>
         LOGO
       </Typography>
     </Box>

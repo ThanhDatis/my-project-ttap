@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 import { create } from 'zustand';
 import { createJSONStorage, persist } from 'zustand/middleware';
 
@@ -68,7 +69,7 @@ export const useAuthStore = create<AuthState>()(
       updateToken: (token: string, refreshToken?: string) => {
         set({
           token,
-          refreshToken: refreshToken || get().refreshToken
+          refreshToken: refreshToken || get().refreshToken,
         });
       },
 
@@ -125,6 +126,6 @@ export const useAuthStore = create<AuthState>()(
           state.isLoading = false;
         }
       },
-    }
-  )
+    },
+  ),
 );
