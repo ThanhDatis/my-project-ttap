@@ -12,6 +12,7 @@ import Profile from '../pages/cms/profile';
 
 import SignIn from '../pages/auth/signIn';
 import SignUp from '../pages/auth/signUp';
+import ForgotPassword from '../pages/auth/forgotPassword';
 
 
 const AppRouter = () => {
@@ -22,6 +23,7 @@ const AppRouter = () => {
           <Route index element={<Navigate to='signIn' replace />} />
           <Route path='signin' element={<SignIn />}/>
           <Route path='signup' element={<SignUp />}/>
+          <Route path='forgot-password' element={<ForgotPassword />}/>
         </Route>
 
         <Route path="/" element={<LayoutDashboard /> }>
