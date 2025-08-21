@@ -1,10 +1,10 @@
 import { Box } from '@mui/material';
-import React from 'react';
+// import React from 'react';
 
 import { gray } from '../../common/color';
-import { ForgotPasswordForm } from '../../components/forms/forgotPasswordForm';
+import { ForgotPasswordForm } from '../../components/forms/forgotPassword/forgotPasswordForm';
 
-const ForgotPassword: React.FC = () => {
+function ForgotPassword() {
   return (
     <Box
       sx={{
@@ -18,6 +18,6 @@ const ForgotPassword: React.FC = () => {
       <ForgotPasswordForm />
     </Box>
   );
-};
+}
 
 export default ForgotPassword;

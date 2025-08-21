@@ -16,13 +16,13 @@ import React, { useState } from 'react';
 import { useNavigate, Link as RouterLink } from 'react-router-dom';
 import * as Yup from 'yup';
 
-import { gray } from '../../common/color';
-import { ROUTES } from '../../common/constant';
-import { fontWeight } from '../../common/text';
-import { validateEmail } from '../../common/validate';
-import { Input } from '../fields';
-import LoadingButton from '../loadingButton';
-import { ToastMessage } from '../toastMessage';
+import { gray } from '../../../common/color';
+import { ROUTES } from '../../../common/constant';
+import { fontWeight } from '../../../common/text';
+import { validateEmail } from '../../../common/validate';
+import { Input } from '../../fields';
+import LoadingButton from '../../loadingButton';
+import { ToastMessage } from '../../toastMessage';
 
 const forgotPasswordSchema = Yup.object({
   email: validateEmail,
