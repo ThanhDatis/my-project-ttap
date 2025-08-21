@@ -3,9 +3,19 @@ import CloseRoundedIcon from '@mui/icons-material/CloseRounded';
 import InfoRoundedIcon from '@mui/icons-material/InfoRounded';
 import NewReleasesRoundedIcon from '@mui/icons-material/NewReleasesRounded';
 import WarningRoundedIcon from '@mui/icons-material/WarningRounded';
-import { Box, Typography, type SvgIconProps, type SxProps } from '@mui/material';
+import {
+  Box,
+  Typography,
+  type SvgIconProps,
+  type SxProps,
+} from '@mui/material';
 import React from 'react';
-import { ToastContainer, toast, type Id, type ToastOptions } from 'react-toastify';
+import {
+  ToastContainer,
+  toast,
+  type Id,
+  type ToastOptions,
+} from 'react-toastify';
 
 import { errorColor, gray, successColor, warningColor } from '../common/color';
 import 'react-toastify/dist/ReactToastify.css';
@@ -81,7 +91,11 @@ interface CustomToastOptions extends Omit<ToastOptions, 'type' | 'autoClose'> {
   navigate?: () => void;
 }
 
-export const ToastMessage = (type: ToastType, message: string, options?: CustomToastOptions): Id => {
+export const ToastMessage = (
+  type: ToastType,
+  message: string,
+  options?: CustomToastOptions,
+): Id => {
   return toast(<ToastContent message={message} status={type} />, {
     position: 'top-right',
     autoClose: 5000,

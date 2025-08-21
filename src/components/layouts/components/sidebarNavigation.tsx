@@ -16,12 +16,18 @@ interface MenuItem {
 }
 
 const menuItems: MenuItem[] = [
-  { text: 'Dashboard', icon: <SpaceDashboardRoundedIcon />, path: ROUTES.DASHBOARD },
+  {
+    text: 'Dashboard',
+    icon: <SpaceDashboardRoundedIcon />,
+    path: ROUTES.DASHBOARD,
+  },
   { text: 'Customers', icon: <GroupRoundedIcon />, path: ROUTES.CUSTOMERS },
   { text: 'Orders', icon: <SellRoundedIcon />, path: ROUTES.ORDERS },
 ];
 
-const bottomMenuItems: MenuItem[] = [{ text: 'Setting', icon: <SettingsRoundedIcon />, path: ROUTES.SETTING }];
+const bottomMenuItems: MenuItem[] = [
+  { text: 'Setting', icon: <SettingsRoundedIcon />, path: ROUTES.SETTING },
+];
 
 export const SidebarNavigation = () => {
   const navigate = useNavigate();

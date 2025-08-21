@@ -7,7 +7,8 @@ const Orders = () => {
         THIS IS ORDERS
       </Typography>
       <Typography variant="body1" color="text.secondary">
-        View and manage all orders here. Track order status, process new orders, and manage order fulfillment.
+        View and manage all orders here. Track order status, process new orders,
+        and manage order fulfillment.
       </Typography>
     </Box>
   );

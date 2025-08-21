@@ -12,7 +12,10 @@ interface GuestGuardProps {
   redirectTo?: string;
 }
 
-export const GuestGuard: React.FC<GuestGuardProps> = ({ children, redirectTo = '/dashboard' }) => {
+export const GuestGuard: React.FC<GuestGuardProps> = ({
+  children,
+  redirectTo = '/dashboard',
+}) => {
   const { isAuthenticated, checkAuth, setLoading, isLoading } = useAuthStore();
   const [isChecking, setIsChecking] = useState(true);
   const location = useLocation();
@@ -63,7 +66,10 @@ export const GuestGuard: React.FC<GuestGuardProps> = ({ children, redirectTo = '
   return <>{children}</>;
 };
 
-export const withGuestGuard = (Component: React.ComponentType, redirectTo?: string) => {
+export const withGuestGuard = (
+  Component: React.ComponentType,
+  redirectTo?: string,
+) => {
   const WrappedComponent = (props: any) => (
     <GuestGuard redirectTo={redirectTo}>
       <Component {...props} />

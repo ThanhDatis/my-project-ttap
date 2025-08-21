@@ -7,7 +7,8 @@ const Profile = () => {
         THIS IS PROFILE
       </Typography>
       <Typography variant="body1" color="text.secondary">
-        Manage your user profile, update personal information, and change account settings.
+        Manage your user profile, update personal information, and change
+        account settings.
       </Typography>
     </Box>
   );

@@ -7,7 +7,11 @@ interface TextTypographyProps {
   component?: React.ElementType;
 }
 
-export function TextTypography({ sx = {}, children, component = 'p' }: TextTypographyProps): React.JSX.Element {
+export function TextTypography({
+  sx = {},
+  children,
+  component = 'p',
+}: TextTypographyProps): React.JSX.Element {
   return (
     <Typography
       component={component}

@@ -1,7 +1,16 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import EmailRoundedIcon from '@mui/icons-material/EmailRounded';
-import { Box, Paper, Typography, Alert, InputAdornment, Link, FormControl, FormLabel } from '@mui/material';
+import {
+  Box,
+  Paper,
+  Typography,
+  Alert,
+  InputAdornment,
+  Link,
+  FormControl,
+  FormLabel,
+} from '@mui/material';
 import { Formik, Form } from 'formik';
 import React, { useState } from 'react';
 import { useNavigate, Link as RouterLink } from 'react-router-dom';
@@ -31,19 +40,22 @@ export const ForgotPasswordForm: React.FC = () => {
   const navigate = useNavigate();
 
   const mockSendResetEmail = async (email: string) => {
-    return new Promise<{ success: boolean; message: string }>((resolve, reject) => {
-      setTimeout(() => {
-        if (email === 'notfound@gmail.com') {
-          reject(new Error('Email address not found in our system.'));
-          return;
-        }
+    return new Promise<{ success: boolean; message: string }>(
+      (resolve, reject) => {
+        setTimeout(() => {
+          if (email === 'notfound@gmail.com') {
+            reject(new Error('Email address not found in our system.'));
+            return;
+          }
 
-        resolve({
-          success: true,
-          message: 'Password reset instructions have been sent to your email.',
-        });
-      }, 2000);
-    });
+          resolve({
+            success: true,
+            message:
+              'Password reset instructions have been sent to your email.',
+          });
+        }, 2000);
+      },
+    );
   };
 
   const handleSubmit = async (values: ForgotPasswordFormValues) => {
@@ -56,7 +68,9 @@ export const ForgotPasswordForm: React.FC = () => {
       setIsSuccess(true);
       ToastMessage('success', response.message);
     } catch (error: any) {
-      setError(error.message || 'Failed to send reset email. Please try again.');
+      setError(
+        error.message || 'Failed to send reset email. Please try again.',
+      );
       ToastMessage('error', 'Failed to send reset email!');
     } finally {
       setIsLoading(false);
@@ -84,10 +98,16 @@ export const ForgotPasswordForm: React.FC = () => {
         }}
       >
         <Box sx={{ mb: 4 }}>
-          <Typography variant="h4" sx={{ fontWeight: 'bold', color: '#1976d2', mb: 1 }}>
+          <Typography
+            variant="h4"
+            sx={{ fontWeight: 'bold', color: '#1976d2', mb: 1 }}
+          >
             LOGO
           </Typography>
-          <Typography variant="h5" sx={{ fontWeight: 600, mb: 1, color: 'success.main' }}>
+          <Typography
+            variant="h5"
+            sx={{ fontWeight: 600, mb: 1, color: 'success.main' }}
+          >
             Email Sent!
           </Typography>
           <Typography variant="body2" color="text.secondary">
@@ -110,7 +130,10 @@ export const ForgotPasswordForm: React.FC = () => {
           </Typography>
         </Box>
 
-        <LoadingButton textButton="Back to Sign In" onClick={handleBackToSignIn} />
+        <LoadingButton
+          textButton="Back to Sign In"
+          onClick={handleBackToSignIn}
+        />
 
         <Typography variant="body2" color="text.secondary">
           Didn't receive the email?{' '}
@@ -141,14 +164,18 @@ export const ForgotPasswordForm: React.FC = () => {
       }}
     >
       <Box sx={{ textAlign: 'center', mb: 4 }}>
-        <Typography variant="h4" sx={{ fontWeight: 'bold', color: '#1976d2', mb: 1 }}>
+        <Typography
+          variant="h4"
+          sx={{ fontWeight: 'bold', color: '#1976d2', mb: 1 }}
+        >
           LOGO
         </Typography>
         <Typography variant="h5" sx={{ fontWeight: 600, mb: 1 }}>
           Forgot Password
         </Typography>
         <Typography variant="body2" color="text.secondary">
-          Enter your email address and we'll send you instructions to reset your password.
+          Enter your email address and we'll send you instructions to reset your
+          password.
         </Typography>
       </Box>
 
@@ -158,7 +185,11 @@ export const ForgotPasswordForm: React.FC = () => {
         </Alert>
       )}
 
-      <Formik initialValues={initialValues} validationSchema={forgotPasswordSchema} onSubmit={handleSubmit}>
+      <Formik
+        initialValues={initialValues}
+        validationSchema={forgotPasswordSchema}
+        onSubmit={handleSubmit}
+      >
         {({ values, errors, touched, handleBlur, handleChange }) => (
           <Form style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
             <FormControl error={touched.email && Boolean(errors.email)}>
@@ -194,7 +225,9 @@ export const ForgotPasswordForm: React.FC = () => {
                 handleEnter={(e) => {
                   const form = e.currentTarget.closest('form');
                   if (form) {
-                    const submitButton = form.querySelector('button[type="submit"]') as HTMLButtonElement;
+                    const submitButton = form.querySelector(
+                      'button[type="submit"]',
+                    ) as HTMLButtonElement;
                     if (submitButton && !submitButton.disabled) {
                       submitButton.click();
                     }
@@ -203,7 +236,10 @@ export const ForgotPasswordForm: React.FC = () => {
               />
             </FormControl>
 
-            <LoadingButton loading={isLoading} textButton="Send Reset Instructions" />
+            <LoadingButton
+              loading={isLoading}
+              textButton="Send Reset Instructions"
+            />
 
             <Box sx={{ textAlign: 'center' }}>
               <Link

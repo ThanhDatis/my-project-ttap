@@ -1,5 +1,16 @@
-import { Person as PersonIcon, Logout as LogoutIcon } from '@mui/icons-material';
-import { Avatar, Box, ListItemIcon, ListItemText, Menu, MenuItem, Typography } from '@mui/material';
+import {
+  Person as PersonIcon,
+  Logout as LogoutIcon,
+} from '@mui/icons-material';
+import {
+  Avatar,
+  Box,
+  ListItemIcon,
+  ListItemText,
+  Menu,
+  MenuItem,
+  Typography,
+} from '@mui/material';
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 

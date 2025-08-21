@@ -44,7 +44,9 @@ const BreadcrumbPage: React.FC<BreadcrumbPageProps> = ({
   );
 
   const breadcrumbs = useMemo((): BreadcrumbItem[] => {
-    const pathSegments = location.pathname.split('/').filter((segment) => segment && segment.trim());
+    const pathSegments = location.pathname
+      .split('/')
+      .filter((segment) => segment && segment.trim());
 
     if (pathSegments.length === 0) {
       return [{ label: routeLabels.dashboard || 'Dashboard', isLast: true }];
@@ -70,7 +72,10 @@ const BreadcrumbPage: React.FC<BreadcrumbPageProps> = ({
           .replace(/([A-Z])/g, ' $1')
           .trim()
           .split(' ')
-          .map((word) => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
+          .map(
+            (word) =>
+              word.charAt(0).toUpperCase() + word.slice(1).toLowerCase(),
+          )
           .join(' ');
       if (isLast && lastBreadcrumb) {
         label = lastBreadcrumb;

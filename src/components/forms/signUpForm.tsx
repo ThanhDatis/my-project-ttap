@@ -3,7 +3,17 @@ import EmailRoundedIcon from '@mui/icons-material/EmailRounded';
 import LockRoundedIcon from '@mui/icons-material/LockRounded';
 import VisibilityOffRoundedIcon from '@mui/icons-material/VisibilityOffRounded';
 import VisibilityRoundedIcon from '@mui/icons-material/VisibilityRounded';
-import { Box, Paper, Typography, Alert, InputAdornment, IconButton, Link, FormControl, FormLabel } from '@mui/material';
+import {
+  Box,
+  Paper,
+  Typography,
+  Alert,
+  InputAdornment,
+  IconButton,
+  Link,
+  FormControl,
+  FormLabel,
+} from '@mui/material';
 import { Formik, Form } from 'formik';
 import React, { useState } from 'react';
 import { useNavigate, Link as RouterLink } from 'react-router-dom';
@@ -48,27 +58,31 @@ export const SignUpForm: React.FC = () => {
   const { login } = useAuthStore();
   const navigate = useNavigate();
 
-  const mockSignUp = async (data: Omit<SignUpFormValues, 'confirmPassword' | 'acceptTerms'>) => {
-    return new Promise<{ user: any; token: string; refreshToken: string }>((resolve, reject) => {
-      setTimeout(() => {
-        if (data.email === 'existing@gmail.com') {
-          reject(new Error('The email has already been used.'));
-          return;
-        }
+  const mockSignUp = async (
+    data: Omit<SignUpFormValues, 'confirmPassword' | 'acceptTerms'>,
+  ) => {
+    return new Promise<{ user: any; token: string; refreshToken: string }>(
+      (resolve, reject) => {
+        setTimeout(() => {
+          if (data.email === 'existing@gmail.com') {
+            reject(new Error('The email has already been used.'));
+            return;
+          }
 
-        resolve({
-          user: {
-            id: Date.now().toString(),
-            email: data.email,
-            name: data.name,
-            role: 'user',
-            avatar: undefined,
-          },
-          token: 'mock-jwt-token-' + Date.now(),
-          refreshToken: 'mock-refresh-token-' + Date.now(),
-        });
-      }, 1500);
-    });
+          resolve({
+            user: {
+              id: Date.now().toString(),
+              email: data.email,
+              name: data.name,
+              role: 'user',
+              avatar: undefined,
+            },
+            token: 'mock-jwt-token-' + Date.now(),
+            refreshToken: 'mock-refresh-token-' + Date.now(),
+          });
+        }, 1500);
+      },
+    );
   };
 
   const handleSubmit = async (values: SignUpFormValues) => {
@@ -84,7 +98,10 @@ export const SignUpForm: React.FC = () => {
 
       login(user, token, refreshToken);
 
-      ToastMessage('success', 'Registration successful! Welcome to the system.');
+      ToastMessage(
+        'success',
+        'Registration successful! Welcome to the system.',
+      );
 
       navigate(ROUTES.DASHBOARD, { replace: true });
     } catch (error: any) {
@@ -114,7 +131,10 @@ export const SignUpForm: React.FC = () => {
       }}
     >
       <Box sx={{ textAlign: 'center', mb: 4 }}>
-        <Typography variant="h4" sx={{ fontWeight: 'bold', color: '#1976d2', mb: 1 }}>
+        <Typography
+          variant="h4"
+          sx={{ fontWeight: 'bold', color: '#1976d2', mb: 1 }}
+        >
           LOGO
         </Typography>
         <Typography variant="h5" sx={{ fontWeight: fontWeight.L, mb: 1 }}>
@@ -131,11 +151,23 @@ export const SignUpForm: React.FC = () => {
         </Alert>
       )}
 
-      <Formik initialValues={initialValues} validationSchema={signUpSchema} onSubmit={handleSubmit}>
+      <Formik
+        initialValues={initialValues}
+        validationSchema={signUpSchema}
+        onSubmit={handleSubmit}
+      >
         {({ errors, touched, values, handleChange, handleBlur }) => (
           <Form style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
             <FormControl>
-              <FormLabel htmlFor="email" sx={{ textAlign: 'left', mb: 1, fontWeight: fontWeight.L, display: 'block' }}>
+              <FormLabel
+                htmlFor="email"
+                sx={{
+                  textAlign: 'left',
+                  mb: 1,
+                  fontWeight: fontWeight.L,
+                  display: 'block',
+                }}
+              >
                 Email
               </FormLabel>
               <Input
@@ -159,7 +191,12 @@ export const SignUpForm: React.FC = () => {
             <FormControl>
               <FormLabel
                 htmlFor="password"
-                sx={{ textAlign: 'left', mb: 1, fontWeight: fontWeight.L, display: 'block' }}
+                sx={{
+                  textAlign: 'left',
+                  mb: 1,
+                  fontWeight: fontWeight.L,
+                  display: 'block',
+                }}
               >
                 Password
               </FormLabel>
@@ -181,9 +218,15 @@ export const SignUpForm: React.FC = () => {
                   <InputAdornment position="start">
                     <IconButton
                       onClick={() => setShowPassword(!showPassword)}
-                      aria-label={showPassword ? 'Hide password' : 'Show password'}
+                      aria-label={
+                        showPassword ? 'Hide password' : 'Show password'
+                      }
                     >
-                      {showPassword ? <VisibilityOffRoundedIcon /> : <VisibilityRoundedIcon />}
+                      {showPassword ? (
+                        <VisibilityOffRoundedIcon />
+                      ) : (
+                        <VisibilityRoundedIcon />
+                      )}
                     </IconButton>
                   </InputAdornment>
                 }
@@ -194,7 +237,12 @@ export const SignUpForm: React.FC = () => {
             <FormControl>
               <FormLabel
                 htmlFor="confirmPassword"
-                sx={{ textAlign: 'left', mb: 1, fontWeight: fontWeight.L, display: 'block' }}
+                sx={{
+                  textAlign: 'left',
+                  mb: 1,
+                  fontWeight: fontWeight.L,
+                  display: 'block',
+                }}
               >
                 Confirm Password
               </FormLabel>
@@ -215,10 +263,18 @@ export const SignUpForm: React.FC = () => {
                 suffixIcon={
                   <InputAdornment position="start">
                     <IconButton
-                      onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                      aria-label={showConfirmPassword ? 'Hide password' : 'Show password'}
+                      onClick={() =>
+                        setShowConfirmPassword(!showConfirmPassword)
+                      }
+                      aria-label={
+                        showConfirmPassword ? 'Hide password' : 'Show password'
+                      }
                     >
-                      {showConfirmPassword ? <VisibilityOffRoundedIcon /> : <VisibilityRoundedIcon />}
+                      {showConfirmPassword ? (
+                        <VisibilityOffRoundedIcon />
+                      ) : (
+                        <VisibilityRoundedIcon />
+                      )}
                     </IconButton>
                   </InputAdornment>
                 }

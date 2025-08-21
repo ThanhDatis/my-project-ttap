@@ -1,5 +1,10 @@
 /* eslint-disable no-unused-vars */
-import { ListItem, ListItemButton, ListItemIcon, ListItemText } from '@mui/material';
+import {
+  ListItem,
+  ListItemButton,
+  ListItemIcon,
+  ListItemText,
+} from '@mui/material';
 
 interface MenuItem {
   text: string;
@@ -14,7 +19,12 @@ interface SidebarMenuItemProps {
   onNavigate: (path: string) => void;
 }
 
-export const SidebarMenuItem: React.FC<SidebarMenuItemProps> = ({ item, borderRadius = 2, isActive, onNavigate }) => {
+export const SidebarMenuItem: React.FC<SidebarMenuItemProps> = ({
+  item,
+  borderRadius = 2,
+  isActive,
+  onNavigate,
+}) => {
   return (
     <ListItem disablePadding sx={{ mb: 1 }}>
       <ListItemButton
