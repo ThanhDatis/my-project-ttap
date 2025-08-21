@@ -283,7 +283,7 @@ export const SignUpForm: React.FC = () => {
               />
             </FormControl>
 
-            <LoadingButton loading={isLoading} />
+            <LoadingButton textButton="Sign Up" loading={isLoading} />
 
             <Box sx={{ textAlign: 'center' }}>
               <Typography variant="body2" color="text.secondary">

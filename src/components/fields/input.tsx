@@ -2,6 +2,7 @@
 import {
   Box,
   TextField,
+  Typography,
   type AlertColor,
   type SxProps,
   type Theme,
@@ -9,7 +10,7 @@ import {
 import React, { forwardRef, type InputHTMLAttributes } from 'react';
 
 import { errorColor } from '../../common/color';
-import { TextTypography } from '../textTypography';
+// import { TextTypography } from '../textTypography';
 
 import { defaultStyleInput, errorStyleInput } from './styles';
 
@@ -139,7 +140,8 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
           }}
         />
         {isError ? (
-          <TextTypography
+          <Typography
+            variant="caption"
             sx={{
               color: errorColor,
               fontSize: '12px',
@@ -150,7 +152,7 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
             }}
           >
             {errorText}
-          </TextTypography>
+          </Typography>
         ) : null}
       </Box>
     );

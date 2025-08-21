@@ -23,19 +23,17 @@ export const LoadingButton: React.FC<LoadingButtonProps> = ({
     fontWeight: 600,
     mb: 1,
   },
-  textButton = 'Sign In',
+  textButton = '',
   type = 'submit',
   loading = false,
   onClick,
   variant = 'contained',
   disabled = false,
   size = 20,
-  // color = "primary",
 }: LoadingButtonProps): React.JSX.Element => {
   return (
     <Button
       variant={variant}
-      // color={color}
       sx={{
         ...sxButton,
         color: loading ? 'transparent' : '',

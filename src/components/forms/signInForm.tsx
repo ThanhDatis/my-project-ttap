@@ -237,7 +237,7 @@ export const SignInForm: React.FC = () => {
               </Link>
             </Box>
 
-            <LoadingButton loading={isLoading} />
+            <LoadingButton textButton="Sign In" loading={isLoading} />
 
             <Box sx={{ textAlign: 'center' }}>
               <Typography variant="body2" color="text.secondary">
