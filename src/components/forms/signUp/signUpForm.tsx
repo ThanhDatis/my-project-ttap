@@ -19,19 +19,19 @@ import React, { useState } from 'react';
 import { useNavigate, Link as RouterLink } from 'react-router-dom';
 import * as Yup from 'yup';
 
-import { ROUTES } from '../../common/constant';
-import { fontWeight } from '../../common/text';
+import { ROUTES } from '../../../common/constant';
+import { fontWeight } from '../../../common/text';
 import {
   validateEmail,
   validatePasswordSignUp,
   validateName,
   validateConfirmPassword,
   validateAcceptTerms,
-} from '../../common/validate';
-import { useAuthStore } from '../../store/auth.store';
-import { Input } from '../fields';
-import LoadingButton from '../loadingButton';
-import ToastMessage from '../toastMessage';
+} from '../../../common/validate';
+import { useAuthStore } from '../../../store/auth.store';
+import { Input } from '../../fields';
+import LoadingButton from '../../loadingButton';
+import ToastMessage from '../../toastMessage';
 
 const signUpSchema = Yup.object({
   name: validateName,
