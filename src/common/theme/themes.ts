@@ -12,7 +12,7 @@ import {
   secondaryTextColor,
   successColor,
   warningColor,
-  // labelColor,
+  labelColor,
 } from '../color';
 
 const theme = createTheme({
@@ -67,7 +67,7 @@ const theme = createTheme({
     MuiTypography: {
       styleOverrides: {
         root: {
-          a: { color: infoTextColor, textDecoration: "underline" },
+          a: { color: labelColor },
         },
       },
       defaultProps: {
@@ -94,6 +94,16 @@ const theme = createTheme({
         },
       },
     },
+    MuiIconButton: {
+      styleOverrides: {
+        root: {
+          borderRadius: "8px",
+          width: "max-content",
+          background: "transparent",
+          padding: "4px",
+        }
+      }
+    },
     MuiCard: {
       styleOverrides: {
         root: {
@@ -104,6 +114,18 @@ const theme = createTheme({
         },
       },
     },
+    MuiLink: {
+      styleOverrides: {
+        root: {
+          fontWeight: 600,
+          ':hover': {
+            color: `${gray[900]}`,
+            textDecoration: 'underline'
+          },
+        },
+      },
+    },
+
     MuiTextField: {
       styleOverrides: {
         root: {
@@ -123,7 +145,7 @@ const theme = createTheme({
             // borderRadius: 8,
             "& fieldset": {
               borderWidth: '1px',
-              borderColor: `${gray[50]} !important`,
+              borderColor: `${gray[500]} !important`,
             },
             "&:hover fieldset": {
               borderWidth: '1px',
@@ -143,7 +165,7 @@ const theme = createTheme({
           },
           input: {
             padding: "8px 12px",
-            fontSize: "14px",
+            fontSize: "16px",
             fontWeight: 400,
             borderWidth: "thin",
           },
@@ -159,11 +181,21 @@ const theme = createTheme({
         },
       }
     },
+    MuiFormControlLabel: {
+      styleOverrides: {
+        root: {
+          span: {
+            fontSize: "14px",
+            fontWeight: 500,
+          }
+        }
+      }
+    },
     MuiFormLabel: {
       styleOverrides: {
         root: {
-          fontSize: "0.875rem",
-          fontWeight: 400,
+          fontSize: "16px",
+          fontWeight: 600,
           marginBottom: "8px",
           display: "block",
         },

@@ -16,9 +16,7 @@ import React, { useState } from 'react';
 import { useNavigate, Link as RouterLink } from 'react-router-dom';
 import * as Yup from 'yup';
 
-import { gray } from '../../../common/color';
 import { ROUTES } from '../../../common/constant';
-import { fontWeight } from '../../../common/text';
 import { validateEmail } from '../../../common/validate';
 import { Input } from '../../fields';
 import LoadingButton from '../../loadingButton';
@@ -98,12 +96,12 @@ export const ForgotPasswordForm: React.FC = () => {
         }}
       >
         <Box sx={{ mb: 4 }}>
-          <Typography
+          {/* <Typography
             variant="h4"
             sx={{ fontWeight: 'bold', color: '#1976d2', mb: 1 }}
           >
             LOGO
-          </Typography>
+          </Typography> */}
           <Typography
             variant="h5"
             sx={{ fontWeight: 600, mb: 1, color: 'success.main' }}
@@ -164,13 +162,13 @@ export const ForgotPasswordForm: React.FC = () => {
       }}
     >
       <Box sx={{ textAlign: 'center', mb: 4 }}>
-        <Typography
+        {/* <Typography
           variant="h4"
           sx={{ fontWeight: 'bold', color: '#1976d2', mb: 1 }}
         >
           LOGO
-        </Typography>
-        <Typography variant="h5" sx={{ fontWeight: 600, mb: 1 }}>
+        </Typography> */}
+        <Typography variant="h4" sx={{ fontWeight: 600, mb: 1 }}>
           Forgot Password
         </Typography>
         <Typography variant="body2" color="text.secondary">
@@ -198,8 +196,6 @@ export const ForgotPasswordForm: React.FC = () => {
                 sx={{
                   textAlign: 'left',
                   mb: 1,
-                  display: 'block',
-                  fontWeight: fontWeight.L,
                   '&.Mui-error': { color: 'error.main' },
                 }}
               >
@@ -249,12 +245,8 @@ export const ForgotPasswordForm: React.FC = () => {
                   display: 'inline-flex',
                   alignItems: 'center',
                   gap: 1,
-                  textDecoration: 'none',
+                  // textDecoration: 'none',
                   color: 'text.secondary',
-                  '&:hover': {
-                    textDecoration: 'underline',
-                    color: gray[900],
-                  },
                 }}
               >
                 <ArrowBackIcon fontSize="small" />

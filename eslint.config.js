@@ -31,7 +31,7 @@ export default tseslint.config(
           project: './tsconfig.json',
         },
         node: {
-          extensions: ['.js', '.jsx', '.ts', 'tsx'],
+          extensions: ['.js', '.jsx', '.ts', '.tsx'],
         },
       },
     },
@@ -73,6 +73,7 @@ export default tseslint.config(
           alphabetize: { order: 'asc', caseInsensitive: true }
         },
       ],
+      'import/no-unresolved': 'error',
     },
   },
   prettierConfig

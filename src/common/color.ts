@@ -36,6 +36,8 @@ export const brand = {
 export const primaryTextColor = '#000';
 export const secondaryTextColor = '#fff';
 export const infoTextColor = '#0288d1';
+// export const infoTextColor = gray[500];
+
 export const labelColor = '#808080';
 
 // Error

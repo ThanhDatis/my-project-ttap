@@ -20,7 +20,6 @@ import { useNavigate, Link as RouterLink } from 'react-router-dom';
 import * as Yup from 'yup';
 
 import { ROUTES } from '../../../common/constant';
-import { fontWeight } from '../../../common/text';
 import {
   validateEmail,
   validatePasswordSignUp,
@@ -131,14 +130,14 @@ export const SignUpForm: React.FC = () => {
       }}
     >
       <Box sx={{ textAlign: 'center', mb: 4 }}>
-        <Typography
+        {/* <Typography
           variant="h4"
           sx={{ fontWeight: 'bold', color: '#1976d2', mb: 1 }}
         >
           LOGO
-        </Typography>
-        <Typography variant="h5" sx={{ fontWeight: fontWeight.L, mb: 1 }}>
-          Register
+        </Typography> */}
+        <Typography variant="h3" sx={{ mb: 1 }}>
+          Sign Up
         </Typography>
         <Typography variant="body2" color="text.secondary">
           Create a new account to start using the system.
@@ -164,8 +163,6 @@ export const SignUpForm: React.FC = () => {
                 sx={{
                   textAlign: 'left',
                   mb: 1,
-                  fontWeight: fontWeight.L,
-                  display: 'block',
                 }}
               >
                 Email
@@ -194,8 +191,6 @@ export const SignUpForm: React.FC = () => {
                 sx={{
                   textAlign: 'left',
                   mb: 1,
-                  fontWeight: fontWeight.L,
-                  display: 'block',
                 }}
               >
                 Password
@@ -240,8 +235,6 @@ export const SignUpForm: React.FC = () => {
                 sx={{
                   textAlign: 'left',
                   mb: 1,
-                  fontWeight: fontWeight.L,
-                  display: 'block',
                 }}
               >
                 Confirm Password
@@ -291,11 +284,7 @@ export const SignUpForm: React.FC = () => {
                 <Link
                   component={RouterLink}
                   to={ROUTES.AUTH.SIGNIN}
-                  sx={{
-                    fontWeight: 600,
-                    textDecoration: 'none',
-                    '&:hover': { textDecoration: 'underline' },
-                  }}
+                  sx={{ textDecoration: 'none' }}
                 >
                   Sign in now
                 </Link>

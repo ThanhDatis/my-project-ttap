@@ -2,7 +2,8 @@ import { Box } from '@mui/material';
 // import React from 'react';
 
 import { gray } from '../../common/color';
-import { ForgotPasswordForm } from '../../components/forms/forgotPassword/forgotPasswordForm';
+// import { ForgotPasswordForm } from '../../components/forms/forgotPassword/forgotPasswordForm';
+import { ForgotPasswordForm } from '../../components/forms';
 
 function ForgotPassword() {
   return (
