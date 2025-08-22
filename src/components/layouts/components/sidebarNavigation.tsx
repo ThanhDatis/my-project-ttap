@@ -29,7 +29,13 @@ const bottomMenuItems: MenuItem[] = [
   { text: 'Setting', icon: <SettingsRoundedIcon />, path: ROUTES.SETTING },
 ];
 
-export const SidebarNavigation = () => {
+interface SidebarNavigationProps {
+  open: boolean;
+}
+
+export const SidebarNavigation: React.FC<SidebarNavigationProps> = ({
+  open,
+}) => {
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -44,14 +50,14 @@ export const SidebarNavigation = () => {
   return (
     <>
       <Box sx={{ flex: 1 }}>
-        <List sx={{ pt: 2 }}>
+        <List>
           {menuItems.map((item) => (
             <SidebarMenuItem
               key={item.text}
               item={item}
               isActive={isActive(item.path)}
               onNavigate={handleNavigation}
-              // borderRadius={2}
+              open={open}
             />
           ))}
         </List>
@@ -64,7 +70,7 @@ export const SidebarNavigation = () => {
               item={item}
               isActive={isActive(item.path)}
               onNavigate={handleNavigation}
-              borderRadius={2}
+              open={open}
             />
           ))}
         </List>

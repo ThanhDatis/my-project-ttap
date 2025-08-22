@@ -4,6 +4,8 @@ import {
   ListItemButton,
   ListItemIcon,
   ListItemText,
+  Tooltip,
+  keyframes,
 } from '@mui/material';
 
 import { gray } from '../../../common/color';
@@ -16,56 +18,43 @@ interface MenuItem {
 
 interface SidebarMenuItemProps {
   item: MenuItem;
-  borderRadius?: number;
   isActive: boolean;
   onNavigate: (path: string) => void;
+  open: boolean;
 }
+
+const pulse = keyframes`
+  0% {
+    transform: translateY(-50%) scale(1);
+    opacity: 1;
+  }
+  50% {
+    transform: translateY(-50%) scale(1.2);
+    opacity: 0.7;
+  }
+  100% {
+    transform: translateY(-50%) scale(1);
+    opacity: 1;
+  }
+`;
 
 export const SidebarMenuItem: React.FC<SidebarMenuItemProps> = ({
   item,
-  borderRadius = 1,
   isActive,
   onNavigate,
+  open,
 }) => {
-  return (
-    <ListItem disablePadding>
-      <ListItemButton
-        onClick={() => onNavigate(item.path)}
-        sx={{
-          borderRadius,
-          // backgroundColor: isActive ? gray[100] : 'transparent',
-          // border: isActive ? `1px solid ${gray[300]}` : '1px solid transparent',
-
-          // transition: 'all 0.5s ease',
-
-          // '&:hover': {
-          //   backgroundColor: isActive ? gray[200] : gray[50],
-          //   boxShadow: `0 0 20px rgba(0,0,0,0.1)`,
-          //   border: `1px solid ${gray[400]}`,
-
-          //   '& .MuiListItemIcon-root': {
-          //     filter: 'drop-shadow(0 0 8px rgba(0,0,0,0.2))',
-          //     transform: 'translateY(-2px)',
-          //   },
-
-          //   '& .MuiListItemText-primary': {
-          //     letterSpacing: '0.5px',
-          //   },
-          // },
-
-          // '& .MuiListItemIcon-root': {
-          //   color: isActive ? gray[700] : gray[500],
-          //   transition: 'all 0.3s ease',
-          //   minWidth: 50,
-          // },
-
-          // '& .MuiListItemText-primary': {
-          //   color: isActive ? gray[900] : gray[700],
-          //   fontWeight: isActive ? 600 : 400,
-          //   transition: 'all 0.3s ease',
-          // },
-
-          backgroundColor: isActive ? gray[100] : 'transparent',
+  const menuButton = (
+    <ListItemButton
+      onClick={() => onNavigate(item.path)}
+      sx={[
+        {
+          minHeight: 48,
+          px: 2.5,
+          backgroundColor: isActive ? gray[300] : 'transparent',
+          borderRadius: 2,
+          mx: 1,
+          mb: 0.5,
           position: 'relative',
           overflow: 'hidden',
 
@@ -73,7 +62,7 @@ export const SidebarMenuItem: React.FC<SidebarMenuItemProps> = ({
 
           '&:hover': {
             backgroundColor: isActive ? gray[200] : gray[50],
-            transform: 'translateX(4px)',
+            transform: open ? 'translateX(4px)' : 'translateX(2px)',
             boxShadow: '0 2px 8px rgba(0,0,0,0.1)',
 
             '& .MuiListItemIcon-root': {
@@ -82,7 +71,7 @@ export const SidebarMenuItem: React.FC<SidebarMenuItemProps> = ({
             },
 
             '& .MuiListItemText-primary': {
-              transform: 'translateX(2px)',
+              transform: open ? 'translateX(2px)' : 'none',
               fontWeight: 500,
             },
 
@@ -106,7 +95,7 @@ export const SidebarMenuItem: React.FC<SidebarMenuItemProps> = ({
           },
 
           '& .MuiListItemIcon-root': {
-            color: isActive ? gray[600] : gray[500],
+            color: isActive ? gray[800] : gray[500],
             transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
             minWidth: 50,
           },
@@ -121,21 +110,54 @@ export const SidebarMenuItem: React.FC<SidebarMenuItemProps> = ({
             '&::after': {
               content: '""',
               position: 'absolute',
-              right: 8,
+              right: open ? 8 : '-50%',
               top: '50%',
               width: '6px',
               height: '6px',
-              backgroundColor: gray[600],
+              backgroundColor: gray[800],
               borderRadius: '50%',
-              transform: 'translateY(-50%)',
-              animation: 'pulse 2s infinite',
+              transform: open ? 'translateY(-50%)' : 'translate(50%, -50%)',
+              animation: `${pulse} 2s infinite`,
             },
           }),
-        }}
+        },
+        open ? { justifyContent: 'initial' } : { justifyContent: 'center' },
+      ]}
+    >
+      <ListItemIcon
+        sx={[
+          {
+            minWidth: 0,
+            justifyContent: 'center',
+            color: isActive ? gray[700] : gray[500],
+          },
+          open ? { mr: 3 } : { mr: 'auto' },
+        ]}
       >
-        <ListItemIcon sx={{ minWidth: 50 }}>{item.icon}</ListItemIcon>
-        <ListItemText primary={item.text} />
-      </ListItemButton>
+        {item.icon}
+      </ListItemIcon>
+      <ListItemText
+        primary={item.text}
+        sx={[
+          {
+            color: isActive ? gray[900] : gray[700],
+            fontWeight: isActive ? 600 : 400,
+          },
+          open ? { opacity: 1 } : { opacity: 0 },
+        ]}
+      />
+    </ListItemButton>
+  );
+
+  return (
+    <ListItem disablePadding>
+      {!open ? (
+        <Tooltip title={item.text} placement="right" arrow>
+          {menuButton}
+        </Tooltip>
+      ) : (
+        menuButton
+      )}
     </ListItem>
   );
 };

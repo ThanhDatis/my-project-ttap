@@ -10,16 +10,21 @@ import {
   Menu,
   MenuItem,
   Typography,
+  Tooltip,
 } from '@mui/material';
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 import { ROUTES } from '../../../common';
-import { borderLine } from '../../../common/color';
+// import { borderLine } from '../../../common/color';
 import { useAuthStore } from '../../../store';
 import ToastMessage from '../../toastMessage';
 
-export const SidebarUserMenu = () => {
+interface SidebarUserMenuProps {
+  open: boolean;
+}
+
+export const SidebarUserMenu: React.FC<SidebarUserMenuProps> = ({ open }) => {
   const navigate = useNavigate();
   const { user, logout } = useAuthStore();
   const [anchorEL, setAnchorEl] = useState<null | HTMLElement>(null);
@@ -44,34 +49,72 @@ export const SidebarUserMenu = () => {
     navigate(ROUTES.AUTH.SIGNIN);
   };
 
+  const userMenuContent = (
+    <Box
+      sx={[
+        {
+          p: 2,
+          cursor: 'pointer',
+          display: 'flex',
+          alignItems: 'center',
+          '&:hover': {
+            backgroundColor: '#f5f5f5',
+          },
+        },
+        open
+          ? {
+              justifyContent: 'flex-start',
+              gap: 2,
+            }
+          : {
+              justifyContent: 'center',
+              gap: 0,
+            },
+      ]}
+      onClick={handleUserMenuOpen}
+    >
+      <Avatar sx={{ width: 32, height: 32, bgcolor: '#1976d2' }}>
+        <PersonIcon sx={{ fontSize: 20 }} />
+      </Avatar>
+      {open && (
+        <Box sx={{ minWidth: 0, flex: 1 }}>
+          <Typography
+            variant="body2"
+            sx={{
+              fontWeight: 600,
+              color: '#333',
+              opacity: open ? 1 : 0,
+            }}
+          >
+            {user?.name || 'Admin ABCD'}
+          </Typography>
+          <Typography
+            variant="caption"
+            sx={{
+              color: '#666',
+              display: 'block',
+              overflow: 'hidden',
+              textOverflow: 'ellipsis',
+              whiteSpace: 'nowrap',
+              opacity: open ? 1 : 0,
+            }}
+          >
+            {user?.email || 'admin@gmail.com'}
+          </Typography>
+        </Box>
+      )}
+    </Box>
+  );
+
   return (
     <>
-      <Box
-        sx={{
-          p: 2,
-          borderTop: '1px solid',
-          borderColor: borderLine,
-          cursor: 'pointer',
-          '&:hover': {
-            backgroundColor: '#e0e0e0',
-          },
-        }}
-        onClick={handleUserMenuOpen}
-      >
-        <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-          <Avatar sx={{ width: 32, height: 32, bgcolor: '#1976d2' }}>
-            <PersonIcon sx={{ fontSize: 20 }} />
-          </Avatar>
-          <Box>
-            <Typography variant="body2" sx={{ fontWeight: 600, color: '#333' }}>
-              {user?.name || 'Admin ABCD'}
-            </Typography>
-            <Typography variant="caption" sx={{ color: '#666' }}>
-              {user?.email || 'admin@gmail.com'}
-            </Typography>
-          </Box>
-        </Box>
-      </Box>
+      {!open ? (
+        <Tooltip title={user?.name || 'Admin ABCD'} placement="right" arrow>
+          {userMenuContent}
+        </Tooltip>
+      ) : (
+        userMenuContent
+      )}
 
       <Menu
         anchorEl={anchorEL}

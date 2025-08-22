@@ -1,21 +1,27 @@
 import { Box, Typography } from '@mui/material';
 
-import { borderLine } from '../../../common/color';
-import { HEIGHT_HEADER_SIDE_BAR } from '../../../common/constant';
+// import { borderLine } from '../../../common/color';
+// import { HEIGHT_HEADER_SIDE_BAR } from '../../../common/constant';
 
-export const SidebarHeader = () => {
+interface SidebarHeaderProps {
+  open: boolean;
+}
+
+export const SidebarHeader: React.FC<SidebarHeaderProps> = ({ open }) => {
   return (
     <Box
       sx={{
-        height: HEIGHT_HEADER_SIDE_BAR,
+        flex: 1,
+        display: 'flex',
         alignContent: 'center',
-        borderBottom: '1px solid',
-        borderColor: borderLine,
+        pl: open ? 2 : 0,
       }}
     >
-      <Typography variant="h6" sx={{ fontWeight: 'bold', color: '#1976d2' }}>
-        LOGO
-      </Typography>
+      {open && (
+        <Typography variant="h6" sx={{ fontWeight: 'bold', color: '#1976d2' }}>
+          LOGO
+        </Typography>
+      )}
     </Box>
   );
 };
