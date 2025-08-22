@@ -21,8 +21,8 @@ const theme = createTheme({
     primary: {
       main: primaryTextColor,
       light: '#42a5f5',
-      dark: '1565c0',
-      contrastText: '#808080',
+      dark: '#1565c0',
+      contrastText: '#9e9e9e',
     },
     secondary: {
       main: secondaryTextColor,
@@ -85,6 +85,13 @@ const theme = createTheme({
             boxShadow: "none",
           },
         },
+        contained: {
+          backgroundColor: brand[450],
+          color: '#ffffff',
+          '&:hover': {
+            backgroundColor: brand[600],
+          },
+        },
         outlined: {
           borderColor: gray[500],
           color: brand[500],
@@ -142,7 +149,6 @@ const theme = createTheme({
             borderColor: "#e6e8ee",
           },
           "& .MuiOutlinedInput-root": {
-            // borderRadius: 8,
             "& fieldset": {
               borderWidth: '1px',
               borderColor: `${gray[500]} !important`,
@@ -228,7 +234,7 @@ const theme = createTheme({
       styleOverrides: {
         root: {
           span: {
-            fontSize: "14px",
+            fontSize: "16px",
           },
         },
         // primary: {
@@ -241,6 +247,7 @@ const theme = createTheme({
         // },
       },
     },
+    
   }
 });
 

@@ -2,7 +2,11 @@ export const defaultStyleInput = {
   '.MuiInputBase-root': {
     borderRadius: '8px',
     paddingRight: '0px !important',
+    minHeight: '46px',
     fieldset: { boxSizing: ' border-box' },
+  },
+  '.MuiInputBase-input': {
+    textAlign: 'left !important',
   },
   'textarea::placeholder': {
     fontSize: '14px',

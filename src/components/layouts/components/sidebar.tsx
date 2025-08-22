@@ -20,13 +20,15 @@ const Sidebar = () => {
           backgroundColor: primaryBackgroundSidebar,
           borderRight: '1px solid',
           borderColor: borderLine,
+          // overflowX: 'hidden',
         },
       }}
     >
       <Box
         sx={{
-          overflow: 'auto',
+          overflow: 'hidden',
           height: '100%',
+          width: '100%',
           display: 'flex',
           flexDirection: 'column',
         }}
