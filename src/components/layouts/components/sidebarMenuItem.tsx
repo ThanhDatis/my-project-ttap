@@ -4,11 +4,12 @@ import {
   ListItemButton,
   ListItemIcon,
   ListItemText,
-  Tooltip,
   keyframes,
 } from '@mui/material';
 
 import { gray } from '../../../common/color';
+
+import ConditionalTooltip from './conditionalTooltip';
 
 interface MenuItem {
   text: string;
@@ -53,7 +54,7 @@ export const SidebarMenuItem: React.FC<SidebarMenuItemProps> = ({
           px: 2.5,
           backgroundColor: isActive ? gray[300] : 'transparent',
           borderRadius: 2,
-          mx: 1,
+          // mx: 1,
           mb: 0.5,
           position: 'relative',
           overflow: 'hidden',
@@ -151,13 +152,14 @@ export const SidebarMenuItem: React.FC<SidebarMenuItemProps> = ({
 
   return (
     <ListItem disablePadding>
-      {!open ? (
-        <Tooltip title={item.text} placement="right" arrow>
-          {menuButton}
-        </Tooltip>
-      ) : (
-        menuButton
-      )}
+      <ConditionalTooltip
+        show={!open}
+        title={item.text}
+        placement="right"
+        arrow
+      >
+        {menuButton}
+      </ConditionalTooltip>
     </ListItem>
   );
 };

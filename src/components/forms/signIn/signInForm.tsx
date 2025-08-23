@@ -136,7 +136,7 @@ export const SignInForm: React.FC = () => {
         onSubmit={handleSubmit}
       >
         {({ values, errors, touched, handleBlur, handleChange }) => (
-          <Form style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
+          <Form style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
             <FormControl>
               <FormLabel
                 htmlFor="email"
@@ -155,7 +155,7 @@ export const SignInForm: React.FC = () => {
                 typeInput="email"
                 placeholder="Enter your email"
                 isError={!!(touched.email && errors.email)}
-                errorText=""
+                errorText="Email errors"
                 prefixIcon={
                   <InputAdornment position="start">
                     <EmailRoundedIcon />
@@ -183,7 +183,7 @@ export const SignInForm: React.FC = () => {
                 typeInput={showPassword ? 'text' : 'password'}
                 placeholder="Enter your password"
                 isError={!!(touched.password && errors.password)}
-                errorText=""
+                errorText="Password errors"
                 prefixIcon={
                   <InputAdornment position="start">
                     <LockRoundedIcon color="action" />

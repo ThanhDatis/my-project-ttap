@@ -10,7 +10,6 @@ import {
   Menu,
   MenuItem,
   Typography,
-  Tooltip,
 } from '@mui/material';
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
@@ -19,6 +18,8 @@ import { ROUTES } from '../../../common';
 // import { borderLine } from '../../../common/color';
 import { useAuthStore } from '../../../store';
 import ToastMessage from '../../toastMessage';
+
+import ConditionalTooltip from './conditionalTooltip';
 
 interface SidebarUserMenuProps {
   open: boolean;
@@ -108,13 +109,14 @@ export const SidebarUserMenu: React.FC<SidebarUserMenuProps> = ({ open }) => {
 
   return (
     <>
-      {!open ? (
-        <Tooltip title={user?.name || 'Admin ABCD'} placement="right" arrow>
-          {userMenuContent}
-        </Tooltip>
-      ) : (
-        userMenuContent
-      )}
+      <ConditionalTooltip
+        show={!open}
+        title={user?.name || 'Admin ABCD'}
+        placement="right"
+        arrow
+      >
+        {userMenuContent}
+      </ConditionalTooltip>
 
       <Menu
         anchorEl={anchorEL}
