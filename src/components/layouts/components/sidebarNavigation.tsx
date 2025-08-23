@@ -1,3 +1,4 @@
+import CategoryRoundedIcon from '@mui/icons-material/CategoryRounded';
 import GroupRoundedIcon from '@mui/icons-material/GroupRounded';
 import SellRoundedIcon from '@mui/icons-material/SellRounded';
 import SettingsRoundedIcon from '@mui/icons-material/SettingsRounded';
@@ -21,6 +22,7 @@ const menuItems: MenuItem[] = [
     icon: <SpaceDashboardRoundedIcon />,
     path: ROUTES.DASHBOARD,
   },
+  { text: 'Products', icon: <CategoryRoundedIcon />, path: ROUTES.PRODUCTS },
   { text: 'Customers', icon: <GroupRoundedIcon />, path: ROUTES.CUSTOMERS },
   { text: 'Orders', icon: <SellRoundedIcon />, path: ROUTES.ORDERS },
 ];

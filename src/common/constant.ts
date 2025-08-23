@@ -10,6 +10,7 @@ export const ROUTES = {
     RESET_PASSWORD: '/auth/reset-password',
   },
   DASHBOARD: '/dashboard',
+  PRODUCTS: '/products',
   CUSTOMERS: '/customers',
   ORDERS: '/orders',
   SETTING: '/setting',

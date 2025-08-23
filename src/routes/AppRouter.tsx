@@ -10,6 +10,7 @@ import SignUp from '../pages/auth/signUp';
 import Customers from '../pages/cms/customers';
 import Dashboard from '../pages/cms/dashboard';
 import Orders from '../pages/cms/orders';
+import Products from '../pages/cms/products';
 import Profile from '../pages/cms/profile';
 import Setting from '../pages/cms/setting';
 
@@ -27,6 +28,7 @@ const AppRouter = () => {
         <Route path="/" element={<LayoutDashboard />}>
           <Route index element={<Navigate to="/dashboard" replace />} />
           <Route path="dashboard" element={<Dashboard />} />
+          <Route path="products" element={<Products />} />
           <Route path="customers" element={<Customers />} />
           <Route path="orders" element={<Orders />} />
           <Route path="setting" element={<Setting />} />

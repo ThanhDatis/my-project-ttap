@@ -1,1 +1,0 @@
-export { TextTypography } from './textTypography';
