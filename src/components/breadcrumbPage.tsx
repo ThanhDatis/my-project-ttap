@@ -19,6 +19,7 @@ interface BreadcrumbPageProps {
 
 const DEFAULT_ROUTE_LABELS: Record<string, string> = {
   dashboard: 'Dashboard',
+  products: 'Products',
   customers: 'Customers',
   orders: 'Orders',
   setting: 'Setting',
