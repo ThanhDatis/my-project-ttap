@@ -2,8 +2,10 @@
 import { create } from 'zustand';
 import { createJSONStorage, persist } from 'zustand/middleware';
 
+import axios from '../lib/axios';
+
 interface User {
-  id: string;
+  _id: string;
   email: string;
   name: string;
   role: string;
@@ -18,12 +20,12 @@ interface AuthState {
   isLoading: boolean;
 
   // Actions
-  login: (user: User, token: string, refreshToken?: string) => void;
+  login: (name: string, password: string) => Promise<void>;
   logout: () => void;
   setUser: (user: User) => void;
   setLoading: (loading: boolean) => void;
   checkAuth: () => boolean;
-  updateToken: (token: string, refreshToken?: string) => void;
+  // updateToken: (token: string, refreshToken?: string) => void;
   clearAuth: () => void;
 }
 
@@ -36,14 +38,32 @@ export const useAuthStore = create<AuthState>()(
       refreshToken: null,
       isLoading: false,
 
-      login: (user: User, token: string, refreshToken?: string) => {
-        set({
-          isAuthenticated: true,
-          user,
-          token,
-          refreshToken,
-          isLoading: false,
-        });
+      login: async (email: string, password: string) => {
+        set({ isLoading: true });
+        try {
+          // Call your login API here
+          const response = await axios.post('/auth/signin', {
+            email,
+            password,
+          });
+          const { user, token, refreshToken } = response.data;
+          set({
+            isAuthenticated: true,
+            user: {
+              _id: user._id,
+              email: user.email,
+              name: user.name,
+              role: user.role,
+              avatar: user.avatar,
+            },
+            token,
+            refreshToken,
+            isLoading: false,
+          });
+        } catch (error) {
+          set({ isLoading: false });
+          throw error;
+        }
       },
 
       logout: () => {
@@ -66,14 +86,14 @@ export const useAuthStore = create<AuthState>()(
         set({ isLoading: loading });
       },
 
-      updateToken: (token: string, refreshToken?: string) => {
-        set({
-          token,
-          refreshToken: refreshToken || get().refreshToken,
-        });
-      },
+      // updateToken: (token: string, refreshToken?: string) => {
+      //   set({
+      //     token,
+      //     refreshToken: refreshToken || get().refreshToken,
+      //   });
+      // },
 
-      clearAuth() {
+      clearAuth: () => {
         set({
           isAuthenticated: false,
           user: null,
@@ -85,29 +105,27 @@ export const useAuthStore = create<AuthState>()(
 
       checkAuth: () => {
         const { token, user } = get();
-        if (!token || !user) {
-          return false;
-        }
+        return !!(token && user);
 
-        try {
-          if (token.length < 10) {
-            get().logout();
-            return false;
-          }
-          // Decode token và check expiration
-          // const decoded = jwt.decode(token);
-          // if (decoded && typeof decoded === 'object' && decoded.exp) {
-          //   if (Date.now() >= decoded.exp * 1000) {
-          //     get().logout();
-          //     return false;
-          //   }
-          // }
-          return true;
-        } catch (error) {
-          console.error('Token validation error:', error);
-          get().logout();
-          return false;
-        }
+        // try {
+        //   if (token.length < 10) {
+        //     get().logout();
+        //     return false;
+        //   }
+        //   // Decode token và check expiration
+        //   // const decoded = jwt.decode(token);
+        //   // if (decoded && typeof decoded === 'object' && decoded.exp) {
+        //   //   if (Date.now() >= decoded.exp * 1000) {
+        //   //     get().logout();
+        //   //     return false;
+        //   //   }
+        //   // }
+        //   return true;
+        // } catch (error) {
+        //   console.error('Token validation error:', error);
+        //   get().logout();
+        //   return false;
+        // }
       },
     }),
     {
@@ -120,12 +138,14 @@ export const useAuthStore = create<AuthState>()(
         refreshToken: state.refreshToken,
       }),
 
-      onRehydrateStorage: () => (state) => {
-        console.log('Hydration finished, state:', state);
-        if (state) {
-          state.isLoading = false;
-        }
-      },
+      // onRehydrateStorage: () => (state) => {
+      //   console.log('Hydration finished, state:', state);
+      //   if (state) {
+      //     state.isLoading = false;
+      //   }
+      // },
     },
   ),
 );
+
+export type { User };

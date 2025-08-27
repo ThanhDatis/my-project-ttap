@@ -42,55 +42,25 @@ export interface SignInFormValues {
 export const SignInForm: React.FC = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState<string>('');
-  const [isLoading, setIsLoading] = useState(false);
+  const [isLoading] = useState(false);
 
   const { login } = useAuthStore();
   const navigate = useNavigate();
   const location = useLocation();
 
-  const mockLogin = async (email: string, password: string) => {
-    return new Promise<{ user: any; token: string; refreshToken: string }>(
-      (resolve, reject) => {
-        setTimeout(() => {
-          if (email === 'admin@gmail.com' && password === '123456') {
-            resolve({
-              user: {
-                id: '1',
-                email,
-                name: 'Admin ABCD',
-                role: 'admin',
-                avatar: undefined,
-              },
-              token: 'mock-jwt-token-' + Date.now(),
-              refreshToken: 'mock-refresh-token-' + Date.now(),
-            });
-          } else {
-            reject(new Error('Email or password incorrect'));
-          }
-        }, 1000);
-      },
-    );
-  };
-
   const handleSubmit = async (values: SignInFormValues) => {
-    setIsLoading(true);
     setError('');
 
     try {
-      const { user, token, refreshToken } = await mockLogin(
-        values.email,
-        values.password,
-      );
-      login(user, token, refreshToken);
+      await login(values.email, values.password);
       ToastMessage('success', 'Sign in success!');
-
       const from = (location.state as any)?.from?.pathname || ROUTES.DASHBOARD;
       navigate(from, { replace: true });
     } catch (error: any) {
-      setError(error.message || 'Login failed. Please try again..');
-      ToastMessage('error', 'Login failed!');
-    } finally {
-      setIsLoading(false);
+      const errorMessage =
+        error.response?.data?.message || 'Login failed. Please try again.';
+      setError(errorMessage);
+      ToastMessage('error', errorMessage);
     }
   };
 

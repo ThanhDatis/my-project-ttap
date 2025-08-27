@@ -1,8 +1,9 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import axios, {
+  // AxiosError,
   type AxiosInstance,
   type InternalAxiosRequestConfig,
 } from 'axios';
-// import { create } from 'zustand';
 
 export const API_CONFIG = {
   BASE_URL: import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000/api',
@@ -18,42 +19,73 @@ const axiosInstance: AxiosInstance = axios.create({
   },
 });
 
-function getAuthToken() {
-  return localStorage.getItem('token');
-}
 axiosInstance.interceptors.request.use(
   (config: InternalAxiosRequestConfig) => {
-    const token = getAuthToken();
-    if (token) {
-      config.headers.Authorization = `Bearer ${token}`;
+    const authStorage = localStorage.getItem('auth-storage');
+    if (authStorage) {
+      try {
+        const authData = JSON.parse(authStorage);
+        if (authData.state?.token) {
+          config.headers.Authorization = `Bearer ${authData.state.token}`;
+        }
+      } catch (error) {
+        console.error('Failed to get auth token', error);
+      }
     }
     return config;
   },
   (error) => Promise.reject(error),
 );
 
+function showToast(
+  type: 'success' | 'error' | 'warning' | 'info',
+  message: string,
+): void {
+  import('../components/toastMessage')
+    .then(({ ToastMessage }) => {
+      ToastMessage(type, message);
+    })
+    .catch(() => {
+      console.log(`${type.toUpperCase()}: ${message}`);
+    });
+}
+
+// axiosInstance.interceptors.request.use(
+//   (config: InternalAxiosRequestConfig) => {
+//     const token = getAuthToken();
+//     if (token) {
+//       config.headers.Authorization = `Bearer ${token}`;
+//     }
+//     if (import.meta.env.DEV) {
+//       console.log(`${config.method?.toUpperCase()} ${config.url}`, config.data);
+//     }
+//     return config;
+//   },
+//   (error) => {
+//     console.log('Request error:', error);
+//     return Promise.reject(error);
+//   },
+// );
+
 axiosInstance.interceptors.response.use(
-  (res) => res,
+  (response) => response,
   async (error) => {
     const status = error.response?.status;
     switch (status) {
       case 401:
-        //Add toastMessage
-        localStorage.removeItem('token');
-        window.location.href = '/signin';
+        showToast('error', 'Session expired. Please login again.');
+        localStorage.removeItem('auth-storage');
+        window.location.href = '/auth/signin';
         break;
       case 403:
-        //Add toastMessage
-        break;
-      case 400:
-        //Add toastMessage
+        console.log('Access forbidden');
         break;
       case 500:
-        //Add toastMessage
+        console.log('Server error');
         break;
       default:
         if (error.message === 'Network Error') {
-          alert('Not connect');
+          console.log('Network error');
         }
         break;
     }
