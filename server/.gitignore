@@ -1,0 +1,5 @@
+# Thư mục chứa các thư viện đã cài đặt, không cần commit vì nó rất nặng
+node_modules
+
+# File chứa các biến môi trường và thông tin nhạy cảm
+.env
