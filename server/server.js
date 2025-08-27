@@ -12,7 +12,7 @@ const PORT = process.env.PORT || 3000;
 const authRoutes = require('./routes/auth');
 const productRoutes = require('./routes/product');
 
-mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost:27017/my_project_ttap')
+mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost:27017')
   .then(async () => {
     console.log('🍃 MongoDB Connected');
 

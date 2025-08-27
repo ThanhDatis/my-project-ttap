@@ -74,8 +74,6 @@ export const useAuthStore = create<AuthState>()(
           refreshToken: null,
           isLoading: false,
         });
-        // Clear localStorage
-        // localStorage.removeItem('auth-storage');
       },
 
       setUser: (user: User) => {
@@ -85,14 +83,6 @@ export const useAuthStore = create<AuthState>()(
       setLoading: (loading: boolean) => {
         set({ isLoading: loading });
       },
-
-      // updateToken: (token: string, refreshToken?: string) => {
-      //   set({
-      //     token,
-      //     refreshToken: refreshToken || get().refreshToken,
-      //   });
-      // },
-
       clearAuth: () => {
         set({
           isAuthenticated: false,
