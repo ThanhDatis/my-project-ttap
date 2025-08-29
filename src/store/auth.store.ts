@@ -19,7 +19,6 @@ interface AuthState {
   refreshToken: string | null;
   isLoading: boolean;
 
-  // Actions
   login: (name: string, password: string) => Promise<void>;
   logout: () => void;
   setUser: (user: User) => void;
@@ -41,7 +40,6 @@ export const useAuthStore = create<AuthState>()(
       login: async (email: string, password: string) => {
         set({ isLoading: true });
         try {
-          // Call your login API here
           const response = await axios.post('/auth/signin', {
             email,
             password,

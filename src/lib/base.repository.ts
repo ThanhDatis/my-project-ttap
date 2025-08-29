@@ -4,6 +4,7 @@ import axiosInstance from './axios';
 
 export class BaseRepository<T> {
   protected endpoint: string;
+  protected axiosInstance = axiosInstance;
 
   constructor(endpoint: string) {
     this.endpoint = endpoint;
