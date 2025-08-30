@@ -1,5 +1,4 @@
 /* eslint-disable no-unused-vars */
-// src/pages/cms/components/ProductDetailDialog.tsx
 import {
   Close as CloseIcon,
   Edit as EditIcon,
@@ -139,7 +138,6 @@ export const ProductDetailDialog: React.FC<ProductDetailDialogProps> = ({
 
       <DialogContent>
         <Grid container spacing={3}>
-          {/* Product Image */}
           <Grid size={{ xs: 12, md: 4 }}>
             {product.images && product.images.length > 0 ? (
               <Card>
@@ -175,7 +173,6 @@ export const ProductDetailDialog: React.FC<ProductDetailDialogProps> = ({
             )}
           </Grid>
 
-          {/* Product Info */}
           <Grid size={{ xs: 12, md: 8 }}>
             <Box sx={{ mb: 2 }}>
               <Typography variant="h5" gutterBottom>

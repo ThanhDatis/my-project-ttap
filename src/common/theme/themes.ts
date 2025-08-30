@@ -93,10 +93,11 @@ const theme = createTheme({
           },
         },
         outlined: {
-          borderColor: gray[500],
-          color: brand[500],
+          borderColor: gray[700],
+          fontWeight: 'bold',
+          color: primaryTextColor,
           "&:hover": {
-            backgroundColor: "rgba(25, 118, 210, 0.04)",
+            backgroundColor: gray[100],
           },
         },
       },
@@ -247,7 +248,7 @@ const theme = createTheme({
         // },
       },
     },
-    
+
   }
 });
 

@@ -1,11 +1,8 @@
-// src/pages/cms/products.tsx - Fixed version with safe guards
-import {
-  Add as AddIcon,
-  Refresh as RefreshIcon,
-  Edit as EditIcon,
-  Delete as DeleteIcon,
-  Visibility as ViewIcon,
-} from '@mui/icons-material';
+import AddCircleOutlineRoundedIcon from '@mui/icons-material/AddCircleOutlineRounded';
+import DeleteRoundedIcon from '@mui/icons-material/DeleteRounded';
+import EditRoundedIcon from '@mui/icons-material/EditRounded';
+import RefreshRoundedIcon from '@mui/icons-material/RefreshRounded';
+import VisibilityRoundedIcon from '@mui/icons-material/VisibilityRounded';
 import {
   Box,
   Typography,
@@ -20,12 +17,11 @@ import {
   MenuItem,
   ListItemIcon,
   ListItemText,
-  Grid as Grid,
   CircularProgress,
 } from '@mui/material';
 import React from 'react';
 
-import BreadcrumbPage from '../../components/breadcrumbPage';
+import { brand } from '../../common/color';
 import CustomTable from '../../components/tables/customTable';
 import { type Product } from '../../lib/product.repo';
 
@@ -36,12 +32,10 @@ import useProducts from './hooks/useProducts';
 
 const Products: React.FC = () => {
   const {
-    // Data
     products,
     pagination,
     productToDelete,
 
-    // UI State
     isLoading,
     isDeleting,
     error,
@@ -51,11 +45,9 @@ const Products: React.FC = () => {
     showDeleteDialog,
     selectedProduct,
 
-    // Menu state
     anchorEl,
     // selectedProductForMenu,
 
-    // Table
     columns,
 
     handleCreateProduct,
@@ -64,7 +56,6 @@ const Products: React.FC = () => {
     handlePageChange,
     handleSortModelChange,
 
-    // Menu Actions
     handleMenuClose,
     handleMenuEdit,
     handleMenuDelete,
@@ -76,11 +67,9 @@ const Products: React.FC = () => {
     handleEditFromDetail,
     handleDeleteFromDetail,
 
-    // Error handling
     clearError,
   } = useProducts();
 
-  // Debug logging
   React.useEffect(() => {
     console.log('Products Debug:', {
       products,
@@ -93,7 +82,6 @@ const Products: React.FC = () => {
     });
   }, [products, pagination, isLoading, error]);
 
-  // Loading state
   if (isLoading && (!products || products.length === 0)) {
     return (
       <Box
@@ -112,68 +100,56 @@ const Products: React.FC = () => {
     );
   }
 
-  // Ensure products is always an array
   const safeProducts = Array.isArray(products) ? products : [];
 
   return (
     <Box>
-      {/* Breadcrumb with Actions */}
-      <BreadcrumbPage
-        actionComponents={[
-          <Button
-            key="refresh"
-            variant="outlined"
-            startIcon={<RefreshIcon />}
-            onClick={handleRefresh}
-            disabled={isLoading}
-            size="small"
-          >
-            Refresh
-          </Button>,
-          <Button
-            key="create"
-            variant="contained"
-            startIcon={<AddIcon />}
-            onClick={handleCreateProduct}
-            disabled={isLoading}
-          >
-            Add Product
-          </Button>,
-        ]}
-      />
-
-      {/* Error Alert */}
       {error && (
         <Alert severity="error" sx={{ mb: 2 }} onClose={clearError}>
           {error}
         </Alert>
       )}
 
-      {/* Page Header */}
-      <Grid container spacing={4}>
-        <Grid size={{ xs: 12 }}>
-          <Typography variant="h4" sx={{ fontWeight: 'bold', mb: 1 }}>
-            Products Management
-          </Typography>
-          <Typography variant="body1" color="text.secondary">
-            Manage your product inventory, track stock levels, and update
-            product information.
-          </Typography>
-        </Grid>
-      </Grid>
-
-      {/* Filters */}
-      <Box sx={{ mt: 3 }}>
-        <ProductFiltersComponent />
+      <Box>
+        <Typography variant="h4" sx={{ fontWeight: 'bold', mb: 1 }}>
+          Products Management
+        </Typography>
+        <Typography variant="body1" color="text.secondary">
+          Manage your product inventory, track stock levels, and update product
+          information.
+        </Typography>
       </Box>
 
-      {/* Products Table */}
+      <Box sx={{ display: 'flex', gap: 2 }}>
+        <Button
+          key="refresh"
+          variant="outlined"
+          startIcon={<RefreshRoundedIcon />}
+          onClick={handleRefresh}
+          disabled={isLoading}
+          size="small"
+        >
+          Refresh
+        </Button>
+        <Button
+          key="create"
+          variant="outlined"
+          startIcon={<AddCircleOutlineRoundedIcon />}
+          onClick={handleCreateProduct}
+          disabled={isLoading}
+        >
+          Add Product
+        </Button>
+      </Box>
+
+      <ProductFiltersComponent />
+
       <Box sx={{ mt: 2 }}>
         <CustomTable<Product>
           rowHeight={80}
           columnHeaders={columns}
           isLoading={isLoading}
-          checkboxSelection={false}
+          checkboxSelection={true}
           items={safeProducts.map((product) => ({
             ...product,
             id: product.id || Math.random().toString(),
@@ -185,8 +161,6 @@ const Products: React.FC = () => {
           handleSortModelChange={handleSortModelChange}
           onRowClick={(params) => {
             console.log('Row clicked:', params.row);
-            // Simple row click to view details (remove the complex logic)
-            // We'll handle this through the menu instead
           }}
           noDataMessage="No products found. Start by creating your first product."
           sx={{
@@ -200,7 +174,6 @@ const Products: React.FC = () => {
         />
       </Box>
 
-      {/* Action Menu */}
       <Menu
         anchorEl={anchorEl}
         open={Boolean(anchorEl)}
@@ -222,27 +195,29 @@ const Products: React.FC = () => {
       >
         <MenuItem onClick={handleMenuView}>
           <ListItemIcon>
-            <ViewIcon fontSize="small" sx={{ color: '#1976d2' }} />
+            <VisibilityRoundedIcon
+              fontSize="small"
+              sx={{ color: brand[500] }}
+            />
           </ListItemIcon>
           <ListItemText>View Details</ListItemText>
         </MenuItem>
 
         <MenuItem onClick={handleMenuEdit}>
           <ListItemIcon>
-            <EditIcon fontSize="small" sx={{ color: '#1976d2' }} />
+            <EditRoundedIcon fontSize="small" />
           </ListItemIcon>
           <ListItemText>Edit</ListItemText>
         </MenuItem>
 
         <MenuItem onClick={handleMenuDelete}>
           <ListItemIcon>
-            <DeleteIcon fontSize="small" sx={{ color: '#f44336' }} />
+            <DeleteRoundedIcon fontSize="small" sx={{ color: '#f44336' }} />
           </ListItemIcon>
           <ListItemText>Delete</ListItemText>
         </MenuItem>
       </Menu>
 
-      {/* Product Form Dialog */}
       <ProductForm
         open={showForm}
         onClose={handleCloseForm}
@@ -250,7 +225,6 @@ const Products: React.FC = () => {
         mode={formMode}
       />
 
-      {/* Product Detail Dialog */}
       <ProductDetailDialog
         open={showDetail}
         onClose={handleCloseDetail}
@@ -259,7 +233,6 @@ const Products: React.FC = () => {
         onDelete={handleDeleteFromDetail}
       />
 
-      {/* Delete Confirmation Dialog */}
       <Dialog
         open={showDeleteDialog}
         onClose={handleCloseDeleteDialog}

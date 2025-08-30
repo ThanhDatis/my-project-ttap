@@ -19,6 +19,14 @@ import { Formik, Form } from 'formik';
 import React from 'react';
 import * as Yup from 'yup';
 
+import {
+  validateProductName,
+  validateProductDescription,
+  validateProductPrice,
+  validateProductStock,
+  validateCategory,
+  validateSku,
+} from '../../../common/validate';
 import { Input } from '../../../components/fields';
 import LoadingButton from '../../../components/loadingButton';
 import { type Product } from '../../../lib/product.repo';
@@ -26,28 +34,12 @@ import { useProductStore } from '../../../store/product.store';
 import { PRODUCT_CATEGORY_OPTIONS } from '../tableColumns/productsColumn';
 
 const productSchema = Yup.object({
-  name: Yup.string()
-    .min(2, 'Product name must be at least 2 characters')
-    .max(100, 'Product name must be less than 100 characters')
-    .required('Product name is required'),
-  description: Yup.string()
-    .min(10, 'Description must be at least 10 characters')
-    .max(1000, 'Description must be less than 1000 characters')
-    .required('Description is required'),
-  price: Yup.number()
-    .min(0, 'Price must be positive')
-    .required('Price is required'),
-  stock: Yup.number()
-    .integer('Stock must be a whole number')
-    .min(0, 'Stock must be positive')
-    .required('Stock is required'),
-  category: Yup.string().required('Category is required'),
-  sku: Yup.string()
-    .matches(
-      /^[A-Z0-9-_]+$/,
-      'SKU must contain only uppercase letters, numbers, hyphens and underscores',
-    )
-    .max(50, 'SKU must be less than 50 characters'),
+  name: validateProductName,
+  description: validateProductDescription,
+  price: validateProductPrice,
+  stock: validateProductStock,
+  category: validateCategory,
+  sku: validateSku,
 });
 
 export interface ProductFormValues {

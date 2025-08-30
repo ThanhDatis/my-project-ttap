@@ -28,6 +28,34 @@ const validateAcceptTerms = Yup.boolean()
   .oneOf([true], 'You must accept the terms and conditions')
   .required('You must accept the terms and conditions');
 
+const validateProductName = Yup.string()
+  .min(2, 'Product name is too short')
+  .max(100, 'Product name is too long')
+  .required('Product name is required');
+
+const validateProductDescription = Yup.string()
+  .min(10, 'Product description is too short')
+  .max(500, 'Product description is too long')
+  .required('Product description is required');
+
+const validateProductStock = Yup.number()
+  .integer('Stock must be a whole number')
+  .min(0, 'Stock must be at least 0')
+  .required('Stock is required');
+
+const validateCategory = Yup.string().required('Category is required');
+
+const validateSku = Yup.string()
+  .matches(
+    /^[a-zA-Z0-9-_]+$/,
+    'SKU can only contain letters, numbers, hyphens, and underscores',
+  )
+  .max(50, 'SKU must be less than 50 characters');
+
+const validateProductPrice = Yup.number()
+  .min(0, 'Price must be at least 0')
+  .required('Price is required');
+
 export {
   validateEmail,
   validatePasswordSignIn,
@@ -36,4 +64,10 @@ export {
   validateName,
   validateConfirmPassword,
   validateAcceptTerms,
+  validateProductName,
+  validateProductDescription,
+  validateProductStock,
+  validateCategory,
+  validateSku,
+  validateProductPrice,
 };
