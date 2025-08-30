@@ -1,18 +1,17 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { Close as CloseIcon } from '@mui/icons-material';
+
+import RefreshRoundedIcon from '@mui/icons-material/RefreshRounded';
 import {
-  Dialog,
-  DialogTitle,
-  DialogContent,
-  DialogActions,
   Button,
   Box,
-  IconButton,
   FormControl,
   FormLabel,
-  Alert,
   TextField,
   MenuItem,
+  Card,
+  Typography,
+  Avatar,
+  Chip,
 } from '@mui/material';
 import Grid from '@mui/material/Grid';
 import { Formik, Form } from 'formik';
@@ -29,7 +28,7 @@ import {
 } from '../../../common/validate';
 import { Input } from '../../../components/fields';
 import LoadingButton from '../../../components/loadingButton';
-import { type Product } from '../../../lib/product.repo';
+import ToastMessage from '../../../components/toastMessage';
 import { useProductStore } from '../../../store/product.store';
 import { PRODUCT_CATEGORY_OPTIONS } from '../tableColumns/productsColumn';
 
@@ -53,39 +52,42 @@ export interface ProductFormValues {
 }
 
 interface ProductFormProps {
-  open: boolean;
-  onClose: () => void;
-  product?: Product | null;
-  mode: 'create' | 'edit';
+  onRefresh: () => void;
+  isTableLoading?: boolean;
+  // open: boolean;
+  // onClose: () => void;
+  // product?: Product | null;
+  // mode: 'create' | 'edit';
 }
 
 export const ProductForm: React.FC<ProductFormProps> = ({
-  open,
-  onClose,
-  product,
-  mode,
+  onRefresh,
+  isTableLoading = false,
 }) => {
   const {
     createProduct,
-    updateProduct,
+    // updateProduct,
     isCreating,
-    isUpdating,
-    error,
-    clearError,
+    // isUpdating,
+    // error,
+    // clearError,
   } = useProductStore();
 
-  const isLoading = isCreating || isUpdating;
+  // const isLoading = isCreating || isUpdating;
 
   const initialValues: ProductFormValues = {
-    name: product?.name || '',
-    description: product?.description || '',
-    price: product?.price || '',
-    stock: product?.stock || '',
-    category: product?.category || '',
-    sku: product?.sku || '',
+    name: '',
+    description: '',
+    price: '',
+    stock: '',
+    category: '',
+    sku: '',
   };
 
-  const handleSubmit = async (values: ProductFormValues) => {
+  const handleSubmit = async (
+    values: ProductFormValues,
+    { resetForm }: { resetForm: () => void },
+  ) => {
     try {
       const productData = {
         name: values.name,
@@ -96,51 +98,26 @@ export const ProductForm: React.FC<ProductFormProps> = ({
         sku: values.sku,
       };
 
-      if (mode === 'create') {
-        await createProduct(productData);
-      } else if (mode === 'edit' && product) {
-        await updateProduct(product.id.toString(), productData);
-      }
-
-      onClose();
-    } catch (error) {
+      await createProduct(productData);
+      ToastMessage('success', 'Product created successfully');
+      resetForm();
+      onRefresh();
+    } catch (error: any) {
+      ToastMessage('error', error.message || 'Failed to create product');
       console.error('Form submission error:', error);
     }
   };
 
-  const handleClose = () => {
-    clearError();
-    onClose();
-  };
-
   return (
-    <Dialog
-      open={open}
-      onClose={handleClose}
-      maxWidth="md"
-      fullWidth
-      PaperProps={{
-        sx: { maxHeight: '90vh' },
-      }}
-    >
-      <DialogTitle
-        sx={{
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'space-between',
-        }}
-      >
-        {mode === 'create' ? 'Create New Product' : 'Edit Product'}
-        <IconButton onClick={handleClose} size="small">
-          <CloseIcon />
-        </IconButton>
-      </DialogTitle>
-
+    <Card sx={{ p: 3, mb: 2 }}>
+      <Typography variant="h6" sx={{ p: 2, fontWeight: 'bold' }}>
+        Create New Product
+      </Typography>
       <Formik
         initialValues={initialValues}
         validationSchema={productSchema}
         onSubmit={handleSubmit}
-        enableReinitialize
+        // enableReinitialize
       >
         {({
           values,
@@ -152,190 +129,248 @@ export const ProductForm: React.FC<ProductFormProps> = ({
           dirty,
         }) => (
           <Form>
-            <DialogContent>
-              {error && (
-                <Alert severity="error" sx={{ mb: 2 }} onClose={clearError}>
-                  {error}
-                </Alert>
-              )}
-
-              <Grid container spacing={3}>
-                <Grid size={{ xs: 12, md: 8 }}>
-                  <FormControl fullWidth>
-                    <FormLabel htmlFor="name">Product Name *</FormLabel>
-                    <Input
-                      id="name"
-                      name="name"
-                      label=""
-                      value={values.name}
-                      placeholder="Enter product name"
-                      isError={!!(touched.name && errors.name)}
-                      errorText={errors.name}
-                      onChange={handleChange}
-                      onBlur={handleBlur}
-                      disabled={isLoading}
-                    />
-                  </FormControl>
-                </Grid>
-
-                <Grid size={{ xs: 12, md: 4 }}>
-                  <FormControl fullWidth>
-                    <FormLabel htmlFor="sku">SKU</FormLabel>
-                    <Input
-                      id="sku"
-                      name="sku"
-                      label=""
-                      value={values.sku}
-                      placeholder="e.g. PROD-001"
-                      isError={!!(touched.sku && errors.sku)}
-                      errorText={errors.sku}
-                      onChange={handleChange}
-                      onBlur={handleBlur}
-                      disabled={isLoading}
-                    />
-                  </FormControl>
-                </Grid>
-
-                <Grid size={{ xs: 12 }}>
-                  <FormControl fullWidth>
-                    <FormLabel htmlFor="description">Description *</FormLabel>
-                    <Input
-                      id="description"
-                      name="description"
-                      label=""
-                      value={values.description}
-                      placeholder="Enter product description"
-                      multiline
-                      rows={4}
-                      isError={!!(touched.description && errors.description)}
-                      errorText={errors.description}
-                      onChange={handleChange}
-                      onBlur={handleBlur}
-                      disabled={isLoading}
-                    />
-                  </FormControl>
-                </Grid>
-
-                <Grid size={{ xs: 12, md: 6 }}>
-                  <FormControl fullWidth>
-                    <FormLabel htmlFor="category">Category *</FormLabel>
-                    <Input
-                      id="category"
-                      name="category"
-                      label=""
-                      value={values.category}
-                      isError={!!(touched.category && errors.category)}
-                      errorText={errors.category}
-                      onChange={handleChange}
-                      onBlur={handleBlur}
-                      disabled={isLoading}
-                    />
-                    {/* Alternative: Use TextField with select for better UX */}
-                    <TextField
-                      select
-                      fullWidth
-                      name="category"
-                      value={values.category}
-                      onChange={handleChange}
-                      onBlur={handleBlur}
-                      error={!!(touched.category && errors.category)}
-                      helperText={errors.category}
-                      disabled={isLoading}
-                    >
-                      {PRODUCT_CATEGORY_OPTIONS.filter(
-                        (opt) => opt.value !== 'all',
-                      ).map((option) => (
-                        <MenuItem key={option.value} value={option.value}>
-                          {option.label}
-                        </MenuItem>
-                      ))}
-                    </TextField>
-                  </FormControl>
-                </Grid>
-
-                <Grid size={{ xs: 12, md: 6 }}>
-                  <FormControl fullWidth>
-                    <FormLabel htmlFor="price">Price (VND) *</FormLabel>
-                    <Input
-                      id="price"
-                      name="price"
-                      label=""
-                      typeInput="number"
-                      value={values.price === '' ? '' : String(values.price)}
-                      placeholder="0"
-                      isError={!!(touched.price && errors.price)}
-                      errorText={errors.price}
-                      onChange={handleChange}
-                      onBlur={handleBlur}
-                      disabled={isLoading}
-                    />
-                  </FormControl>
-                </Grid>
-
-                <Grid size={{ xs: 12, md: 6 }}>
-                  <FormControl fullWidth>
-                    <FormLabel htmlFor="stock">Stock Quantity *</FormLabel>
-                    <Input
-                      id="stock"
-                      name="stock"
-                      label=""
-                      typeInput="number"
-                      value={values.stock === '' ? '' : String(values.stock)}
-                      placeholder="0"
-                      isError={!!(touched.stock && errors.stock)}
-                      errorText={errors.stock}
-                      onChange={handleChange}
-                      onBlur={handleBlur}
-                      disabled={isLoading}
-                    />
-                  </FormControl>
-                </Grid>
-
-                {mode === 'edit' && product && (
-                  <Grid size={{ xs: 12, md: 6 }}>
-                    <Box sx={{ pt: 2 }}>
-                      <FormLabel>Current Status</FormLabel>
-                      <Box
-                        sx={{
-                          mt: 1,
-                          fontSize: '0.875rem',
-                          color: 'text.secondary',
-                        }}
-                      >
-                        {Number(values.stock) === 0
-                          ? 'Out of Stock'
-                          : product.status === 'active'
-                            ? 'Active'
-                            : 'Inactive'}
-                      </Box>
-                    </Box>
-                  </Grid>
-                )}
+            <Grid container spacing={4}>
+              <Grid size={{ xs: 12, md: 6 }}>
+                <FormControl fullWidth>
+                  <FormLabel htmlFor="name">Product Name *</FormLabel>
+                  <Input
+                    id="name"
+                    name="name"
+                    label=""
+                    value={values.name}
+                    placeholder="Enter product name"
+                    isError={!!(touched.name && errors.name)}
+                    errorText={errors.name}
+                    onChange={handleChange}
+                    onBlur={handleBlur}
+                    disabled={isCreating}
+                  />
+                </FormControl>
+                <FormControl fullWidth>
+                  <FormLabel htmlFor="sku">SKU</FormLabel>
+                  <Input
+                    id="sku"
+                    name="sku"
+                    label=""
+                    value={values.sku}
+                    placeholder="e.g. PROD-001"
+                    isError={!!(touched.sku && errors.sku)}
+                    errorText={errors.sku}
+                    onChange={handleChange}
+                    onBlur={handleBlur}
+                    disabled={isCreating}
+                  />
+                </FormControl>
+                <FormControl fullWidth>
+                  <FormLabel htmlFor="description">Description *</FormLabel>
+                  <Input
+                    id="description"
+                    name="description"
+                    label=""
+                    value={values.description}
+                    placeholder="Enter product description"
+                    multiline
+                    rows={4}
+                    isError={!!(touched.description && errors.description)}
+                    errorText={errors.description}
+                    onChange={handleChange}
+                    onBlur={handleBlur}
+                    disabled={isCreating}
+                  />
+                </FormControl>
+                <FormControl fullWidth>
+                  <FormLabel htmlFor="category">Category *</FormLabel>
+                  {/* <Input
+id="category"
+name="category"
+label=""
+value={values.category}
+isError={!!(touched.category && errors.category)}
+errorText={errors.category}
+onChange={handleChange}
+onBlur={handleBlur}
+disabled={isCreating}
+/> */}
+                  <TextField
+                    select
+                    fullWidth
+                    name="category"
+                    value={values.category}
+                    onChange={handleChange}
+                    onBlur={handleBlur}
+                    error={!!(touched.category && errors.category)}
+                    helperText={errors.category}
+                    disabled={isCreating}
+                  >
+                    {PRODUCT_CATEGORY_OPTIONS.filter(
+                      (opt) => opt.value !== 'all',
+                    ).map((option) => (
+                      <MenuItem key={option.value} value={option.value}>
+                        {option.label}
+                      </MenuItem>
+                    ))}
+                  </TextField>
+                </FormControl>
+                <FormControl fullWidth>
+                  <FormLabel htmlFor="price">Price (VND) *</FormLabel>
+                  <Input
+                    id="price"
+                    name="price"
+                    label=""
+                    typeInput="number"
+                    value={values.price === '' ? '' : String(values.price)}
+                    placeholder="0"
+                    isError={!!(touched.price && errors.price)}
+                    errorText={errors.price}
+                    onChange={handleChange}
+                    onBlur={handleBlur}
+                    disabled={isCreating}
+                  />
+                </FormControl>
+                <FormControl fullWidth>
+                  <FormLabel htmlFor="stock">Stock Quantity *</FormLabel>
+                  <Input
+                    id="stock"
+                    name="stock"
+                    label=""
+                    typeInput="number"
+                    value={values.stock === '' ? '' : String(values.stock)}
+                    placeholder="0"
+                    isError={!!(touched.stock && errors.stock)}
+                    errorText={errors.stock}
+                    onChange={handleChange}
+                    onBlur={handleBlur}
+                    disabled={isCreating}
+                  />
+                </FormControl>
               </Grid>
-            </DialogContent>
 
-            <DialogActions sx={{ p: 3, pt: 0 }}>
-              <Button
-                onClick={handleClose}
-                disabled={isLoading}
-                variant="outlined"
-              >
-                Cancel
-              </Button>
-              <LoadingButton
-                type="submit"
-                loading={isLoading}
-                disabled={!isValid || (!dirty && mode === 'edit')}
-                textButton={
-                  mode === 'create' ? 'Create Product' : 'Save Changes'
-                }
-                variant="contained"
-              />
-            </DialogActions>
+              <Grid size={{ xs: 12, md: 6 }}>
+                <Card sx={{ p: 2, bgcolor: 'grey.50', height: 'fit-content' }}>
+                  <Typography variant="h6" sx={{ mb: 2, fontWeight: 'bold' }}>
+                    Product Preview
+                  </Typography>
+
+                  <Box sx={{ textAlign: 'center', mb: 2 }}>
+                    <Avatar
+                      sx={{
+                        width: 60,
+                        height: 60,
+                        margin: '0 auto',
+                        borderRadius: 2,
+                        fontSize: 24,
+                      }}
+                      variant="rounded"
+                    >
+                      {values.name?.charAt(0)?.toUpperCase() || 'P'}
+                    </Avatar>
+                  </Box>
+
+                  <Box>
+                    <Typography variant="subtitle1" color="text.secondary">
+                      Product Name
+                    </Typography>
+                    <Typography variant="body1" sx={{ fontWeight: 'bold' }}>
+                      {values.name || 'Product Name'}
+                    </Typography>
+                  </Box>
+
+                  <Box>
+                    <Typography variant="subtitle2" color="text.secondary">
+                      Product Category
+                    </Typography>
+                    {values.category ? (
+                      <Chip
+                        label={
+                          PRODUCT_CATEGORY_OPTIONS.find(
+                            (opt) => opt.value === values.category,
+                          )?.label || values.category
+                        }
+                        size="small"
+                        variant="outlined"
+                        sx={{ mt: 0.5 }}
+                      />
+                    ) : (
+                      <Typography
+                        variant="body2"
+                        sx={{ fontStyle: 'italic', color: 'text.disabled' }}
+                      >
+                        No Category
+                      </Typography>
+                    )}
+                  </Box>
+
+                  <Box sx={{ mb: 2 }}>
+                    <Typography variant="subtitle2" color="text.secondary">
+                      Price
+                    </Typography>
+                    <Typography
+                      variant="body1"
+                      color="primary.main"
+                      sx={{ fontWeight: 'bold' }}
+                    >
+                      {values.price
+                        ? new Intl.NumberFormat('vi-VN', {
+                            style: 'currency',
+                            currency: 'VND',
+                          }).format(Number(values.price))
+                        : '0 VND'}
+                    </Typography>
+                  </Box>
+
+                  <Box sx={{ mb: 2 }}>
+                    <Typography variant="subtitle2" color="text.secondary">
+                      Stock
+                    </Typography>
+                    <Chip
+                      label={values.stock ? String(values.stock) : 0}
+                      size="small"
+                      color={
+                        Number(values.stock) > 10
+                          ? 'success'
+                          : Number(values.stock) > 0
+                            ? 'warning'
+                            : 'default'
+                      }
+                    />
+                  </Box>
+                  {values.sku && (
+                    <Box>
+                      <Typography variant="subtitle2" color="text.secondary">
+                        SKU
+                      </Typography>
+                      <Typography variant="body1" sx={{ fontWeight: 'bold' }}>
+                        {values.sku}
+                      </Typography>
+                    </Box>
+                  )}
+                </Card>
+              </Grid>
+
+              <Box sx={{ mt: 3, display: 'flex', justifyContent: 'flex-end' }}>
+                <Button
+                  variant="outlined"
+                  startIcon={<RefreshRoundedIcon />}
+                  onClick={onRefresh}
+                  disabled={isTableLoading || isCreating}
+                  size="large"
+                >
+                  Refresh
+                </Button>
+                <LoadingButton
+                  type="submit"
+                  loading={isCreating}
+                  disabled={!isValid || !dirty}
+                  textButton="Add Product"
+                  variant="contained"
+                  sxButton={{ px: 4, py: 2, fontSize: '1rem' }}
+                />
+              </Box>
+            </Grid>
           </Form>
         )}
       </Formik>
-    </Dialog>
+    </Card>
   );
 };
 

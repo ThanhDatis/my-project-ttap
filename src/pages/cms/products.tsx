@@ -1,7 +1,5 @@
-import AddCircleOutlineRoundedIcon from '@mui/icons-material/AddCircleOutlineRounded';
 import DeleteRoundedIcon from '@mui/icons-material/DeleteRounded';
 import EditRoundedIcon from '@mui/icons-material/EditRounded';
-import RefreshRoundedIcon from '@mui/icons-material/RefreshRounded';
 import VisibilityRoundedIcon from '@mui/icons-material/VisibilityRounded';
 import {
   Box,
@@ -18,6 +16,7 @@ import {
   ListItemIcon,
   ListItemText,
   CircularProgress,
+  Card,
 } from '@mui/material';
 import React from 'react';
 
@@ -39,18 +38,14 @@ const Products: React.FC = () => {
     isLoading,
     isDeleting,
     error,
-    formMode,
-    showForm,
     showDetail,
     showDeleteDialog,
     selectedProduct,
 
     anchorEl,
-    // selectedProductForMenu,
 
     columns,
 
-    handleCreateProduct,
     handleConfirmDelete,
     handleRefresh,
     handlePageChange,
@@ -61,7 +56,6 @@ const Products: React.FC = () => {
     handleMenuDelete,
     handleMenuView,
 
-    handleCloseForm,
     handleCloseDetail,
     handleCloseDeleteDialog,
     handleEditFromDetail,
@@ -69,18 +63,6 @@ const Products: React.FC = () => {
 
     clearError,
   } = useProducts();
-
-  React.useEffect(() => {
-    console.log('Products Debug:', {
-      products,
-      productsType: typeof products,
-      isArray: Array.isArray(products),
-      length: products?.length,
-      pagination,
-      isLoading,
-      error,
-    });
-  }, [products, pagination, isLoading, error]);
 
   if (isLoading && (!products || products.length === 0)) {
     return (
@@ -110,7 +92,7 @@ const Products: React.FC = () => {
         </Alert>
       )}
 
-      <Box>
+      <Box sx={{ mb: 2 }}>
         <Typography variant="h4" sx={{ fontWeight: 'bold', mb: 1 }}>
           Products Management
         </Typography>
@@ -119,60 +101,41 @@ const Products: React.FC = () => {
           information.
         </Typography>
       </Box>
+      <ProductForm onRefresh={handleRefresh} isTableLoading={isLoading} />
 
-      <Box sx={{ display: 'flex', gap: 2 }}>
-        <Button
-          key="refresh"
-          variant="outlined"
-          startIcon={<RefreshRoundedIcon />}
-          onClick={handleRefresh}
-          disabled={isLoading}
-          size="small"
-        >
-          Refresh
-        </Button>
-        <Button
-          key="create"
-          variant="outlined"
-          startIcon={<AddCircleOutlineRoundedIcon />}
-          onClick={handleCreateProduct}
-          disabled={isLoading}
-        >
-          Add Product
-        </Button>
-      </Box>
+      <Card>
+        <ProductFiltersComponent />
 
-      <ProductFiltersComponent />
-
-      <Box sx={{ mt: 2 }}>
-        <CustomTable<Product>
-          rowHeight={80}
-          columnHeaders={columns}
-          isLoading={isLoading}
-          checkboxSelection={true}
-          items={safeProducts.map((product) => ({
-            ...product,
-            id: product.id || Math.random().toString(),
-          }))}
-          totalCount={pagination?.total || 0}
-          currentPage={pagination?.page || 0}
-          maxPageSize={pagination?.limit || 10}
-          onPageChange={handlePageChange}
-          handleSortModelChange={handleSortModelChange}
-          onRowClick={(params) => {
-            console.log('Row clicked:', params.row);
-          }}
-          noDataMessage="No products found. Start by creating your first product."
-          sx={{
-            '& .MuiDataGrid-row': {
-              cursor: 'pointer',
-              '&:hover': {
-                backgroundColor: 'action.hover',
+        <Box sx={{ mt: 2 }}>
+          <CustomTable<Product>
+            rowHeight={80}
+            columnHeaders={columns}
+            isLoading={isLoading}
+            checkboxSelection={true}
+            items={safeProducts.map((product) => ({
+              ...product,
+              id: product.id || Math.random().toString(),
+            }))}
+            totalCount={pagination?.total || 0}
+            currentPage={pagination?.page || 0}
+            maxPageSize={pagination?.limit || 10}
+            onPageChange={handlePageChange}
+            handleSortModelChange={handleSortModelChange}
+            onRowClick={(params) => {
+              console.log('Row clicked:', params.row);
+            }}
+            noDataMessage="No products found. Start by creating your first product."
+            sx={{
+              '& .MuiDataGrid-row': {
+                cursor: 'pointer',
+                '&:hover': {
+                  backgroundColor: 'action.hover',
+                },
               },
-            },
-          }}
-        />
-      </Box>
+            }}
+          />
+        </Box>
+      </Card>
 
       <Menu
         anchorEl={anchorEl}
@@ -217,13 +180,6 @@ const Products: React.FC = () => {
           <ListItemText>Delete</ListItemText>
         </MenuItem>
       </Menu>
-
-      <ProductForm
-        open={showForm}
-        onClose={handleCloseForm}
-        product={selectedProduct}
-        mode={formMode}
-      />
 
       <ProductDetailDialog
         open={showDetail}
