@@ -16,7 +16,7 @@ import {
   ListItemIcon,
   ListItemText,
   CircularProgress,
-  Card,
+  // Card,
 } from '@mui/material';
 import React from 'react';
 
@@ -85,7 +85,7 @@ const Products: React.FC = () => {
   const safeProducts = Array.isArray(products) ? products : [];
 
   return (
-    <Box>
+    <Box sx={{ width: '100%', height: '100%' }}>
       {error && (
         <Alert severity="error" sx={{ mb: 2 }} onClose={clearError}>
           {error}
@@ -101,41 +101,40 @@ const Products: React.FC = () => {
           information.
         </Typography>
       </Box>
+
       <ProductForm onRefresh={handleRefresh} isTableLoading={isLoading} />
 
-      <Card>
-        <ProductFiltersComponent />
+      <ProductFiltersComponent />
 
-        <Box sx={{ mt: 2 }}>
-          <CustomTable<Product>
-            rowHeight={80}
-            columnHeaders={columns}
-            isLoading={isLoading}
-            checkboxSelection={true}
-            items={safeProducts.map((product) => ({
-              ...product,
-              id: product.id || Math.random().toString(),
-            }))}
-            totalCount={pagination?.total || 0}
-            currentPage={pagination?.page || 0}
-            maxPageSize={pagination?.limit || 10}
-            onPageChange={handlePageChange}
-            handleSortModelChange={handleSortModelChange}
-            onRowClick={(params) => {
-              console.log('Row clicked:', params.row);
-            }}
-            noDataMessage="No products found. Start by creating your first product."
-            sx={{
-              '& .MuiDataGrid-row': {
-                cursor: 'pointer',
-                '&:hover': {
-                  backgroundColor: 'action.hover',
-                },
+      <Box sx={{ mt: 2 }}>
+        <CustomTable<Product>
+          rowHeight={80}
+          columnHeaders={columns}
+          isLoading={isLoading}
+          checkboxSelection={true}
+          items={safeProducts.map((product) => ({
+            ...product,
+            id: product.id || Math.random().toString(),
+          }))}
+          totalCount={pagination?.total || 0}
+          currentPage={pagination?.page || 0}
+          maxPageSize={pagination?.limit || 10}
+          onPageChange={handlePageChange}
+          handleSortModelChange={handleSortModelChange}
+          onRowClick={(params) => {
+            console.log('Row clicked:', params.row);
+          }}
+          noDataMessage="No products found. Start by creating your first product."
+          sx={{
+            '& .MuiDataGrid-row': {
+              cursor: 'pointer',
+              '&:hover': {
+                backgroundColor: 'action.hover',
               },
-            }}
-          />
-        </Box>
-      </Card>
+            },
+          }}
+        />
+      </Box>
 
       <Menu
         anchorEl={anchorEl}

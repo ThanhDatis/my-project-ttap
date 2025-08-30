@@ -205,6 +205,8 @@ const theme = createTheme({
           fontWeight: 600,
           marginBottom: "8px",
           display: "block",
+          color: labelColor,
+          textAlign: "left",
         },
       },
     },

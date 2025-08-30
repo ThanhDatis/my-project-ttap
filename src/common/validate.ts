@@ -38,6 +38,10 @@ const validateProductDescription = Yup.string()
   .max(500, 'Product description is too long')
   .required('Product description is required');
 
+const validateProductPrice = Yup.number()
+  .positive('Price must be a positive number')
+  .required('Price is required');
+
 const validateProductStock = Yup.number()
   .integer('Stock must be a whole number')
   .min(0, 'Stock must be at least 0')
@@ -51,10 +55,6 @@ const validateSku = Yup.string()
     'SKU can only contain letters, numbers, hyphens, and underscores',
   )
   .max(50, 'SKU must be less than 50 characters');
-
-const validateProductPrice = Yup.number()
-  .min(0, 'Price must be at least 0')
-  .required('Price is required');
 
 export {
   validateEmail,

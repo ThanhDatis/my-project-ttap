@@ -10,8 +10,8 @@ import {
   MenuItem,
   Card,
   Typography,
-  Avatar,
   Chip,
+  Divider,
 } from '@mui/material';
 import Grid from '@mui/material/Grid';
 import { Formik, Form } from 'formik';
@@ -109,7 +109,7 @@ export const ProductForm: React.FC<ProductFormProps> = ({
   };
 
   return (
-    <Card sx={{ p: 3, mb: 2 }}>
+    <Box sx={{ p: 3, mb: 2 }}>
       <Typography variant="h6" sx={{ p: 2, fontWeight: 'bold' }}>
         Create New Product
       </Typography>
@@ -117,260 +117,275 @@ export const ProductForm: React.FC<ProductFormProps> = ({
         initialValues={initialValues}
         validationSchema={productSchema}
         onSubmit={handleSubmit}
-        // enableReinitialize
       >
-        {({
-          values,
-          errors,
-          touched,
-          handleBlur,
-          handleChange,
-          isValid,
-          dirty,
-        }) => (
+        {({ values, errors, touched, handleBlur, handleChange, isValid }) => (
           <Form>
-            <Grid container spacing={4}>
-              <Grid size={{ xs: 12, md: 6 }}>
-                <FormControl fullWidth>
-                  <FormLabel htmlFor="name">Product Name *</FormLabel>
-                  <Input
-                    id="name"
-                    name="name"
-                    label=""
-                    value={values.name}
-                    placeholder="Enter product name"
-                    isError={!!(touched.name && errors.name)}
-                    errorText={errors.name}
-                    onChange={handleChange}
-                    onBlur={handleBlur}
-                    disabled={isCreating}
-                  />
-                </FormControl>
-                <FormControl fullWidth>
-                  <FormLabel htmlFor="sku">SKU</FormLabel>
-                  <Input
-                    id="sku"
-                    name="sku"
-                    label=""
-                    value={values.sku}
-                    placeholder="e.g. PROD-001"
-                    isError={!!(touched.sku && errors.sku)}
-                    errorText={errors.sku}
-                    onChange={handleChange}
-                    onBlur={handleBlur}
-                    disabled={isCreating}
-                  />
-                </FormControl>
-                <FormControl fullWidth>
-                  <FormLabel htmlFor="description">Description *</FormLabel>
-                  <Input
-                    id="description"
-                    name="description"
-                    label=""
-                    value={values.description}
-                    placeholder="Enter product description"
-                    multiline
-                    rows={4}
-                    isError={!!(touched.description && errors.description)}
-                    errorText={errors.description}
-                    onChange={handleChange}
-                    onBlur={handleBlur}
-                    disabled={isCreating}
-                  />
-                </FormControl>
-                <FormControl fullWidth>
-                  <FormLabel htmlFor="category">Category *</FormLabel>
-                  {/* <Input
-id="category"
-name="category"
-label=""
-value={values.category}
-isError={!!(touched.category && errors.category)}
-errorText={errors.category}
-onChange={handleChange}
-onBlur={handleBlur}
-disabled={isCreating}
-/> */}
-                  <TextField
-                    select
-                    fullWidth
-                    name="category"
-                    value={values.category}
-                    onChange={handleChange}
-                    onBlur={handleBlur}
-                    error={!!(touched.category && errors.category)}
-                    helperText={errors.category}
-                    disabled={isCreating}
-                  >
-                    {PRODUCT_CATEGORY_OPTIONS.filter(
-                      (opt) => opt.value !== 'all',
-                    ).map((option) => (
-                      <MenuItem key={option.value} value={option.value}>
-                        {option.label}
-                      </MenuItem>
-                    ))}
-                  </TextField>
-                </FormControl>
-                <FormControl fullWidth>
-                  <FormLabel htmlFor="price">Price (VND) *</FormLabel>
-                  <Input
-                    id="price"
-                    name="price"
-                    label=""
-                    typeInput="number"
-                    value={values.price === '' ? '' : String(values.price)}
-                    placeholder="0"
-                    isError={!!(touched.price && errors.price)}
-                    errorText={errors.price}
-                    onChange={handleChange}
-                    onBlur={handleBlur}
-                    disabled={isCreating}
-                  />
-                </FormControl>
-                <FormControl fullWidth>
-                  <FormLabel htmlFor="stock">Stock Quantity *</FormLabel>
-                  <Input
-                    id="stock"
-                    name="stock"
-                    label=""
-                    typeInput="number"
-                    value={values.stock === '' ? '' : String(values.stock)}
-                    placeholder="0"
-                    isError={!!(touched.stock && errors.stock)}
-                    errorText={errors.stock}
-                    onChange={handleChange}
-                    onBlur={handleBlur}
-                    disabled={isCreating}
-                  />
-                </FormControl>
-              </Grid>
-
-              <Grid size={{ xs: 12, md: 6 }}>
-                <Card sx={{ p: 2, bgcolor: 'grey.50', height: 'fit-content' }}>
-                  <Typography variant="h6" sx={{ mb: 2, fontWeight: 'bold' }}>
-                    Product Preview
-                  </Typography>
-
-                  <Box sx={{ textAlign: 'center', mb: 2 }}>
-                    <Avatar
-                      sx={{
-                        width: 60,
-                        height: 60,
-                        margin: '0 auto',
-                        borderRadius: 2,
-                        fontSize: 24,
-                      }}
-                      variant="rounded"
-                    >
-                      {values.name?.charAt(0)?.toUpperCase() || 'P'}
-                    </Avatar>
-                  </Box>
-
-                  <Box>
-                    <Typography variant="subtitle1" color="text.secondary">
-                      Product Name
-                    </Typography>
-                    <Typography variant="body1" sx={{ fontWeight: 'bold' }}>
-                      {values.name || 'Product Name'}
-                    </Typography>
-                  </Box>
-
-                  <Box>
-                    <Typography variant="subtitle2" color="text.secondary">
-                      Product Category
-                    </Typography>
-                    {values.category ? (
-                      <Chip
-                        label={
-                          PRODUCT_CATEGORY_OPTIONS.find(
-                            (opt) => opt.value === values.category,
-                          )?.label || values.category
-                        }
-                        size="small"
-                        variant="outlined"
-                        sx={{ mt: 0.5 }}
-                      />
-                    ) : (
-                      <Typography
-                        variant="body2"
-                        sx={{ fontStyle: 'italic', color: 'text.disabled' }}
-                      >
-                        No Category
-                      </Typography>
-                    )}
-                  </Box>
-
-                  <Box sx={{ mb: 2 }}>
-                    <Typography variant="subtitle2" color="text.secondary">
-                      Price
-                    </Typography>
-                    <Typography
-                      variant="body1"
-                      color="primary.main"
-                      sx={{ fontWeight: 'bold' }}
-                    >
-                      {values.price
-                        ? new Intl.NumberFormat('vi-VN', {
-                            style: 'currency',
-                            currency: 'VND',
-                          }).format(Number(values.price))
-                        : '0 VND'}
-                    </Typography>
-                  </Box>
-
-                  <Box sx={{ mb: 2 }}>
-                    <Typography variant="subtitle2" color="text.secondary">
-                      Stock
-                    </Typography>
-                    <Chip
-                      label={values.stock ? String(values.stock) : 0}
-                      size="small"
-                      color={
-                        Number(values.stock) > 10
-                          ? 'success'
-                          : Number(values.stock) > 0
-                            ? 'warning'
-                            : 'default'
-                      }
+            <Box>
+              <Grid container spacing={2}>
+                <Grid size={{ xs: 12, md: 4 }}>
+                  <FormControl sx={{ width: '100%', mb: 2 }}>
+                    <FormLabel htmlFor="name">Product Name</FormLabel>
+                    <Input
+                      id="name"
+                      name="name"
+                      label=""
+                      value={values.name}
+                      placeholder="Enter product name"
+                      isError={!!(touched.name && errors.name)}
+                      errorText={errors.name}
+                      onChange={handleChange}
+                      onBlur={handleBlur}
+                      disabled={isCreating}
                     />
-                  </Box>
-                  {values.sku && (
-                    <Box>
-                      <Typography variant="subtitle2" color="text.secondary">
-                        SKU
+                  </FormControl>
+                  <FormControl sx={{ width: '100%', mb: 2 }}>
+                    <FormLabel htmlFor="description">Description</FormLabel>
+                    <Input
+                      id="description"
+                      name="description"
+                      label=""
+                      value={values.description}
+                      placeholder="Enter product description"
+                      multiline
+                      rows={5}
+                      isError={!!(touched.description && errors.description)}
+                      errorText={errors.description}
+                      onChange={handleChange}
+                      onBlur={handleBlur}
+                      disabled={isCreating}
+                    />
+                  </FormControl>
+                </Grid>
+                <Grid size={{ xs: 12, md: 4 }}>
+                  <FormControl sx={{ width: '100%', mb: 2 }}>
+                    <FormLabel htmlFor="sku">SKU</FormLabel>
+                    <Input
+                      id="sku"
+                      name="sku"
+                      label=""
+                      value={values.sku}
+                      placeholder="e.g. PROD-001"
+                      isError={!!(touched.sku && errors.sku)}
+                      errorText={errors.sku}
+                      onChange={handleChange}
+                      onBlur={handleBlur}
+                      disabled={isCreating}
+                    />
+                  </FormControl>
+                  <FormControl sx={{ width: '100%', mb: 2 }}>
+                    <FormLabel htmlFor="category">Category</FormLabel>
+                    <TextField
+                      select
+                      fullWidth
+                      name="category"
+                      value={values.category}
+                      onChange={handleChange}
+                      onBlur={handleBlur}
+                      error={!!(touched.category && errors.category)}
+                      helperText={errors.category}
+                      disabled={isCreating}
+                    >
+                      {PRODUCT_CATEGORY_OPTIONS.filter(
+                        (opt) => opt.value !== 'all',
+                      ).map((option) => (
+                        <MenuItem key={option.value} value={option.value}>
+                          {option.label}
+                        </MenuItem>
+                      ))}
+                    </TextField>
+                  </FormControl>
+                  <Grid container spacing={2}>
+                    <Grid size={{ xs: 12, md: 6 }}>
+                      <FormControl sx={{ width: '100%', mb: 2 }}>
+                        <FormLabel htmlFor="price">Price (VND)</FormLabel>
+                        <Input
+                          id="price"
+                          name="price"
+                          label=""
+                          typeInput="number"
+                          value={
+                            values.price === '' ? '' : String(values.price)
+                          }
+                          placeholder="0"
+                          isError={!!(touched.price && errors.price)}
+                          errorText={errors.price}
+                          onChange={handleChange}
+                          onBlur={handleBlur}
+                          disabled={isCreating}
+                        />
+                      </FormControl>
+                    </Grid>
+                    <Grid size={{ xs: 12, md: 6 }}>
+                      <FormControl sx={{ width: '100%', mb: 2 }}>
+                        <FormLabel htmlFor="stock">Stock Quantity</FormLabel>
+                        <Input
+                          id="stock"
+                          name="stock"
+                          label=""
+                          typeInput="number"
+                          value={
+                            values.stock === '' ? '' : String(values.stock)
+                          }
+                          placeholder="0"
+                          isError={!!(touched.stock && errors.stock)}
+                          errorText={errors.stock}
+                          onChange={handleChange}
+                          onBlur={handleBlur}
+                          disabled={isCreating}
+                        />
+                      </FormControl>
+                    </Grid>
+                  </Grid>
+                </Grid>
+                <Grid size={{ xs: 12, md: 4 }}>
+                  <Card sx={{ p: 2, bgcolor: 'grey.50' }}>
+                    <Typography variant="h6" sx={{ mb: 2, fontWeight: 'bold' }}>
+                      Product Preview
+                    </Typography>
+
+                    <Box
+                      sx={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        mb: 1,
+                      }}
+                    >
+                      <Typography variant="subtitle1" color="text.secondary">
+                        Product Name: &nbsp;
+                      </Typography>
+                      <Typography>
+                        {values.name || (
+                          <Typography
+                            variant="body1"
+                            sx={{ fontStyle: 'italic', color: 'text.disabled' }}
+                          >
+                            No Product Name
+                          </Typography>
+                        )}
+                      </Typography>
+                    </Box>
+                    <Box
+                      sx={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        mb: 1,
+                      }}
+                    >
+                      <Typography variant="subtitle1" color="text.secondary">
+                        Category: &nbsp;
+                      </Typography>
+                      {values.category ? (
+                        <Chip
+                          label={
+                            PRODUCT_CATEGORY_OPTIONS.find(
+                              (opt) => opt.value === values.category,
+                            )?.label || values.category
+                          }
+                          size="small"
+                          variant="outlined"
+                          sx={{ mt: 0.5 }}
+                        />
+                      ) : (
+                        <Typography
+                          variant="body1"
+                          sx={{
+                            fontStyle: 'italic',
+                            color: 'text.disabled',
+                          }}
+                        >
+                          No Category
+                        </Typography>
+                      )}
+                    </Box>
+                    <Divider sx={{ my: 1 }} />
+                    <Box
+                      sx={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        mb: 1,
+                      }}
+                    >
+                      <Typography variant="subtitle1" color="text.secondary">
+                        SKU: &nbsp;
                       </Typography>
                       <Typography variant="body1" sx={{ fontWeight: 'bold' }}>
                         {values.sku}
                       </Typography>
                     </Box>
-                  )}
-                </Card>
+                    <Box
+                      sx={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        mb: 1,
+                      }}
+                    >
+                      <Typography variant="subtitle1" color="text.secondary">
+                        Price: &nbsp;
+                      </Typography>
+                      <Typography
+                        variant="body1"
+                        color="primary.main"
+                        sx={{ fontWeight: 'bold' }}
+                      >
+                        {values.price
+                          ? new Intl.NumberFormat('vi-VN', {
+                              style: 'currency',
+                              currency: 'VND',
+                            }).format(Number(values.price))
+                          : '0 VND'}
+                      </Typography>
+                    </Box>
+                    <Box
+                      sx={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        mb: 1,
+                      }}
+                    >
+                      <Typography variant="subtitle1" color="text.secondary">
+                        Stock: &nbsp;
+                      </Typography>
+                      <Chip
+                        label={values.stock ? String(values.stock) : 0}
+                        size="small"
+                        color={
+                          Number(values.stock) > 10
+                            ? 'success'
+                            : Number(values.stock) > 0
+                              ? 'warning'
+                              : 'default'
+                        }
+                      />
+                    </Box>
+                  </Card>
+                  <Box
+                    sx={{ mt: 2, display: 'flex', justifyContent: 'space-between' }}
+                  >
+                    <Button
+                      variant="outlined"
+                      startIcon={<RefreshRoundedIcon />}
+                      onClick={onRefresh}
+                      disabled={isTableLoading || isCreating}
+                      size="large"
+                    >
+                      Refresh
+                    </Button>
+                    <LoadingButton
+                      type="submit"
+                      loading={isCreating}
+                      disabled={!isValid || isCreating}
+                      textButton="Add Product"
+                      variant="contained"
+                      // sxButton={{ px: 3, py: 2, fontSize: '1rem' }}
+                    />
+                  </Box>
+                </Grid>
               </Grid>
-
-              <Box sx={{ mt: 3, display: 'flex', justifyContent: 'flex-end' }}>
-                <Button
-                  variant="outlined"
-                  startIcon={<RefreshRoundedIcon />}
-                  onClick={onRefresh}
-                  disabled={isTableLoading || isCreating}
-                  size="large"
-                >
-                  Refresh
-                </Button>
-                <LoadingButton
-                  type="submit"
-                  loading={isCreating}
-                  disabled={!isValid || !dirty}
-                  textButton="Add Product"
-                  variant="contained"
-                  sxButton={{ px: 4, py: 2, fontSize: '1rem' }}
-                />
-              </Box>
-            </Grid>
+            </Box>
           </Form>
         )}
       </Formik>
-    </Card>
+    </Box>
   );
 };
 
