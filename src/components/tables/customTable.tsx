@@ -66,6 +66,7 @@ export default function CustomTable<T extends Record<string, any>>({
   noDataMessage = 'No data to display',
 }: CustomTableProps<T>): React.JSX.Element {
   const isMobile = useMediaQuery(theme.breakpoints.down('md'));
+  // const isTablet = useMediaQuery(theme.breakpoints.down('lg'));
 
   const [SelectedIds, setSelectedIds] = useState<
     GridRowSelectionModel | undefined
@@ -103,7 +104,17 @@ export default function CustomTable<T extends Record<string, any>>({
     <Box
       sx={{
         width: '100%',
-        maxWidth: isMobile ? 'calc(100vw - 40px)' : '100%',
+        position: 'relative',
+        overflow: 'hidden',
+        maxWidth: !isMobile
+          ? open()
+            ? 'calc(100vw - 290px)'
+            : 'calc(100vw - 105px)'
+          : 'calc(100vw - 40px)',
+        // '& .MuiDataGrid-root': {
+        //   maxWidth: '100%',
+        //   overflow: 'auto',
+        // },
         ...sx,
       }}
     >

@@ -1,7 +1,7 @@
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
 import ChevronRightIcon from '@mui/icons-material/ChevronRight';
 import MenuIcon from '@mui/icons-material/Menu';
-import { Box, Divider, IconButton } from '@mui/material';
+import { Box, Divider, IconButton, useMediaQuery } from '@mui/material';
 import MuiDrawer from '@mui/material/Drawer';
 import {
   type CSSObject,
@@ -81,6 +81,8 @@ const Sidebar = () => {
   const theme = useTheme();
   const [open, setOpen] = useState(false);
 
+  const isMobile = useMediaQuery(theme.breakpoints.down('md'));
+
   const handleDrawerOpen = () => {
     setOpen(true);
   };
@@ -90,7 +92,14 @@ const Sidebar = () => {
   };
 
   return (
-    <Drawer variant="permanent" open={open}>
+    <Drawer
+      variant={isMobile ? 'temporary' : 'permanent'}
+      open={open}
+      onClose={isMobile ? () => setOpen(false) : undefined}
+      ModalProps={{
+        keepMounted: true,
+      }}
+    >
       <DrawerHeader>
         <SidebarHeader open={open} />
         <IconButton onClick={open ? handleDrawerClose : handleDrawerOpen}>

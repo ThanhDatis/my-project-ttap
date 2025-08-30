@@ -359,7 +359,11 @@ export const ProductForm: React.FC<ProductFormProps> = ({
                     </Box>
                   </Card>
                   <Box
-                    sx={{ mt: 2, display: 'flex', justifyContent: 'space-between' }}
+                    sx={{
+                      mt: 2,
+                      display: 'flex',
+                      justifyContent: 'space-between',
+                    }}
                   >
                     <Button
                       variant="outlined"
