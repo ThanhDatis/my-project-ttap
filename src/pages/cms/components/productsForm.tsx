@@ -253,16 +253,16 @@ export const ProductForm: React.FC<ProductFormProps> = ({
                       <Typography variant="subtitle1" color="text.secondary">
                         Product Name: &nbsp;
                       </Typography>
-                      <Typography>
-                        {values.name || (
-                          <Typography
-                            variant="body1"
-                            sx={{ fontStyle: 'italic', color: 'text.disabled' }}
-                          >
-                            No Product Name
-                          </Typography>
-                        )}
-                      </Typography>
+                      {values.name ? (
+                        <Typography>{values.name}</Typography>
+                      ) : (
+                        <Typography
+                          variant="body1"
+                          sx={{ fontStyle: 'italic', color: 'text.disabled' }}
+                        >
+                          No Product Name
+                        </Typography>
+                      )}
                     </Box>
                     <Box
                       sx={{

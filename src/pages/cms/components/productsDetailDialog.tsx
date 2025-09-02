@@ -235,7 +235,6 @@ export const ProductDetailDialog: React.FC<ProductDetailDialogProps> = ({
             </Grid>
           </Grid>
 
-          {/* Description */}
           <Grid size={{ xs: 12 }}>
             <Divider sx={{ mb: 2 }} />
             <Typography variant="h6" gutterBottom>
@@ -250,7 +249,6 @@ export const ProductDetailDialog: React.FC<ProductDetailDialogProps> = ({
             </Typography>
           </Grid>
 
-          {/* Additional Images */}
           {product.images && product.images.length > 1 && (
             <Grid size={{ xs: 12 }}>
               <Divider sx={{ mb: 2 }} />
@@ -274,7 +272,6 @@ export const ProductDetailDialog: React.FC<ProductDetailDialogProps> = ({
             </Grid>
           )}
 
-          {/* Metadata */}
           {(product.updatedAt || product.createdAt) && (
             <Grid size={{ xs: 12 }}>
               <Divider sx={{ mb: 2 }} />

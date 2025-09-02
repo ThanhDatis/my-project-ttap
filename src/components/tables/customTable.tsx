@@ -106,11 +106,8 @@ export default function CustomTable<T extends Record<string, any>>({
         width: '100%',
         position: 'relative',
         overflow: 'hidden',
-        maxWidth: !isMobile
-          ? open()
-            ? 'calc(100vw - 290px)'
-            : 'calc(100vw - 105px)'
-          : 'calc(100vw - 40px)',
+        maxWidth: !isMobile ? 'calc(100vw - 290px)' : 'calc(100vw - 105px)',
+
         // '& .MuiDataGrid-root': {
         //   maxWidth: '100%',
         //   overflow: 'auto',

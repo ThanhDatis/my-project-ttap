@@ -80,7 +80,7 @@ export default function useProducts() {
     setSelectedProductForMenu(productId);
   };
 
-  const handleMenuClose = (event: React.MouseEvent<HTMLElement, MouseEvent>, p0: string): void => {
+  const handleMenuClose = (): void => {
     setAnchorEl(null);
     setSelectedProductForMenu('');
   };
@@ -117,12 +117,10 @@ export default function useProducts() {
 
   // === TABLE ACTIONS ===
 
-  // Handle Pagination
   const handlePageChange = (page: number, pageSize: number) => {
     setPagination(page, pageSize);
   };
 
-  // Handle Sorting
   const handleSortModelChange = (model: GridSortModel) => {
     if (model.length > 0) {
       const { field, sort } = model[0];
@@ -130,14 +128,12 @@ export default function useProducts() {
     }
   };
 
-  // Handle Refresh
   const handleRefresh = () => {
     fetchProducts();
   };
 
   // === DIALOG ACTIONS ===
 
-  // Close Forms
   const handleCloseForm = () => {
     setShowForm(false);
     setSelectedProduct(null);
@@ -153,13 +149,11 @@ export default function useProducts() {
     setProductToDelete(null);
   };
 
-  // Handle Edit from Detail Dialog
   const handleEditFromDetail = (product: Product) => {
     handleCloseDetail();
     handleEditProduct(product);
   };
 
-  // Handle Delete from Detail Dialog
   const handleDeleteFromDetail = (product: Product) => {
     handleCloseDetail();
     handleDeleteProduct(product);
