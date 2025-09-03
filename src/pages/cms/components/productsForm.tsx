@@ -42,7 +42,7 @@ const productSchema = Yup.object({
 });
 
 export interface ProductFormValues {
-  [x: string]: any;
+  // [x: string]: any;
   name: string;
   description: string;
   price: number | '';
@@ -64,14 +64,7 @@ export const ProductForm: React.FC<ProductFormProps> = ({
   onRefresh,
   isTableLoading = false,
 }) => {
-  const {
-    createProduct,
-    // updateProduct,
-    isCreating,
-    // isUpdating,
-    // error,
-    // clearError,
-  } = useProductStore();
+  const { createProduct, isCreating } = useProductStore();
 
   // const isLoading = isCreating || isUpdating;
 
@@ -89,20 +82,33 @@ export const ProductForm: React.FC<ProductFormProps> = ({
     { resetForm }: { resetForm: () => void },
   ) => {
     try {
+      if (!values.name || !values.description || !values.category) {
+        ToastMessage('error', 'Please fill in all required fields');
+        return;
+      }
+
+      if (values.price === '' || values.stock === '') {
+        ToastMessage('error', 'Please fill in all required fields');
+        return;
+      }
+
       const productData = {
-        name: values.name,
-        description: values.description,
+        name: values.name.trim(),
+        description: values.description.trim(),
         price: Number(values.price),
         stock: Number(values.stock),
         category: values.category,
-        sku: values.sku,
+        sku: values.sku.trim() || undefined,
       };
+
+      console.log('📝 Submitting product data:', productData);
 
       await createProduct(productData);
       ToastMessage('success', 'Product created successfully');
       resetForm();
       onRefresh();
     } catch (error: any) {
+      console.error('Form submission error:', error);
       ToastMessage('error', error.message || 'Failed to create product');
       console.error('Form submission error:', error);
     }

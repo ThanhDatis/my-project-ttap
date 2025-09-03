@@ -83,7 +83,6 @@ export default function useProducts() {
           return;
         }
 
-        // FIX: Validate ID format nếu cần
         if (!productId || productId === 'undefined' || productId === 'null') {
           console.error('Invalid product ID:', productId);
           ToastMessage('error', 'Invalid product ID');

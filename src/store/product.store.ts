@@ -4,7 +4,11 @@
 import { create } from 'zustand';
 import { createJSONStorage, persist } from 'zustand/middleware';
 
-import { productRepository, type Product } from './../lib/product.repo';
+import {
+  productRepository,
+  type Product,
+  type CreateProductData,
+} from './../lib/product.repo';
 
 export interface ProductFilters {
   search?: string;
@@ -95,26 +99,32 @@ export const useProductStore = create<ProductState>()(
             // ...filters,
           };
 
-          const response = await productRepository.getAll(params);
-          // Đảm bảo response.products là array
-          set({
-            products: Array.isArray(response.products) ? response.products : [],
-          });
-          set({
-            pagination: {
-              ...pagination,
-              total: response.products.length,
-              totalPages: 1,
-            },
-            isLoading: false,
-          });
+          const response = await productRepository.getAllProducts(params);
+          if (response && Array.isArray(response.products)) {
+            set({
+              products: response.products,
+              pagination: {
+                page: pagination.page,
+                limit: pagination.limit,
+                total:
+                  response.pagination?.totalItems || response.products.length,
+                totalPages: response.pagination?.totalPages || 1,
+              },
+              isLoading: false,
+            });
+          }
         } catch (error: any) {
           set({
-            error: error.message || 'Failed to fetch products',
+            error:
+              error.response?.data?.message ||
+              error.message ||
+              'Failed to fetch products',
+            products: [],
             isLoading: false,
           });
         }
       },
+
       fetchProductById: async (id: string) => {
         set({ isLoading: true, error: null });
         try {
@@ -125,71 +135,99 @@ export const useProductStore = create<ProductState>()(
           });
         } catch (error: any) {
           set({
-            error: error.message || 'Failed to fetch product',
+            error:
+              error.response?.data?.message ||
+              error.message ||
+              'Failed to fetch product',
             isLoading: false,
           });
         }
       },
-      createProduct: async (productData: Omit<Product, 'id'>) => {
+
+      createProduct: async (productData: CreateProductData) => {
         set({ isCreating: true, error: null });
         try {
-          const newProduct = await productRepository.create(productData);
-          set((state) => ({
-            products: [newProduct.product, ...state.products],
-            isCreating: false,
-          }));
-          await get().fetchProducts();
+          const response = await productRepository.createProduct(productData);
+          console.log('✅ Create response:', response);
+          if (response.product) {
+            set((state) => ({
+              products: [response.product, ...state.products],
+              isCreating: false,
+            }));
+
+            setTimeout(() => get().fetchProducts(), 100);
+          } else {
+            throw new Error('Failed to create product');
+          }
         } catch (error: any) {
+          const errorMessage =
+            error.message?.data?.message ||
+            error.message ||
+            'Failed to create product';
           set({
-            error: error.message || 'Failed to create product',
+            error: errorMessage,
             isCreating: false,
           });
-          throw error;
+          throw new Error(errorMessage);
         }
       },
       updateProduct: async (id: string, productData: Partial<Product>) => {
         set({ isUpdating: true, error: null });
         try {
-          const updatedProduct = await productRepository.update(
+          const response = await productRepository.updateProduct(
             id,
             productData,
           );
-          set((state) => ({
-            products: state.products.map((product) =>
-              product.id === updatedProduct.id ? updatedProduct : product,
-            ),
-            selectedProduct: updatedProduct.product,
-            isUpdating: false,
-          }));
+          if (response.product) {
+            set((state) => ({
+              products: state.products.map((product) =>
+                product.id === id ? response.product : product,
+              ),
+              selectedProduct: response.product,
+              isUpdating: false,
+            }));
+          }
         } catch (error: any) {
+          const errorMessage =
+            error.response?.data?.message ||
+            error.message ||
+            'Failed to create product';
           set({
-            error: error.message || 'Failed to update product',
+            error: errorMessage,
             isUpdating: false,
           });
-          throw error;
+          throw new Error(errorMessage);
         }
       },
+
       deleteProduct: async (id: string) => {
         set({ isDeleting: true, error: null });
         try {
-          await productRepository.delete(id);
-          set((state) => ({
-            products: state.products.filter((p) => String(p.id) !== id),
-            selectedProduct:
-              String(state.selectedProduct?.id) === id
-                ? null
-                : state.selectedProduct,
-            isDeleting: false,
-          }));
-          await get().fetchProducts();
+          const response = await productRepository.deleteProduct(id);
+          console.log('Delete response:', response);
+          set((state) => {
+            const updatedProducts = state.products.filter((p) => p.id !== id);
+            return {
+              products: updatedProducts,
+              selectedProduct:
+                state.selectedProduct?.id === id ? null : state.selectedProduct,
+              isDeleting: false,
+            };
+          });
+          setTimeout(() => get().fetchProducts(), 100);
         } catch (error: any) {
+          const errorMessage =
+            error.response?.data?.message ||
+            error.message ||
+            'Failed to delete product';
           set({
-            error: error.message || 'Failed to delete product',
+            error: errorMessage,
             isDeleting: false,
           });
-          throw error;
+          throw new Error(errorMessage);
         }
       },
+
       setFilters: (newFilters: Partial<ProductFilters>) => {
         set((state) => ({
           filters: {
@@ -203,6 +241,7 @@ export const useProductStore = create<ProductState>()(
         }));
         setTimeout(() => get().fetchProducts(), 0);
       },
+
       setPagination: (page: number, limit?: number) => {
         set((state) => ({
           pagination: {
@@ -213,16 +252,20 @@ export const useProductStore = create<ProductState>()(
         }));
         setTimeout(() => get().fetchProducts(), 0);
       },
+
       setSorting: (sortBy: string, sortOrder: 'asc' | 'desc') => {
         set({ sortBy, sortOrder });
         setTimeout(() => get().fetchProducts(), 0);
       },
+
       setSelectedProduct: (product: Product | null) => {
         set({ selectedProduct: product });
       },
+
       clearError: () => {
         set({ error: null });
       },
+
       clearFilters: () => {
         set({
           filters: initialFilters,

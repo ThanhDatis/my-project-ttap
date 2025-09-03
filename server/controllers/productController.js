@@ -38,19 +38,24 @@ const productController = {
         .sort(sort)
         .limit(limit * 1)
         .skip((page - 1) * limit);
-
       const total = await Product.countDocuments(query);
 
       res.json({
         products: products.map(p => ({
-          id: p.id,
+          id: p._id.toString(),
           name: p.name,
           sku: p.sku,
           price: p.price,
+          stock: p.stock,
           category: p.category,
           isActive: p.isActive,
+          images: p.images || [],
           description: p.description,
-          createdBy: p.createdBy,
+          createdBy: p.createdBy ? {
+            _id: p.createdBy._id.toString(),
+            name: p.createdBy.name,
+            email: p.createdBy.email
+          } : null,
           createdAt: p.createdAt,
           updatedAt: p.updatedAt
         })),
@@ -94,16 +99,22 @@ const productController = {
       res.status(201).json({
         message: 'Product created successfully',
         product: {
-          id: newProduct.id,
+          id: newProduct._id.toString(),
           name: newProduct.name,
           sku: newProduct.sku,
           price: newProduct.price,
+          stock: newProduct.stock,
           category: newProduct.category,
-          isActive: newProduct.isActive,
           description: newProduct.description,
-          createdAt: newProduct.createdAt,
-          updatedAt: newProduct.updatedAt,
-          createdBy: newProduct.createdBy
+          isActive: newProduct.isActive,
+          images: newProduct.images || [],
+          createdAt: newProduct.createdAt?.toISOString(),
+          updatedAt: newProduct.updatedAt?.toISOString(),
+          createdBy: newProduct.createdBy ? {
+            _id: newProduct.createdBy._id.toString(),
+            name: newProduct.createdBy.name,
+            email: newProduct.createdBy.email
+          } : null
         }
       });
     } catch (error) {
@@ -126,7 +137,24 @@ const productController = {
       );
       res.json({
         message: 'Product updated successfully',
-        product: updatedProduct
+        product: {
+          id: updatedProduct._id.toString(),
+          name: updatedProduct.name,
+          sku: updatedProduct.sku,
+          price: updatedProduct.price,
+          stock: updatedProduct.stock,
+          category: updatedProduct.category,
+          description: updatedProduct.description,
+          isActive: updatedProduct.isActive,
+          images: updatedProduct.images || [],
+          createdAt: updatedProduct.createdAt,
+          updatedAt: updatedProduct.updatedAt,
+          createdBy: updatedProduct.createdBy ? {
+            _id: updatedProduct.createdBy._id.toString(),
+            name: updatedProduct.createdBy.name,
+            email: updatedProduct.createdBy.email
+          } : null
+        }
       });
     } catch (error) {
       return res.status(500).json({ message: 'Internal server error' });
@@ -135,8 +163,10 @@ const productController = {
 
   delete: async (req, res) => {
     try {
-      const product = await Product.findByIdAndUpdate(
-        req.params.id
+      const product = await Product.findByIdAndDelete(
+        req.params.id,
+        // { isActive: false, updatedAt: new Date() },
+        // { new: true }
       );
 
       if (!product) {
@@ -145,7 +175,10 @@ const productController = {
 
       res.json({
         message: 'Product deleted successfully',
-        product
+        product: {
+          id: product._id.toString(),
+          name: product.name
+        }
       });
     } catch (error) {
       return res.status(500).json({ message: 'Internal server error' });

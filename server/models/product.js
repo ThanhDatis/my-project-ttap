@@ -24,6 +24,7 @@ const ProductSchema = new mongoose.Schema({
     required: [true, 'Category is required'],
     // enum: ['electronics', 'clothing', 'food'],
     trim: true,
+    lowercase: true,
   },
   stock: {
     type: Number,
@@ -48,7 +49,7 @@ const ProductSchema = new mongoose.Schema({
   createdBy: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'User',
-    // required: [true, 'Created by is required'],
+    required: [true, 'Created by is required'],
   },
   // createdAt: {
   //   type: Date,
@@ -62,6 +63,7 @@ const ProductSchema = new mongoose.Schema({
   timestamps: true,
 });
 
-ProductSchema.index({ name: 'text', description: 'text' });
+ProductSchema.index({ name: 'text', description: 'text', sku: 'text' });
+ProductSchema.index({ category: 1, createdAt: 1, isActive: 1 });
 
 module.exports = mongoose.model('Product', ProductSchema);
