@@ -16,11 +16,13 @@ import {
   ListItemIcon,
   ListItemText,
   CircularProgress,
+  useMediaQuery,
   // Card,
 } from '@mui/material';
 import React from 'react';
 
 import { brand } from '../../common/color';
+import theme from '../../common/theme/themes';
 import CustomTable from '../../components/tables/customTable';
 import { type Product } from '../../lib/product.repo';
 
@@ -64,6 +66,8 @@ const Products: React.FC = () => {
     clearError,
   } = useProducts();
 
+  const isMobile = useMediaQuery(theme.breakpoints.down('md'));
+
   if (isLoading && (!products || products.length === 0)) {
     return (
       <Box
@@ -82,10 +86,10 @@ const Products: React.FC = () => {
     );
   }
 
-  const safeProducts = Array.isArray(products) ? products : [];
+  const displayedProducts = products;
 
   return (
-    <Box sx={{ width: '100%', height: '100%' }}>
+    <Box sx={{ width: '100%', height: '100%', overflow: 'hidden' }}>
       {error && (
         <Alert severity="error" sx={{ mb: 2 }} onClose={clearError}>
           {error}
@@ -93,10 +97,17 @@ const Products: React.FC = () => {
       )}
 
       <Box sx={{ mb: 2 }}>
-        <Typography variant="h4" sx={{ fontWeight: 'bold', mb: 1 }}>
+        <Typography
+          variant={isMobile ? 'h6' : 'h4'}
+          sx={{ fontWeight: 'bold', mb: 1 }}
+        >
           Products Management
         </Typography>
-        <Typography variant="body1" color="text.secondary">
+        <Typography
+          variant="body1"
+          color="text.secondary"
+          sx={{ display: { xs: 'none', sm: 'block' } }}
+        >
           Manage your product inventory, track stock levels, and update product
           information.
         </Typography>
@@ -106,16 +117,13 @@ const Products: React.FC = () => {
 
       <ProductFiltersComponent />
 
-      <Box sx={{ mt: 2 }}>
+      <Box sx={{ mt: 2, width: '100%', overflow: 'hidden' }}>
         <CustomTable<Product>
-          rowHeight={80}
+          rowHeight={isMobile ? 60 : 80}
           columnHeaders={columns}
           isLoading={isLoading}
           checkboxSelection={true}
-          items={safeProducts.map((product) => ({
-            ...product,
-            id: product.id || Math.random().toString(),
-          }))}
+          items={displayedProducts}
           totalCount={pagination?.total || 0}
           currentPage={pagination?.page || 0}
           maxPageSize={pagination?.limit || 10}
@@ -126,12 +134,29 @@ const Products: React.FC = () => {
           }}
           noDataMessage="No products found. Start by creating your first product."
           sx={{
+            '& .MuiDataGrid-root': {
+              border: 'none',
+              '& .MuiDataGrid-columnHeaders': {
+                backgroundColor: '#f5f5f5',
+                fontSize: isMobile ? '0.75rem' : '0.875rem',
+              },
+              '& .MuiDataGrid-cell': {
+                fontSize: isMobile ? '0.75rem' : '0.875rem',
+                padding: isMobile ? '4px 8px' : '8px 16px',
+              },
+            },
             '& .MuiDataGrid-row': {
               cursor: 'pointer',
               '&:hover': {
                 backgroundColor: 'action.hover',
               },
             },
+            // FIX: Mobile scroll optimization
+            ...(isMobile && {
+              '& .MuiDataGrid-virtualScroller': {
+                overflow: 'auto !important',
+              },
+            }),
           }}
         />
       </Box>
@@ -141,17 +166,20 @@ const Products: React.FC = () => {
         open={Boolean(anchorEl)}
         onClose={handleMenuClose}
         anchorOrigin={{
-          vertical: 'top',
+          vertical: 'bottom',
           horizontal: 'left',
         }}
         transformOrigin={{
           vertical: 'top',
-          horizontal: 'right',
+          horizontal: 'left',
         }}
         PaperProps={{
           sx: {
             minWidth: 150,
             boxShadow: '0px 4px 20px rgba(0, 0, 0, 0.1)',
+            ...(!isMobile && {
+              minWidth: 120,
+            }),
           },
         }}
       >
@@ -193,6 +221,11 @@ const Products: React.FC = () => {
         onClose={handleCloseDeleteDialog}
         aria-labelledby="delete-dialog-title"
         aria-describedby="delete-dialog-description"
+        fullWidth
+        fullScreen={isMobile}
+        PaperProps={{
+          sx: { ...(isMobile && { margin: 0, borderRadius: 0 }) },
+        }}
       >
         <DialogTitle id="delete-dialog-title">Delete Product</DialogTitle>
         <DialogContent>
@@ -211,7 +244,12 @@ const Products: React.FC = () => {
           </DialogContentText>
         </DialogContent>
         <DialogActions>
-          <Button onClick={handleCloseDeleteDialog} disabled={isDeleting}>
+          <Button
+            onClick={handleCloseDeleteDialog}
+            disabled={isDeleting}
+            fullWidth={isMobile}
+            variant={isMobile ? 'text' : 'outlined'}
+          >
             Cancel
           </Button>
           <Button
@@ -219,7 +257,8 @@ const Products: React.FC = () => {
             color="error"
             variant="contained"
             disabled={isDeleting}
-            autoFocus
+            autoFocus={isMobile}
+            fullWidth={isMobile}
           >
             {isDeleting ? 'Deleting...' : 'Delete'}
           </Button>

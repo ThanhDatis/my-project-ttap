@@ -165,7 +165,7 @@ export const getProductColumns = ({
             display: 'flex',
             flexDirection: 'column',
             justifyContent: 'center',
-            py: 0.5,
+            // py: 0.5,
           }}
         >
           <Typography variant="body2"> {name} </Typography>

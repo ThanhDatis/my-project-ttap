@@ -1,6 +1,6 @@
 /* eslint-disable no-unused-vars */
 import {
-  Box,
+  // Box,
   TextField,
   Typography,
   type AlertColor,
@@ -100,8 +100,26 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
       ...(isError && errorStyleInput),
     };
 
+    const getMultilineProps = () => {
+      if (!multiline) {
+        return { multiline: false };
+      }
+
+      if (rows !== undefined) {
+        return {
+          multiline: true,
+          rows: rows,
+        };
+      }
+      return {
+        multiline: true,
+        ...(minRows !== undefined && { minRows }),
+        ...(maxRows !== undefined && { maxRows }),
+      };
+    };
+
     return (
-      <Box sx={{ width: '100%' }}>
+      <>
         <TextField
           id={id}
           name={name}
@@ -116,10 +134,7 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
           disabled={disabled}
           type={typeInput}
           autoComplete={autoComplete}
-          multiline={multiline}
-          rows={rows}
-          maxRows={maxRows}
-          minRows={minRows}
+          {...getMultilineProps()}
           helperText={!isError ? helperText : undefined}
           onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
             onChange?.(event);
@@ -154,7 +169,7 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
             {errorText}
           </Typography>
         ) : null}
-      </Box>
+      </>
     );
   },
 );

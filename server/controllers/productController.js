@@ -42,7 +42,18 @@ const productController = {
       const total = await Product.countDocuments(query);
 
       res.json({
-        products,
+        products: products.map(p => ({
+          id: p.id,
+          name: p.name,
+          sku: p.sku,
+          price: p.price,
+          category: p.category,
+          isActive: p.isActive,
+          description: p.description,
+          createdBy: p.createdBy,
+          createdAt: p.createdAt,
+          updatedAt: p.updatedAt
+        })),
         pagination: {
           currentPage: parseInt(page),
           totalPages: Math.ceil(total / limit),
@@ -82,7 +93,18 @@ const productController = {
 
       res.status(201).json({
         message: 'Product created successfully',
-        product: newProduct
+        product: {
+          id: newProduct.id,
+          name: newProduct.name,
+          sku: newProduct.sku,
+          price: newProduct.price,
+          category: newProduct.category,
+          isActive: newProduct.isActive,
+          description: newProduct.description,
+          createdAt: newProduct.createdAt,
+          updatedAt: newProduct.updatedAt,
+          createdBy: newProduct.createdBy
+        }
       });
     } catch (error) {
       console.log(error);
@@ -114,9 +136,7 @@ const productController = {
   delete: async (req, res) => {
     try {
       const product = await Product.findByIdAndUpdate(
-        req.params.id,
-        { isActive: false },
-        { new: true }
+        req.params.id
       );
 
       if (!product) {

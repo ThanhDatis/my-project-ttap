@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { type GridSortModel } from '@mui/x-data-grid';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 
 import { ToastMessage } from '../../../components/toastMessage';
 import { type Product } from '../../../lib/product.repo';
@@ -34,6 +34,14 @@ export default function useProducts() {
   const [selectedProductForMenu, setSelectedProductForMenu] =
     useState<string>('');
 
+  const safeProducts = useMemo(() => {
+    if (!Array.isArray(products)) return [];
+    return products.map((product) => ({
+      ...product,
+      id: product.id?.toString(),
+    }));
+  }, [products]);
+
   useEffect(() => {
     fetchProducts();
   }, [fetchProducts]);
@@ -63,11 +71,54 @@ export default function useProducts() {
   const handleConfirmDelete = async () => {
     if (productToDelete) {
       try {
-        await deleteProduct(productToDelete.id.toString());
+        const productId = productToDelete.id.toString();
+
+        if (productId.startsWith('temp-')) {
+          console.warn('Attempting to delete temp product:', productToDelete);
+          ToastMessage(
+            'error',
+            'Cannot delete temporary product. Please refresh the page.',
+          );
+          handleCloseDeleteDialog();
+          return;
+        }
+
+        // FIX: Validate ID format nếu cần
+        if (!productId || productId === 'undefined' || productId === 'null') {
+          console.error('Invalid product ID:', productId);
+          ToastMessage('error', 'Invalid product ID');
+          handleCloseDeleteDialog();
+          return;
+        }
+
+        console.log('Deleting product with ID:', productId);
+        console.log('Product details:', {
+          id: productToDelete.id,
+          name: productToDelete.name,
+          sku: productToDelete.sku,
+        });
+
+        await deleteProduct(productId);
         ToastMessage('success', 'Product deleted successfully!');
         handleCloseDeleteDialog();
+
+        // FIX: Refresh data sau khi delete
+        handleRefresh();
       } catch (error: any) {
-        ToastMessage('error', error.message || 'Failed to delete product');
+        console.error('Delete error details:', error);
+
+        // FIX: Better error messages dựa vào response
+        let errorMessage = 'Failed to delete product';
+
+        if (error.response?.status === 404) {
+          errorMessage = 'Product not found';
+        } else if (error.response?.status === 500) {
+          errorMessage = 'Server error. Please try again later.';
+        } else if (error.message) {
+          errorMessage = error.message;
+        }
+
+        ToastMessage('error', errorMessage);
       }
     }
   };
@@ -85,32 +136,91 @@ export default function useProducts() {
     setSelectedProductForMenu('');
   };
 
+  const findProductById = (displayId: string): Product | undefined => {
+    if (!Array.isArray(safeProducts) || safeProducts.length === 0) {
+      console.warn('No products available to find');
+      return undefined;
+    }
+    let product = safeProducts.find((p) => {
+      if (!p || !p.id) return false;
+      return p.id.toString() === displayId;
+    });
+
+    if (!product && displayId.startsWith('temp-')) {
+      const parts = displayId.split('-');
+      if (parts.length >= 3) {
+        const index = parseInt(parts[1]);
+        const name = parts.slice(2).join('-').replace(/-/g, ' ');
+        product = safeProducts.find(
+          (p, idx) =>
+            idx === index ||
+            p.name?.toLowerCase().replace(/\s+/g, ' ') === name,
+        );
+      }
+    }
+    if (!product && products) {
+      const originalProduct = products.find(
+        (p) => p.id?.toString() === displayId,
+      );
+      if (originalProduct) {
+        product = safeProducts.find(
+          (p) =>
+            p.name === originalProduct.name && p.sku === originalProduct.sku,
+        );
+      }
+    }
+
+    return product;
+  };
+
   const handleMenuEdit = (): void => {
-    const product = products.find(
-      (p) => p.id.toString() === selectedProductForMenu,
-    );
+    if (!selectedProductForMenu) {
+      console.warn(`No product selected for menu actions`);
+      handleMenuClose();
+      return;
+    }
+    const product = findProductById(selectedProductForMenu);
     if (product) {
       handleEditProduct(product);
+    } else {
+      console.error(`Product not found for editing: ${selectedProductForMenu}`);
+      ToastMessage('error', 'Product not found');
     }
     handleMenuClose();
   };
 
   const handleMenuDelete = (): void => {
-    const product = products.find(
-      (p) => p.id.toString() === selectedProductForMenu,
-    );
+    if (!selectedProductForMenu) {
+      console.warn(`No product selected for menu actions`);
+      return handleMenuClose();
+    }
+    const product = findProductById(selectedProductForMenu);
     if (product) {
       handleDeleteProduct(product);
+    } else {
+      console.error(
+        `Product not found for deleting: ${selectedProductForMenu}`,
+      );
+      ToastMessage('error', 'Product not found');
     }
     handleMenuClose();
   };
 
   const handleMenuView = (): void => {
-    const product = products.find(
-      (p) => p.id.toString() === selectedProductForMenu,
-    );
+    if (!selectedProductForMenu) {
+      console.warn(`No product selected for menu actions`);
+      return handleMenuClose();
+    }
+    const product = findProductById(selectedProductForMenu);
     if (product) {
       handleViewProduct(product);
+    } else {
+      console.warn(`Product not found for id: ${selectedProductForMenu}`);
+      // ToastMessage('error', 'Product not found');
+      console.warn(
+        'Available products:',
+        safeProducts.map((p) => ({ id: p.id, name: p.name })),
+      );
     }
     handleMenuClose();
   };
@@ -168,7 +278,7 @@ export default function useProducts() {
   });
 
   return {
-    products,
+    products: safeProducts,
     pagination,
     selectedProduct,
     productToDelete,
