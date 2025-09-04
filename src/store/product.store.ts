@@ -13,20 +13,20 @@ type PaginationState = ProductsListPayload['pagination'];
 export type ProductFilters = {
   search?: string;
   category?: string;
-  status?: 'all' | 'active' | 'inactive' | 'out_of_stock';
+  status?: string;
   minPrice?: number;
   maxPrice?: number;
 };
 
 type ProductStore = {
   products: Product[];
+  categories: string[];
   pagination: PaginationState;
 
   isLoading: boolean;
   isCreating: boolean;
   isDeleting: boolean;
   error: string | null;
-  // isUpdating: boolean;
 
   params: Required<PaginationParams>;
   filters: ProductFilters;
@@ -34,12 +34,14 @@ type ProductStore = {
   setParams: (p: Partial<PaginationParams>) => void;
   setPagination: (page: number, limit: number) => void;
   setSorting: (field: string, order: 'asc' | 'desc') => void;
-
   setFilters: (p: Partial<ProductFilters>) => void;
+
   clearFilters: () => void;
   clearError: () => void;
 
   fetchProducts: () => Promise<void>;
+  fetchCategories: () => Promise<void>;
+
   getProductById: (id: string) => Promise<Product>;
   createProduct: (
     payload: Omit<
@@ -49,9 +51,6 @@ type ProductStore = {
   ) => Promise<Product>;
   updateProduct: (id: string, payload: Partial<Product>) => Promise<Product>;
   deleteProduct: (id: string) => Promise<void>;
-
-  categories: string[];
-  fetchCategories: () => Promise<void>;
 };
 
 const DEFAULT_PAGINATION: PaginationState = {
@@ -92,31 +91,64 @@ const useProductStore = create<ProductStore>((set, get) => ({
   params: DEFAULT_PARAMS,
   filters: DEFAULT_FILTERS,
 
-  setParams: (p) =>
-    set((state) => ({
-      params: { ...state.params, ...p },
-    })),
-  setPagination: (page, limit) =>
+  setParams: (p) => {
+    set((state) => {
+      const newParams = { ...state.params, ...p } as Required<PaginationParams>;
+      if (p.search !== undefined || p.category !== undefined) {
+        newParams.page = 1;
+      }
+      return { params: newParams };
+    });
+    get().fetchProducts();
+  },
+
+  setPagination: (page: number, limit: number) => {
     set((state) => ({
       params: { ...state.params, page, limit },
-    })),
+    }));
+    get().fetchProducts();
+  },
 
-  setSorting: (field, sort) =>
+  setSorting: (field: string, sort: 'asc' | 'desc') => {
     set((state) => ({
       params: { ...state.params, sortBy: field, sortOrder: sort },
-    })),
+    }));
+    get().fetchProducts();
+  },
 
-  setFilters: (p) =>
-    set((state) => ({
-      filters: { ...state.filters, ...p },
-      params: { ...state.params, page: 1 },
-    })),
+  setFilters: (f: Partial<ProductFilters>) => {
+    set((state) => {
+      const updatedFilters = { ...state.filters, ...f } as ProductFilters;
+      const paramsUpdate: Partial<PaginationParams> = {};
+      if (f.search !== undefined) {
+        paramsUpdate.search = f.search ?? '';
+        paramsUpdate.page = 1;
+      }
+      if (f.category !== undefined) {
+        paramsUpdate.category = f.category ?? 'all';
+        paramsUpdate.page = 1;
+      }
+      return {
+        filters: updatedFilters,
+        params: {
+          ...state.params,
+          ...paramsUpdate,
+        } as Required<PaginationParams>,
+      };
+    });
+    get().fetchProducts();
+  },
 
-  clearFilters: () =>
-    set((state) => ({
-      filters: { ...DEFAULT_FILTERS },
-      params: { ...state.params, page: 1, search: '', category: 'all' },
-    })),
+  clearFilters: () => {
+    set((state) => {
+      const defaultFilters: ProductFilters = { ...DEFAULT_FILTERS };
+      return {
+        filters: defaultFilters,
+        params: { ...state.params, page: 1, search: '', category: 'all' },
+      };
+    });
+    get().fetchProducts();
+  },
 
   clearError: () => set({ error: null }),
 
@@ -145,20 +177,35 @@ const useProductStore = create<ProductStore>((set, get) => ({
   },
 
   createProduct: async (payload) => {
-    const created = await productRepository.create(payload);
-    await get().fetchProducts();
-    return created.product;
+    set({ isCreating: true });
+    try {
+      const { product } = await productRepository.create(payload);
+      await get().fetchProducts();
+      return product;
+    } finally {
+      set({ isCreating: false });
+    }
   },
 
   updateProduct: async (id, payload) => {
-    const updated = await productRepository.update(id, payload);
-    await get().fetchProducts();
-    return updated.product;
+    set({ isCreating: true });
+    try {
+      const { product } = await productRepository.update(id, payload);
+      await get().fetchProducts();
+      return product;
+    } finally {
+      set({ isCreating: false });
+    }
   },
 
   deleteProduct: async (id: string) => {
-    await productRepository.softDelete(id);
-    await get().fetchProducts();
+    set({ isDeleting: true });
+    try {
+      await productRepository.softDelete(id);
+      await get().fetchProducts();
+    } finally {
+      set({ isDeleting: false });
+    }
   },
 
   categories: [],

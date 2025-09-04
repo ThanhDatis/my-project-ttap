@@ -1,14 +1,11 @@
 /* eslint-disable no-unused-vars */
-import {
-  Close as CloseIcon,
-  Edit as EditIcon,
-  Delete as DeleteIcon,
-  // ShoppingCart as CartIcon,
-  Inventory as InventoryIcon,
-  AttachMoney as MoneyIcon,
-  Category as CategoryIcon,
-  DateRange as DateIcon,
-} from '@mui/icons-material';
+import AttachMoneyRoundedIcon from '@mui/icons-material/AttachMoneyRounded';
+import CategoryRoundedIcon from '@mui/icons-material/CategoryRounded';
+import CloseRoundedIcon from '@mui/icons-material/CloseRounded';
+import DateRangeRoundedIcon from '@mui/icons-material/DateRangeRounded';
+import DeleteRoundedIcon from '@mui/icons-material/DeleteRounded';
+import EditRoundedIcon from '@mui/icons-material/EditRounded';
+import Inventory2RoundedIcon from '@mui/icons-material/Inventory2Rounded';
 import {
   Dialog,
   DialogTitle,
@@ -132,7 +129,7 @@ export const ProductDetailDialog: React.FC<ProductDetailDialogProps> = ({
           </Typography>
         </Box>
         <IconButton onClick={onClose} size="small">
-          <CloseIcon />
+          <CloseRoundedIcon />
         </IconButton>
       </DialogTitle>
 
@@ -194,7 +191,7 @@ export const ProductDetailDialog: React.FC<ProductDetailDialogProps> = ({
             <Grid container spacing={2}>
               <Grid size={{ xs: 6 }}>
                 <InfoItem
-                  icon={<MoneyIcon />}
+                  icon={<AttachMoneyRoundedIcon />}
                   label="Price"
                   value={
                     <Typography variant="h6" color="primary">
@@ -205,14 +202,14 @@ export const ProductDetailDialog: React.FC<ProductDetailDialogProps> = ({
               </Grid>
               <Grid size={{ xs: 6 }}>
                 <InfoItem
-                  icon={<InventoryIcon />}
+                  icon={<Inventory2RoundedIcon />}
                   label="Stock"
                   value={getStockChip()}
                 />
               </Grid>
               <Grid size={{ xs: 6 }}>
                 <InfoItem
-                  icon={<CategoryIcon />}
+                  icon={<CategoryRoundedIcon />}
                   label="Category"
                   value={
                     <Typography sx={{ textTransform: 'capitalize' }}>
@@ -223,7 +220,7 @@ export const ProductDetailDialog: React.FC<ProductDetailDialogProps> = ({
               </Grid>
               <Grid size={{ xs: 6 }}>
                 <InfoItem
-                  icon={<DateIcon />}
+                  icon={<DateRangeRoundedIcon />}
                   label="Created"
                   value={
                     <Typography variant="body2">
@@ -313,7 +310,7 @@ export const ProductDetailDialog: React.FC<ProductDetailDialogProps> = ({
           <Button
             onClick={() => onEdit(product)}
             variant="contained"
-            startIcon={<EditIcon />}
+            startIcon={<EditRoundedIcon />}
           >
             Edit
           </Button>
@@ -323,7 +320,7 @@ export const ProductDetailDialog: React.FC<ProductDetailDialogProps> = ({
             onClick={() => onDelete(product)}
             variant="outlined"
             color="error"
-            startIcon={<DeleteIcon />}
+            startIcon={<DeleteRoundedIcon />}
           >
             Delete
           </Button>

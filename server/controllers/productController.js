@@ -1,14 +1,13 @@
 /* eslint-disable no-undef */
-/* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable @typescript-eslint/no-require-imports */
-// const { parse } = require('path');
 const mongoose = require('mongoose');
 const Product = require('../models/product');
 
 const MAX_LIMIT = 100;
 const DEFAULT_LIMIT = 10;
 const DEFAULT_PAGE = 1;
-const ALLOWED_SORT_FIELDS = ['name', 'description', 'price', 'category', 'stock', 'sku', 'images'];
+const ALLOWED_FIELDS = ['name', 'description', 'price', 'category', 'stock', 'sku', 'images', 'isActive'];
+const pick = (obj, fields) => fields.reduce((acc, field) => (obj[field] !== undefined ? ((acc[field] = obj[field]), acc) : acc), {});
 
 const asyncHandler = fn => (req, res, next) => {
   Promise.resolve(fn(req, res, next)).catch(next);
@@ -41,7 +40,7 @@ const validateProduct = (payload, { partial = false } = {}) => {
     if (payload[key] !== undefined && typeof payload[key] !== 'number') {
       errors.push(`${key} must be a number`);
     }
-    if (payload[key] !== undefined && typeof payload[key] !== 'number' && payload[key] < 0 ) {
+    if (payload[key] !== undefined && typeof payload[key] === 'number' && payload[key] < 0 ) {
       errors.push(`${key} must be >= 0`);
     }
   });
@@ -49,12 +48,6 @@ const validateProduct = (payload, { partial = false } = {}) => {
   if (payload.images !== undefined && !Array.isArray(payload.images)) {
     errors.push('Images must be an array');
   }
-  // if (payload.stock && typeof payload.stock !== 'number') {
-  //   errors.push('Stock must be a number');
-  // }
-  // if (payload.category && !mongoose.Types.ObjectId.isValid(payload.category)) {
-  //   errors.push('Invalid category ID');
-  // }
   return errors;
 };
 
@@ -79,7 +72,7 @@ const productController = {
 
       page = parseInt(page, 10) || DEFAULT_PAGE;
       limit = Math.min(parseInt(limit, 10) || DEFAULT_LIMIT, MAX_LIMIT);
-      const query = { isActive: true }; // Chỉ lấy item dang active
+      const query = { isActive: true };
 
 
       if (category && category !== 'all') {
@@ -89,7 +82,6 @@ const productController = {
       if (search && String(search).trim()) {
         query.$text = {
           $search: String(search).trim(),
-          // $caseSensitive: false
         };
       }
       const sort = { [sortBy]: sortOrder === 'asc' ? 1 : -1 };
@@ -102,7 +94,6 @@ const productController = {
           .skip((page - 1) * limit),
         Product.countDocuments(query)
       ]);
-      // const total = await Product.countDocuments(query);
       return ok(res, {
         items: items.map(p => ({
           id: p._id.toString(),
@@ -141,8 +132,8 @@ const productController = {
       return fail(res, 'Invalid product ID', 400);
     }
 
-    const product = await Product.findById(id).populate('category', 'name email');
-    if (!product || product.isActive) {
+    const product = await Product.findById(id);
+    if (!product || !product.isActive) {
       return fail(res, 'Product not found', 404);
     }
 
@@ -154,14 +145,14 @@ const productController = {
       return fail(res, 'Forbidden', 403);
     }
     const body = pick(req.body, ALLOWED_FIELDS);
-    const errors = validateProduct(body, { [partial]: false });
+    const errors = validateProduct(body, { partial: false });
     if (errors.length) {
       return fail(res, 'Validation errors', 422, errors);
     }
     const productData = {
         ...body,
         category: body.category?.toLowerCase().trim(),
-        sku: body.sku?.toLowerCase().trim(),
+        sku: body.sku?.toUpperCase().trim(),
         createdBy: req.user._id
       };
 
@@ -199,8 +190,8 @@ const productController = {
       return fail(res, 'Invalid product ID', 400);
     }
 
-    const pick = (req.body, ALLOWED_FIELDS);
-    const errors = validateProduct(pick, { [partial]: true });
+    const body = pick(req.body, ALLOWED_FIELDS);
+    const errors = validateProduct(body, { partial: true });
     if (errors.length) {
       return fail(res, 'Validation errors', 422, errors);
     }
@@ -210,17 +201,24 @@ const productController = {
       return fail(res, 'Product not found', 404);
     }
 
-    const updatedProduct = await Product.findByIdAndUpdate(
-      id,
-      {
-        ...body,
-        ...(body.category ? { category: body.category.toLowerCase().trim() } : {}),
-        ...(body.sku ? { sku: body.sku.toLowerCase().trim() } : {}),
-      },
-      { new: true, runValidators: true }
-    ).populate('createdBy', 'name email');
+    try {
+      const updatedProduct = await Product.findByIdAndUpdate(
+        id,
+        {
+          ...body,
+          ...(body.category ? { category: body.category.toLowerCase().trim() } : {}),
+          ...(body.sku ? { sku: body.sku.toUpperCase().trim() } : {}),
+        },
+        { new: true, runValidators: true }
+      ).populate('createdBy', 'name email');
 
-    return ok(res, updatedProduct, 'Product updated successfully');
+      return ok(res, updatedProduct, 'Product updated successfully');
+    } catch (error) {
+      if (error.code === 11000) {
+        return fail(res, 'SKU must be unique', 409);
+      }
+      return fail(res, 'Failed to update product', 500);
+    }
   }),
 
   delete: async (req, res) => {

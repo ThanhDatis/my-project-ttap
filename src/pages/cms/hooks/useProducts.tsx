@@ -244,6 +244,7 @@ export default function useProducts() {
   const handleCloseForm = () => {
     setShowForm(false);
     setSelectedProduct(null);
+    setFormMode('create');
   };
 
   const handleCloseDetail = () => {

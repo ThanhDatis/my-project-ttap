@@ -29,6 +29,7 @@ import {
 import { Input } from '../../../components/fields';
 import LoadingButton from '../../../components/loadingButton';
 import ToastMessage from '../../../components/toastMessage';
+import type { Product } from '../../../lib/product.repo';
 import { default as useProductStore } from '../../../store/product.store';
 import { PRODUCT_CATEGORY_OPTIONS } from '../tableColumns/productsColumn';
 
@@ -42,7 +43,6 @@ const productSchema = Yup.object({
 });
 
 export interface ProductFormValues {
-  // [x: string]: any;
   name: string;
   description: string;
   price: number | '';
@@ -54,69 +54,98 @@ export interface ProductFormValues {
 interface ProductFormProps {
   onRefresh: () => void;
   isTableLoading?: boolean;
+  mode: 'create' | 'edit';
+  product?: Product;
+  onClose?: () => void;
 }
 
 export const ProductForm: React.FC<ProductFormProps> = ({
   onRefresh,
   isTableLoading = false,
+  mode,
+  product,
+  onClose,
 }) => {
-  const { createProduct, isCreating } = useProductStore();
+  const { createProduct, updateProduct, isCreating } = useProductStore();
 
-  const initialValues: ProductFormValues = {
-    name: '',
-    description: '',
-    price: '',
-    stock: '',
-    category: '',
-    sku: '',
-  };
+  const initialValues: ProductFormValues = React.useMemo(() => {
+    if (mode === 'edit' && product) {
+      return {
+        name: product.name ?? '',
+        description: product.description ?? '',
+        price: product.price ?? '',
+        stock: product.stock ?? '',
+        category: product.category ?? '',
+        sku: product.sku ?? '',
+      };
+    }
+    return {
+      name: '',
+      description: '',
+      price: '',
+      stock: '',
+      category: '',
+      sku: '',
+    };
+  }, [mode, product]);
 
   const handleSubmit = async (
     values: ProductFormValues,
     { resetForm }: { resetForm: () => void },
   ) => {
+    if (!values.name || !values.description || !values.category) {
+      ToastMessage('error', 'Please fill in all required fields');
+      return;
+    }
+
+    if (values.price === '' || values.stock === '') {
+      ToastMessage('error', 'Please fill in all required fields');
+      return;
+    }
+
+    const productData = {
+      name: values.name.trim(),
+      description: values.description.trim(),
+      price: Number(values.price),
+      stock: Number(values.stock),
+      category: values.category,
+      sku: values.sku.trim() || undefined,
+    };
+
     try {
-      if (!values.name || !values.description || !values.category) {
-        ToastMessage('error', 'Please fill in all required fields');
+      if (mode === 'edit' && product) {
+        await updateProduct(product.id, productData);
+        ToastMessage('success', 'Product updated successfully');
+        onClose?.();
+        onRefresh();
         return;
+      } else {
+        await createProduct(productData);
+        ToastMessage('success', 'Product created successfully');
+        resetForm();
+        onRefresh();
       }
-
-      if (values.price === '' || values.stock === '') {
-        ToastMessage('error', 'Please fill in all required fields');
-        return;
-      }
-
-      const productData = {
-        name: values.name.trim(),
-        description: values.description.trim(),
-        price: Number(values.price),
-        stock: Number(values.stock),
-        category: values.category,
-        sku: values.sku.trim() || undefined,
-      };
-
-      console.log('📝 Submitting product data:', productData);
-
-      await createProduct(productData);
-      ToastMessage('success', 'Product created successfully');
-      resetForm();
-      onRefresh();
     } catch (error: any) {
-      console.error('Form submission error:', error);
-      ToastMessage('error', error.message || 'Failed to create product');
-      console.error('Form submission error:', error);
+      ToastMessage(
+        'error',
+        error?.message ||
+          (mode === 'edit'
+            ? 'Failed to update product'
+            : 'Failed to create product'),
+      );
     }
   };
 
   return (
     <Box sx={{ p: 3, mb: 2 }}>
       <Typography variant="h6" sx={{ p: 2, fontWeight: 'bold' }}>
-        Create New Product
+        {mode === 'edit' ? 'Edit Product' : 'Create New Product'}
       </Typography>
       <Formik
         initialValues={initialValues}
         validationSchema={productSchema}
         onSubmit={handleSubmit}
+        enableReinitialize
       >
         {({ values, errors, touched, handleBlur, handleChange, isValid }) => (
           <Form>
@@ -370,18 +399,37 @@ export const ProductForm: React.FC<ProductFormProps> = ({
                       startIcon={<RefreshRoundedIcon />}
                       onClick={onRefresh}
                       disabled={isTableLoading || isCreating}
-                      size="large"
+                      // size="large"
                     >
                       Refresh
                     </Button>
-                    <LoadingButton
-                      type="submit"
-                      loading={isCreating}
-                      disabled={!isValid || isCreating}
-                      textButton="Add Product"
-                      variant="contained"
-                      // sxButton={{ px: 3, py: 2, fontSize: '1rem' }}
-                    />
+                    {mode === 'edit' ? (
+                      <Box sx={{ display: 'flex', gap: 1 }}>
+                        <Button
+                          variant="outlined"
+                          color="inherit"
+                          onClick={onClose}
+                          disabled={isCreating}
+                        >
+                          Cancel
+                        </Button>
+                        <LoadingButton
+                          type="submit"
+                          loading={isCreating}
+                          disabled={!isValid || isCreating}
+                          textButton="Update Product"
+                          variant="contained"
+                        />
+                      </Box>
+                    ) : (
+                      <LoadingButton
+                        type="submit"
+                        loading={isCreating}
+                        disabled={!isValid || isCreating}
+                        textButton="Add Product"
+                        variant="contained"
+                      />
+                    )}
                   </Box>
                 </Grid>
               </Grid>

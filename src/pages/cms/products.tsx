@@ -40,6 +40,8 @@ const Products: React.FC = () => {
     isLoading,
     isDeleting,
     error,
+    formMode,
+    // showForm,
     showDetail,
     showDeleteDialog,
     selectedProduct,
@@ -60,6 +62,7 @@ const Products: React.FC = () => {
 
     handleCloseDetail,
     handleCloseDeleteDialog,
+    handleCloseForm,
     handleEditFromDetail,
     handleDeleteFromDetail,
 
@@ -73,13 +76,10 @@ const Products: React.FC = () => {
       <Box
         sx={{
           display: 'flex',
-          // justifyContent: 'center',
-          // alignItems: 'center',
           height: '100vh',
           width: '100%',
           flexDirection: 'column',
           overflow: 'hidden',
-          // gap: 2,
         }}
       >
         <CircularProgress />
@@ -100,22 +100,28 @@ const Products: React.FC = () => {
 
       <Box sx={{ mb: 2 }}>
         <Typography
-          variant={isMobile ? 'h6' : 'h4'}
+          variant={isMobile ? 'h6' : 'h3'}
           sx={{ fontWeight: 'bold', mb: 1 }}
         >
           Products Management
         </Typography>
-        <Typography
+        {/* <Typography
           variant="body1"
           color="text.secondary"
           sx={{ display: { xs: 'none', sm: 'block' } }}
         >
           Manage your product inventory, track stock levels, and update product
           information.
-        </Typography>
+        </Typography> */}
       </Box>
 
-      <ProductForm onRefresh={handleRefresh} isTableLoading={isLoading} />
+      <ProductForm
+        mode={formMode}
+        product={selectedProduct ?? undefined}
+        onRefresh={handleRefresh}
+        isTableLoading={isLoading}
+        onClose={handleCloseForm}
+      />
 
       <ProductFiltersComponent />
 
