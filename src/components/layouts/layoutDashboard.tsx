@@ -1,4 +1,5 @@
 import { Box } from '@mui/material';
+import React from 'react';
 import { Outlet } from 'react-router-dom';
 
 import { DRAWER_WIDTH } from '../../common/constant';
@@ -8,10 +9,11 @@ import BreadcrumbPage from '../breadcrumbPage';
 import Sidebar from './components/sidebar';
 
 const LayoutDashboard = () => {
+  const [sidebarOpen, setSidebarOpen] = React.useState(false);
   return (
     <AuthGuard>
       <Box sx={{ display: 'flex', minHeight: '100vh' }}>
-        <Sidebar />
+        <Sidebar open={sidebarOpen} setOpen={setSidebarOpen} />
 
         <Box
           component="main"
@@ -23,8 +25,11 @@ const LayoutDashboard = () => {
             flexDirection: 'column',
             width: {
               xs: '100vw',
-              md: `calc(100vw - ${DRAWER_WIDTH}px)`,
+              md: sidebarOpen
+                ? `calc(100vw - ${DRAWER_WIDTH}px)`
+                : `calc('100vw' - ${56}px)`,
             },
+            transition: 'width 0.3s',
             overflow: 'hidden',
           }}
         >

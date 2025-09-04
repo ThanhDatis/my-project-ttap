@@ -29,7 +29,7 @@ import {
 import { Input } from '../../../components/fields';
 import LoadingButton from '../../../components/loadingButton';
 import ToastMessage from '../../../components/toastMessage';
-import { useProductStore } from '../../../store/product.store';
+import { default as useProductStore } from '../../../store/product.store';
 import { PRODUCT_CATEGORY_OPTIONS } from '../tableColumns/productsColumn';
 
 const productSchema = Yup.object({
@@ -54,10 +54,6 @@ export interface ProductFormValues {
 interface ProductFormProps {
   onRefresh: () => void;
   isTableLoading?: boolean;
-  // open: boolean;
-  // onClose: () => void;
-  // product?: Product | null;
-  // mode: 'create' | 'edit';
 }
 
 export const ProductForm: React.FC<ProductFormProps> = ({
@@ -65,8 +61,6 @@ export const ProductForm: React.FC<ProductFormProps> = ({
   isTableLoading = false,
 }) => {
   const { createProduct, isCreating } = useProductStore();
-
-  // const isLoading = isCreating || isUpdating;
 
   const initialValues: ProductFormValues = {
     name: '',

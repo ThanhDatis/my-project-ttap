@@ -73,11 +73,13 @@ const Products: React.FC = () => {
       <Box
         sx={{
           display: 'flex',
-          justifyContent: 'center',
-          alignItems: 'center',
-          minHeight: '400px',
+          // justifyContent: 'center',
+          // alignItems: 'center',
+          height: '100vh',
+          width: '100%',
           flexDirection: 'column',
-          gap: 2,
+          overflow: 'hidden',
+          // gap: 2,
         }}
       >
         <CircularProgress />
@@ -117,9 +119,18 @@ const Products: React.FC = () => {
 
       <ProductFiltersComponent />
 
-      <Box sx={{ mt: 2, width: '100%', overflow: 'hidden' }}>
+      <Box
+        sx={{
+          flex: 1,
+          px: { xs: 1, md: 2 },
+          width: '100%',
+          maxWidth: '100vw',
+          overflow: 'hidden',
+          pb: 2,
+        }}
+      >
         <CustomTable<Product>
-          rowHeight={isMobile ? 60 : 80}
+          rowHeight={isMobile ? 60 : 90}
           columnHeaders={columns}
           isLoading={isLoading}
           checkboxSelection={true}
@@ -134,8 +145,9 @@ const Products: React.FC = () => {
           }}
           noDataMessage="No products found. Start by creating your first product."
           sx={{
+            width: '100%',
+            height: '100%',
             '& .MuiDataGrid-root': {
-              border: 'none',
               '& .MuiDataGrid-columnHeaders': {
                 backgroundColor: '#f5f5f5',
                 fontSize: isMobile ? '0.75rem' : '0.875rem',
@@ -151,7 +163,6 @@ const Products: React.FC = () => {
                 backgroundColor: 'action.hover',
               },
             },
-            // FIX: Mobile scroll optimization
             ...(isMobile && {
               '& .MuiDataGrid-virtualScroller': {
                 overflow: 'auto !important',

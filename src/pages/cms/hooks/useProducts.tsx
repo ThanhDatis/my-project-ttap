@@ -4,7 +4,7 @@ import React, { useEffect, useMemo, useState } from 'react';
 
 import { ToastMessage } from '../../../components/toastMessage';
 import { type Product } from '../../../lib/product.repo';
-import { useProductStore } from '../../../store/product.store';
+import { default as useProductStore } from '../../../store/product.store';
 import { getProductColumns } from '../tableColumns/productsColumn';
 
 export default function useProducts() {
@@ -101,12 +101,10 @@ export default function useProducts() {
         ToastMessage('success', 'Product deleted successfully!');
         handleCloseDeleteDialog();
 
-        // FIX: Refresh data sau khi delete
         handleRefresh();
       } catch (error: any) {
         console.error('Delete error details:', error);
 
-        // FIX: Better error messages dựa vào response
         let errorMessage = 'Failed to delete product';
 
         if (error.response?.status === 404) {

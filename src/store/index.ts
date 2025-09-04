@@ -1,2 +1,2 @@
 export { useAuthStore } from './auth.store';
-export { useProductStore } from './product.store';
+export { default as useProductStore } from './product.store';

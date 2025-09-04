@@ -1,47 +1,110 @@
 /* eslint-disable no-undef */
 /* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable @typescript-eslint/no-require-imports */
-const { parse } = require('path');
+// const { parse } = require('path');
+const mongoose = require('mongoose');
 const Product = require('../models/product');
 
+const MAX_LIMIT = 100;
+const DEFAULT_LIMIT = 10;
+const DEFAULT_PAGE = 1;
+const ALLOWED_SORT_FIELDS = ['name', 'description', 'price', 'category', 'stock', 'sku', 'images'];
+
+const asyncHandler = fn => (req, res, next) => {
+  Promise.resolve(fn(req, res, next)).catch(next);
+};
+
+const isValidObjectId = id => mongoose.Types.ObjectId.isValid(id);
+
+const isAdmin = user => user && (user.role === 'admin' || user.role === 'superadmin');
+
+const validateProduct = (payload, { partial = false } = {}) => {
+  const errors = [];
+
+  const mustBeString = ['name', 'description', 'category', 'sku'];
+  const mustBeNumber = ['price', 'stock'];
+
+  if (!partial) {
+    ['name', 'description', 'price', 'category', 'sku'].forEach((key) => {
+      if (payload[key] === undefined || payload[key] === null || payload[key] === '') {
+        errors.push(`${key} is required`);
+      }
+    });
+  }
+
+  mustBeString.forEach((key) => {
+    if (payload[key] !== undefined && typeof payload[key] !== 'string') {
+      errors.push(`${key} must be a string`);
+    }
+  });
+  mustBeNumber.forEach((key) => {
+    if (payload[key] !== undefined && typeof payload[key] !== 'number') {
+      errors.push(`${key} must be a number`);
+    }
+    if (payload[key] !== undefined && typeof payload[key] !== 'number' && payload[key] < 0 ) {
+      errors.push(`${key} must be >= 0`);
+    }
+  });
+
+  if (payload.images !== undefined && !Array.isArray(payload.images)) {
+    errors.push('Images must be an array');
+  }
+  // if (payload.stock && typeof payload.stock !== 'number') {
+  //   errors.push('Stock must be a number');
+  // }
+  // if (payload.category && !mongoose.Types.ObjectId.isValid(payload.category)) {
+  //   errors.push('Invalid category ID');
+  // }
+  return errors;
+};
+
+const ok = (res, data, message = 'OK', status = 200) => {
+  res.status(status).json({ success: true, message, data });
+};
+
+const fail = (res, message = 'Internal Server Error', status = 400, errors = []) => {
+  res.status(status).json({ success: false, message, errors });
+};
+
 const productController = {
-  getAll: async (req, res) => {
-    try {
-      const {
-        page = 1,
-        limit = 10,
-        category,
-        search,
-        sortBy = 'createdAt',
-        sortOrder = 'desc'
+  getAll: asyncHandler(async (req, res) => {
+    let {
+      page = DEFAULT_PAGE,
+      limit = DEFAULT_LIMIT,
+      category,
+      search,
+      sortBy = 'createdAt',
+      sortOrder = 'desc'
       } = req.query;
 
-      let query = { isActive: true };
+      page = parseInt(page, 10) || DEFAULT_PAGE;
+      limit = Math.min(parseInt(limit, 10) || DEFAULT_LIMIT, MAX_LIMIT);
+      const query = { isActive: true }; // Chỉ lấy item dang active
 
-      if (search) {
-        query.$or = [
-          { name: { $regex: search, $options: 'i' } },
-          { sku: { $regex: search, $options: 'i' } },
-          // { description: { $regex: search, $options: 'i' } }
-        ];
-      }
 
       if (category && category !== 'all') {
-        query.category = category;
+        query.category = category.toString().toLowerCase().trim();
       }
 
-      const sort = {};
-      sort[sortBy] = sortOrder === 'asc' ? 1 : -1;
+      if (search && String(search).trim()) {
+        query.$text = {
+          $search: String(search).trim(),
+          // $caseSensitive: false
+        };
+      }
+      const sort = { [sortBy]: sortOrder === 'asc' ? 1 : -1 };
 
-      const products = await Product.find(query)
-        .populate('createdBy', 'name email')
-        .sort(sort)
-        .limit(limit * 1)
-        .skip((page - 1) * limit);
-      const total = await Product.countDocuments(query);
-
-      res.json({
-        products: products.map(p => ({
+      const [items, total] = await Promise.all([
+        Product.find(query)
+          .populate('createdBy', 'name email')
+          .sort(sort)
+          .limit(limit)
+          .skip((page - 1) * limit),
+        Product.countDocuments(query)
+      ]);
+      // const total = await Product.countDocuments(query);
+      return ok(res, {
+        items: items.map(p => ({
           id: p._id.toString(),
           name: p.name,
           sku: p.sku,
@@ -60,45 +123,52 @@ const productController = {
           updatedAt: p.updatedAt
         })),
         pagination: {
-          currentPage: parseInt(page),
+          page,
+          limit,
+          total,
           totalPages: Math.ceil(total / limit),
-          totalItems: total,
-          itemsPerPage: parseInt(limit)
-        }
-      });
-    } catch (error) {
-      return res.status(500).json({ message: 'Internal server error' });
+          hasNextPage: (page * limit) < total,
+          hasPreviousPage: page > 1
+        },
+      }, 'Fetched products'
+    );
+  }),
+
+  getById: asyncHandler(async (req, res) => {
+    const { id } = req.params;
+
+    if (!isValidObjectId(id)) {
+      return fail(res, 'Invalid product ID', 400);
     }
-  },
 
-  getById: async (req, res) => {
-    try {
-      const { id } = req.params;
-      const product = await Product.findById(id).populate('category', 'name');
-
-      if (!product) {
-        return res.status(404).json({ message: 'Product not found' });
-      }
-
-      res.json(product);
-    } catch (error) {
-      return res.status(500).json({ message: 'Internal server error' });
+    const product = await Product.findById(id).populate('category', 'name email');
+    if (!product || product.isActive) {
+      return fail(res, 'Product not found', 404);
     }
-  },
 
-  create: async (req, res) => {
-    try {
-      const productData = {
-        ...req.body,
+    return ok(res, product, 'Fetched product');
+  }),
+
+  create: asyncHandler(async (req, res) => {
+    if (!isAdmin(req.user)) {
+      return fail(res, 'Forbidden', 403);
+    }
+    const body = pick(req.body, ALLOWED_FIELDS);
+    const errors = validateProduct(body, { [partial]: false });
+    if (errors.length) {
+      return fail(res, 'Validation errors', 422, errors);
+    }
+    const productData = {
+        ...body,
+        category: body.category?.toLowerCase().trim(),
+        sku: body.sku?.toLowerCase().trim(),
         createdBy: req.user._id
       };
 
       const newProduct = await Product.create(productData);
       await newProduct.populate('createdBy', 'name email');
 
-      res.status(201).json({
-        message: 'Product created successfully',
-        product: {
+      return ok(res, {
           id: newProduct._id.toString(),
           name: newProduct.name,
           sku: newProduct.sku,
@@ -114,85 +184,73 @@ const productController = {
             _id: newProduct.createdBy._id.toString(),
             name: newProduct.createdBy.name,
             email: newProduct.createdBy.email
-          } : null
-        }
-      });
-    } catch (error) {
-      console.log(error);
-      return res.status(500).json({ message: 'Internal server error' });
-    }
-  },
-
-  update: async (req, res) => {
-    try {
-      const product = await Product.findById(req.params.id);
-      if (!product) {
-        return res.status(404).json({ message: 'Product not found' });
-      }
-
-      const updatedProduct = await Product.findByIdAndUpdate(
-        req.params.id,
-        req.body,
-        { new: true, runValidators: true }
+          } : null,
+        }, 'Product created successfully', 201
       );
-      res.json({
-        message: 'Product updated successfully',
-        product: {
-          id: updatedProduct._id.toString(),
-          name: updatedProduct.name,
-          sku: updatedProduct.sku,
-          price: updatedProduct.price,
-          stock: updatedProduct.stock,
-          category: updatedProduct.category,
-          description: updatedProduct.description,
-          isActive: updatedProduct.isActive,
-          images: updatedProduct.images || [],
-          createdAt: updatedProduct.createdAt,
-          updatedAt: updatedProduct.updatedAt,
-          createdBy: updatedProduct.createdBy ? {
-            _id: updatedProduct.createdBy._id.toString(),
-            name: updatedProduct.createdBy.name,
-            email: updatedProduct.createdBy.email
-          } : null
-        }
-      });
-    } catch (error) {
-      return res.status(500).json({ message: 'Internal server error' });
+  }),
+
+  update: asyncHandler(async (req, res) => {
+    // const product = await Product.findById(req.params.id);
+    if (!isAdmin(req.user)) {
+        return fail(res, 'Forbidden', 403);
     }
-  },
+    const { id } = req.params;
+    if (!isValidObjectId(id)) {
+      return fail(res, 'Invalid product ID', 400);
+    }
+
+    const pick = (req.body, ALLOWED_FIELDS);
+    const errors = validateProduct(pick, { [partial]: true });
+    if (errors.length) {
+      return fail(res, 'Validation errors', 422, errors);
+    }
+
+    const exists = await Product.findById(id);
+    if (!exists) {
+      return fail(res, 'Product not found', 404);
+    }
+
+    const updatedProduct = await Product.findByIdAndUpdate(
+      id,
+      {
+        ...body,
+        ...(body.category ? { category: body.category.toLowerCase().trim() } : {}),
+        ...(body.sku ? { sku: body.sku.toLowerCase().trim() } : {}),
+      },
+      { new: true, runValidators: true }
+    ).populate('createdBy', 'name email');
+
+    return ok(res, updatedProduct, 'Product updated successfully');
+  }),
 
   delete: async (req, res) => {
-    try {
-      const product = await Product.findByIdAndDelete(
-        req.params.id,
-        // { isActive: false, updatedAt: new Date() },
-        // { new: true }
-      );
-
-      if (!product) {
-        return res.status(404).json({ message: 'Product not found' });
-      }
-
-      res.json({
-        message: 'Product deleted successfully',
-        product: {
-          id: product._id.toString(),
-          name: product.name
-        }
-      });
-    } catch (error) {
-      return res.status(500).json({ message: 'Internal server error' });
+    if (!isAdmin(req.user)) {
+      return fail(res, 'Forbidden', 403);
     }
+
+    const { id } = req.params;
+    if (!isValidObjectId(id)) {
+      return fail(res, 'Invalid product ID', 400);
+    }
+
+    const product = await Product.findByIdAndUpdate(
+      id,
+      { isActive: false, updatedAt: new Date() },
+      { new: true }
+    );
+
+    if (!product) return fail(res, 'Product not found', 404);
+
+    return ok(res, {
+      id: product._id.toString(),
+      name: product.name,
+    }, 'Product deleted successfully');
   },
 
-  getCategories: async (req, res) => {
-    try {
+  getCategories: asyncHandler(async (req, res) => {
       const categories = await Product.distinct('category', { isActive: true });
-      res.json({ categories: categories.sort() });
-    } catch (error) {
-      return res.status(500).json({ message: 'Internal server error' });
-    }
-  }
+      return ok(res, { categories: categories.sort() }, 'Fetched categories successfully');
+  }),
 };
 
 module.exports = productController;

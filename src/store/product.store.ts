@@ -1,298 +1,175 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-
 /* eslint-disable no-unused-vars */
 import { create } from 'zustand';
-import { createJSONStorage, persist } from 'zustand/middleware';
 
-import {
-  productRepository,
+import productRepository, {
   type Product,
-  type CreateProductData,
+  type PaginationParams,
+  type ProductsListPayload,
 } from './../lib/product.repo';
 
-export interface ProductFilters {
+type PaginationState = ProductsListPayload['pagination'];
+
+export type ProductFilters = {
   search?: string;
   category?: string;
+  status?: 'all' | 'active' | 'inactive' | 'out_of_stock';
   minPrice?: number;
   maxPrice?: number;
-  status?: 'active' | 'inactive' | 'all';
-}
+};
 
-export interface ProductPagination {
-  page: number;
-  limit: number;
-  total: number;
-  totalPages: number;
-}
-
-interface ProductState {
+type ProductStore = {
   products: Product[];
-  selectedProduct: Product | null;
-  categories: string[];
+  pagination: PaginationState;
 
   isLoading: boolean;
   isCreating: boolean;
-  isUpdating: boolean;
   isDeleting: boolean;
   error: string | null;
+  // isUpdating: boolean;
 
+  params: Required<PaginationParams>;
   filters: ProductFilters;
-  pagination: ProductPagination;
-  sortBy: string;
-  sortOrder: 'asc' | 'desc';
+
+  setParams: (p: Partial<PaginationParams>) => void;
+  setPagination: (page: number, limit: number) => void;
+  setSorting: (field: string, order: 'asc' | 'desc') => void;
+
+  setFilters: (p: Partial<ProductFilters>) => void;
+  clearFilters: () => void;
+  clearError: () => void;
 
   fetchProducts: () => Promise<void>;
-  fetchProductById: (id: string) => Promise<void>;
-  createProduct: (product: Omit<Product, 'id'>) => Promise<void>;
-  updateProduct: (id: string, product: Partial<Product>) => Promise<void>;
+  getProductById: (id: string) => Promise<Product>;
+  createProduct: (
+    payload: Omit<
+      Product,
+      'id' | 'isActive' | 'createdAt' | 'updatedAt' | 'createdBy'
+    >,
+  ) => Promise<Product>;
+  updateProduct: (id: string, payload: Partial<Product>) => Promise<Product>;
   deleteProduct: (id: string) => Promise<void>;
 
-  setFilters: (filters: Partial<ProductFilters>) => void;
-  setPagination: (page: number, limit?: number) => void;
-  setSorting: (sortBy: string, sortOrder: 'asc' | 'desc') => void;
-  setSelectedProduct: (product: Product | null) => void;
-  clearError: () => void;
-  clearFilters: () => void;
-}
-
-const initialFilters: ProductFilters = {
-  search: '',
-  category: 'all',
-  status: 'all',
+  categories: string[];
+  fetchCategories: () => Promise<void>;
 };
 
-const initialPagination: ProductPagination = {
-  page: 0,
+const DEFAULT_PAGINATION: PaginationState = {
+  page: 1,
   limit: 10,
   total: 0,
   totalPages: 0,
+  hasNextPage: false,
+  hasPreviousPage: false,
 };
 
-export const useProductStore = create<ProductState>()(
-  persist(
-    (set, get) => ({
-      products: [],
-      selectedProduct: null,
-      categories: [],
-      isLoading: false,
-      isCreating: false,
-      isUpdating: false,
-      isDeleting: false,
-      error: null,
-      filters: initialFilters,
-      pagination: initialPagination,
-      sortBy: 'createAt',
-      sortOrder: 'desc',
+const DEFAULT_PARAMS: Required<PaginationParams> = {
+  page: 1,
+  limit: 10,
+  sortBy: 'createdAt',
+  sortOrder: 'desc',
+  search: '',
+  category: 'all',
+};
 
-      fetchProducts: async () => {
-        set({ isLoading: true, error: null });
-        try {
-          const { filters, pagination, sortBy, sortOrder } = get();
+const DEFAULT_FILTERS: ProductFilters = {
+  search: '',
+  category: 'all',
+  status: 'all',
+  minPrice: undefined,
+  maxPrice: undefined,
+};
 
-          const params = {
-            page: pagination.page + 1,
-            limit: pagination.limit,
-            search: filters.search || undefined,
-            category: filters.category === 'all' ? undefined : filters.category,
-            sortBy,
-            sortOrder,
-            // ...filters,
-          };
+const useProductStore = create<ProductStore>((set, get) => ({
+  products: [],
+  pagination: DEFAULT_PAGINATION,
 
-          const response = await productRepository.getAllProducts(params);
-          if (response && Array.isArray(response.products)) {
-            set({
-              products: response.products,
-              pagination: {
-                page: pagination.page,
-                limit: pagination.limit,
-                total:
-                  response.pagination?.totalItems || response.products.length,
-                totalPages: response.pagination?.totalPages || 1,
-              },
-              isLoading: false,
-            });
-          }
-        } catch (error: any) {
-          set({
-            error:
-              error.response?.data?.message ||
-              error.message ||
-              'Failed to fetch products',
-            products: [],
-            isLoading: false,
-          });
-        }
-      },
+  isLoading: false,
+  isCreating: false,
+  isDeleting: false,
+  error: null,
 
-      fetchProductById: async (id: string) => {
-        set({ isLoading: true, error: null });
-        try {
-          const product = await productRepository.getById(id);
-          set({
-            selectedProduct: product,
-            isLoading: false,
-          });
-        } catch (error: any) {
-          set({
-            error:
-              error.response?.data?.message ||
-              error.message ||
-              'Failed to fetch product',
-            isLoading: false,
-          });
-        }
-      },
+  params: DEFAULT_PARAMS,
+  filters: DEFAULT_FILTERS,
 
-      createProduct: async (productData: CreateProductData) => {
-        set({ isCreating: true, error: null });
-        try {
-          const response = await productRepository.createProduct(productData);
-          console.log('✅ Create response:', response);
-          if (response.product) {
-            set((state) => ({
-              products: [response.product, ...state.products],
-              isCreating: false,
-            }));
+  setParams: (p) =>
+    set((state) => ({
+      params: { ...state.params, ...p },
+    })),
+  setPagination: (page, limit) =>
+    set((state) => ({
+      params: { ...state.params, page, limit },
+    })),
 
-            setTimeout(() => get().fetchProducts(), 100);
-          } else {
-            throw new Error('Failed to create product');
-          }
-        } catch (error: any) {
-          const errorMessage =
-            error.message?.data?.message ||
-            error.message ||
-            'Failed to create product';
-          set({
-            error: errorMessage,
-            isCreating: false,
-          });
-          throw new Error(errorMessage);
-        }
-      },
-      updateProduct: async (id: string, productData: Partial<Product>) => {
-        set({ isUpdating: true, error: null });
-        try {
-          const response = await productRepository.updateProduct(
-            id,
-            productData,
-          );
-          if (response.product) {
-            set((state) => ({
-              products: state.products.map((product) =>
-                product.id === id ? response.product : product,
-              ),
-              selectedProduct: response.product,
-              isUpdating: false,
-            }));
-          }
-        } catch (error: any) {
-          const errorMessage =
-            error.response?.data?.message ||
-            error.message ||
-            'Failed to create product';
-          set({
-            error: errorMessage,
-            isUpdating: false,
-          });
-          throw new Error(errorMessage);
-        }
-      },
+  setSorting: (field, sort) =>
+    set((state) => ({
+      params: { ...state.params, sortBy: field, sortOrder: sort },
+    })),
 
-      deleteProduct: async (id: string) => {
-        set({ isDeleting: true, error: null });
-        try {
-          const response = await productRepository.deleteProduct(id);
-          console.log('Delete response:', response);
-          set((state) => {
-            const updatedProducts = state.products.filter((p) => p.id !== id);
-            return {
-              products: updatedProducts,
-              selectedProduct:
-                state.selectedProduct?.id === id ? null : state.selectedProduct,
-              isDeleting: false,
-            };
-          });
-          setTimeout(() => get().fetchProducts(), 100);
-        } catch (error: any) {
-          const errorMessage =
-            error.response?.data?.message ||
-            error.message ||
-            'Failed to delete product';
-          set({
-            error: errorMessage,
-            isDeleting: false,
-          });
-          throw new Error(errorMessage);
-        }
-      },
+  setFilters: (p) =>
+    set((state) => ({
+      filters: { ...state.filters, ...p },
+      params: { ...state.params, page: 1 },
+    })),
 
-      setFilters: (newFilters: Partial<ProductFilters>) => {
-        set((state) => ({
-          filters: {
-            ...state.filters,
-            ...newFilters,
-          },
-          pagination: {
-            ...state.pagination,
-            page: 0,
-          },
-        }));
-        setTimeout(() => get().fetchProducts(), 0);
-      },
+  clearFilters: () =>
+    set((state) => ({
+      filters: { ...DEFAULT_FILTERS },
+      params: { ...state.params, page: 1, search: '', category: 'all' },
+    })),
 
-      setPagination: (page: number, limit?: number) => {
-        set((state) => ({
-          pagination: {
-            ...state.pagination,
-            page,
-            limit: limit || state.pagination.limit,
-          },
-        }));
-        setTimeout(() => get().fetchProducts(), 0);
-      },
+  clearError: () => set({ error: null }),
 
-      setSorting: (sortBy: string, sortOrder: 'asc' | 'desc') => {
-        set({ sortBy, sortOrder });
-        setTimeout(() => get().fetchProducts(), 0);
-      },
+  fetchProducts: async () => {
+    set({ isLoading: true, error: null });
+    try {
+      const { params } = get();
+      const { items, pagination } =
+        await productRepository.getAllProducts(params);
+      set({
+        products: items,
+        pagination,
+        isLoading: false,
+        error: null,
+      });
+    } catch (err: any) {
+      set({
+        isLoading: false,
+        error: err?.message || 'Failed to fetch products',
+      });
+    }
+  },
 
-      setSelectedProduct: (product: Product | null) => {
-        set({ selectedProduct: product });
-      },
+  getProductById: async (id: string) => {
+    return productRepository.getById(id);
+  },
 
-      clearError: () => {
-        set({ error: null });
-      },
+  createProduct: async (payload) => {
+    const created = await productRepository.create(payload);
+    await get().fetchProducts();
+    return created.product;
+  },
 
-      clearFilters: () => {
-        set({
-          filters: initialFilters,
-          pagination: {
-            ...initialPagination,
-            limit: get().pagination.limit,
-          },
-        });
-        setTimeout(() => get().fetchProducts(), 0);
-      },
-    }),
-    {
-      name: 'product-storage',
-      storage: createJSONStorage(() => localStorage),
-      partialize: (state) => ({
-        // products: state.products,
-        // selectedProduct: state.selectedProduct,
-        // categories: state.categories,
-        filters: state.filters,
-        pagination: {
-          ...state.pagination,
-          total: 0,
-          totalPages: 0,
-        },
-        sortBy: state.sortBy,
-        sortOrder: state.sortOrder,
-      }),
-    },
-  ),
-);
+  updateProduct: async (id, payload) => {
+    const updated = await productRepository.update(id, payload);
+    await get().fetchProducts();
+    return updated.product;
+  },
+
+  deleteProduct: async (id: string) => {
+    await productRepository.softDelete(id);
+    await get().fetchProducts();
+  },
+
+  categories: [],
+  fetchCategories: async () => {
+    try {
+      const categories = await productRepository.getCategories();
+      set({ categories });
+    } catch {
+      // ignore nhẹ
+    }
+  },
+}));
+
+export default useProductStore;

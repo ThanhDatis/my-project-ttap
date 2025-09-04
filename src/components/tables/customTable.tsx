@@ -42,6 +42,7 @@ export interface CustomTableProps<T extends GridValidRowModel> {
   onRowClick?: (params: GridRowParams<T>) => void;
   onCellClick?: (params: any, event: any) => void;
   noDataMessage?: string;
+  rowSelectionModel?: GridRowSelectionModel;
 }
 
 export default function CustomTable<T extends Record<string, any>>({
@@ -64,6 +65,7 @@ export default function CustomTable<T extends Record<string, any>>({
   onRowClick,
   onCellClick,
   noDataMessage = 'No data to display',
+  // rowSelectionModel = [],
 }: CustomTableProps<T>): React.JSX.Element {
   const isMobile = useMediaQuery(theme.breakpoints.down('md'));
   // const isTablet = useMediaQuery(theme.breakpoints.down('lg'));
@@ -108,10 +110,10 @@ export default function CustomTable<T extends Record<string, any>>({
         overflow: 'hidden',
         maxWidth: !isMobile ? 'calc(100vw - 290px)' : 'calc(100vw - 105px)',
 
-        // '& .MuiDataGrid-root': {
-        //   maxWidth: '100%',
-        //   overflow: 'auto',
-        // },
+        '& .MuiDataGrid-root': {
+          maxWidth: '100%',
+          overflow: 'auto',
+        },
         ...sx,
       }}
     >

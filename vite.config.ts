@@ -14,4 +14,12 @@ export default defineConfig({
       '@common': path.resolve(__dirname, './src/common'),
     },
   },
+  server: {
+    proxy: {
+      '/api': {
+        target: 'http://localhost:3000',
+        changeOrigin: true,
+      },
+    },
+  },
 });

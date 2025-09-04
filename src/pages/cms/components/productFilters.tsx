@@ -20,7 +20,7 @@ import React, { useState, useEffect } from 'react';
 
 import { gray } from '../../../common/color';
 import {
-  useProductStore,
+  default as useProductStore,
   type ProductFilters,
 } from '../../../store/product.store';
 import {
