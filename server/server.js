@@ -3,16 +3,17 @@
 import express from 'express';
 import cors from 'cors';
 import mongoose from 'mongoose';
-// require('dotenv').config();
+import dotenv from 'dotenv';
 
 dotenv.config();
 
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-import authRoutes from './routes/auth';
-import productRoutes from './routes/product';
-import User from './models/user';
+import authRoutes from './routes/auth.js';
+import productRoutes from './routes/product.js';
+import customerRoutes from './routes/customer.js';
+import User from './models/user.js';
 
 mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost:27017')
   .then(async () => {
@@ -43,6 +44,7 @@ mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost:27017')
 
   app.use('/api/auth', authRoutes);
   app.use('/api/products', productRoutes);
+  app.use('/api/customers', customerRoutes);
 
 app.get('/api/health', (req, res) => {
   res.json({
@@ -60,7 +62,7 @@ app.get('/api/health', (req, res) => {
 app.use((err, req, res, next) => {
   console.error('🍃 Error occurred:', err.message);
   res.status(500).json({
-    error: process.env.NODE_ENV === 'production' ? err.message : 'Internal Server Error'
+    error: process.env.NODE_ENV === 'production' ? 'Internal Server Error' : err.message
   });
 });
 
@@ -70,6 +72,7 @@ app.listen(PORT, () => {
   // console.log(`Test Route: http://localhost:${PORT}/api/test`);
   console.log(`Login: POST http://localhost:${PORT}/api/auth/signin`);
   console.log(`Products: GET http://localhost:${PORT}/api/products`);
+  console.log(`Customers: GET http://localhost:${PORT}/api/customers`);
 });
 
 export default app;

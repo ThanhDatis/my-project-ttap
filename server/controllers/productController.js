@@ -1,7 +1,5 @@
-/* eslint-disable no-undef */
-/* eslint-disable @typescript-eslint/no-require-imports */
-const mongoose = require('mongoose');
-const Product = require('../models/product');
+import mongoose from 'mongoose';
+import Product from '../models/product.js';
 
 const MAX_LIMIT = 100;
 const DEFAULT_LIMIT = 10;
@@ -251,4 +249,4 @@ const productController = {
   }),
 };
 
-module.exports = productController;
+export default productController;
