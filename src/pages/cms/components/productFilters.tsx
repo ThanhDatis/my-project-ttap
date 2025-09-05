@@ -36,9 +36,9 @@ export const ProductFiltersComponent: React.FC<ProductFiltersProps> = ({
   const { filters, setFilters, clearFilters, isLoading } = useProductStore();
 
   const [localFilters, setLocalFilters] = useState<ProductFilters>(filters);
-  const [searchDebounceTimer, setSearchDebounceTimer] = useState<ReturnType<
-    typeof setTimeout
-  > | null>(null);
+  const [searchDebounceTimer] = useState<ReturnType<typeof setTimeout> | null>(
+    null,
+  );
 
   useEffect(() => {
     if (searchDebounceTimer) {
@@ -52,7 +52,7 @@ export const ProductFiltersComponent: React.FC<ProductFiltersProps> = ({
       }
     }, 500);
 
-    setSearchDebounceTimer(timer);
+    // setSearchDebounceTimer(timer);
 
     return () => {
       if (timer) clearTimeout(timer);
