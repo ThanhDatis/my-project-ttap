@@ -1,4 +1,3 @@
-/* eslint-disable no-undef */
 const requireAdmin = (req, res, next) => {
   const role = req.user?.role;
   if (role === 'admin' || role === 'superadmin') {
@@ -7,4 +6,4 @@ const requireAdmin = (req, res, next) => {
   return res.status(403).json({ success: false, message: 'Forbidden' });
 };
 
-module.exports = { requireAdmin };
+export { requireAdmin };

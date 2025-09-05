@@ -1,6 +1,4 @@
-/* eslint-disable no-undef */
-/* eslint-disable @typescript-eslint/no-require-imports */
-const mongoose = require('mongoose');
+import mongoose from 'mongoose';
 
 const ProductSchema = new mongoose.Schema({
   name: {
@@ -65,4 +63,4 @@ const ProductSchema = new mongoose.Schema({
 ProductSchema.index({ name: 'text', description: 'text', sku: 'text' });
 ProductSchema.index({ category: 1, createdAt: 1, isActive: 1 });
 
-module.exports = mongoose.model('Product', ProductSchema);
+export default mongoose.model('Product', ProductSchema);

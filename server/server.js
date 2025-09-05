@@ -1,22 +1,23 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable no-undef */
-/* eslint-disable @typescript-eslint/no-require-imports */
-const express = require('express');
-const cors = require('cors');
-const mongoose = require('mongoose');
-require('dotenv').config();
+import express from 'express';
+import cors from 'cors';
+import mongoose from 'mongoose';
+// require('dotenv').config();
+
+dotenv.config();
 
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-const authRoutes = require('./routes/auth');
-const productRoutes = require('./routes/product');
+import authRoutes from './routes/auth';
+import productRoutes from './routes/product';
+import User from './models/user';
 
 mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost:27017')
   .then(async () => {
     console.log('🍃 MongoDB Connected');
 
-    const User = require('./models/user');
     const adminExists = await User.findOne({ email: 'admin@gmail.com' });
 
     if (!adminExists) {
@@ -71,4 +72,4 @@ app.listen(PORT, () => {
   console.log(`Products: GET http://localhost:${PORT}/api/products`);
 });
 
-module.exports = app;
+export default app;

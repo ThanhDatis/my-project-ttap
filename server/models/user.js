@@ -1,8 +1,6 @@
-/* eslint-disable no-undef */
-/* eslint-disable @typescript-eslint/no-require-imports */
 /* eslint-disable @typescript-eslint/no-unused-vars */
-const mongoose = require('mongoose');
-const bcrypt = require('bcryptjs');
+import mongoose from 'mongoose';
+import bcrypt from 'bcryptjs';
 
 const UserSchema = new mongoose.Schema({
   email: {
@@ -61,4 +59,4 @@ UserSchema.methods.toJSON = function () {
   return obj;
 }
 
-module.exports = mongoose.model('User', UserSchema);
+export default mongoose.model('User', UserSchema);

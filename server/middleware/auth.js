@@ -1,8 +1,6 @@
 /* eslint-disable no-undef */
-/* eslint-disable @typescript-eslint/no-unused-vars */
-/* eslint-disable @typescript-eslint/no-require-imports */
-const jwt = require('jsonwebtoken');
-const User = require('../models/user');
+import jwt from 'jsonwebtoken';
+import User from '../models/user';
 
 const authMiddleware = async (req, res, next) => {
   try {
@@ -24,8 +22,9 @@ const authMiddleware = async (req, res, next) => {
     next();
 
   } catch (error) {
+    console.error(error);
     return res.status(401).json({ message: 'Unauthorized' });
   }
 };
 
-module.exports = authMiddleware;
+export default authMiddleware;

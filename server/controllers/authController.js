@@ -1,8 +1,6 @@
 /* eslint-disable no-undef */
-/* eslint-disable @typescript-eslint/no-unused-vars */
-/* eslint-disable @typescript-eslint/no-require-imports */
-const jwt = require('jsonwebtoken');
-const User = require('../models/user');
+import jwt from 'jsonwebtoken';
+import User from '../models/user';
 
 const generateToken = (user) => {
   return jwt.sign({ id: user._id }, process.env.JWT_SECRET, { expiresIn: '1h' });
@@ -31,6 +29,7 @@ const authController = {
         refreshToken: token
       })
     } catch (error) {
+      console.error(error);
       return res.status(500).json({ message: 'Internal server error' });
     }
   },
@@ -65,6 +64,7 @@ const authController = {
         refreshToken: token
       });
     } catch (error) {
+      console.error(error);
       return res.status(500).json({ message: 'Internal server error' });
     }
   },
@@ -73,6 +73,7 @@ const authController = {
     try {
       res.json({ user: req.user.toJSON() });
     } catch (error) {
+      console.error(error);
       return res.status(500).json({ message: 'Internal server error' });
     }
   }
@@ -89,4 +90,4 @@ const authController = {
   // }
 };
 
-module.exports = authController;
+export default authController;

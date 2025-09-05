@@ -1,9 +1,7 @@
-/* eslint-disable no-undef */
-/* eslint-disable @typescript-eslint/no-require-imports */
-const express = require('express');
-const productController = require('../controllers/productController');
-const authMiddleware = require('../middleware/auth');
-const { requireAdmin } = require('../middleware/roles');
+import express from 'express';
+import productController from '../controllers/productController';
+import authMiddleware from '../middleware/auth';
+import { requireAdmin } from '../middleware/roles';
 
 const router = express.Router();
 
@@ -17,4 +15,4 @@ router.post('/', requireAdmin, productController.create);
 router.put('/:id', requireAdmin, productController.update);
 router.delete('/:id', requireAdmin, productController.delete);
 
-module.exports = router;
+export default router;
