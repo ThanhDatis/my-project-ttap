@@ -1,11 +1,15 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import { type GridSortModel } from '@mui/x-data-grid';
+import type { AxiosError } from 'axios';
 import React, { useEffect, useMemo, useState } from 'react';
 
 import { ToastMessage } from '../../../components/toastMessage';
 import { type Product } from '../../../lib/product.repo';
 import { default as useProductStore } from '../../../store/product.store';
 import { getProductColumns } from '../tableColumns/productsColumn';
+
+function isAxiosError(error: unknown): error is AxiosError {
+  return typeof error === 'object' && error !== null && 'response' in error;
+}
 
 export default function useProducts() {
   const {
@@ -102,16 +106,19 @@ export default function useProducts() {
         handleCloseDeleteDialog();
 
         handleRefresh();
-      } catch (error: any) {
+      } catch (error: unknown) {
         console.error('Delete error details:', error);
 
         let errorMessage = 'Failed to delete product';
 
-        if (error.response?.status === 404) {
-          errorMessage = 'Product not found';
-        } else if (error.response?.status === 500) {
-          errorMessage = 'Server error. Please try again later.';
-        } else if (error.message) {
+        if (isAxiosError(error)) {
+          const status = error.response?.status;
+          if (status === 404) {
+            errorMessage = 'Product not found';
+          } else if (status === 500) {
+            errorMessage = 'Server error. Please try again later.';
+          }
+        } else if (error instanceof Error) {
           errorMessage = error.message;
         }
 

@@ -27,6 +27,9 @@ import React from 'react';
 import { type Product } from '../../../lib/product.repo';
 import { formatDateTime, formatNumber } from '../../../utils';
 
+type ProductWithStatus = Product & {
+  status?: 'active' | 'inactive' | 'out_of_stock';
+};
 interface ProductDetailDialogProps {
   open: boolean;
   onClose: () => void;
@@ -67,11 +70,12 @@ export const ProductDetailDialog: React.FC<ProductDetailDialogProps> = ({
   }
 
   const getStatusChip = () => {
+    const status = (product as ProductWithStatus).status;
     if (product.stock === 0) {
       return <Chip label="Out of Stock" color="error" size="small" />;
     }
 
-    switch (product.status) {
+    switch (status) {
       case 'active':
         return <Chip label="Active" color="success" size="small" />;
       case 'inactive':

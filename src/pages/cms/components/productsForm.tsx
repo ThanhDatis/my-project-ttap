@@ -1,5 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-
 import RefreshRoundedIcon from '@mui/icons-material/RefreshRounded';
 import {
   Button,
@@ -14,7 +12,8 @@ import {
   Divider,
 } from '@mui/material';
 import Grid from '@mui/material/Grid';
-import { Formik, Form } from 'formik';
+import type { AxiosError } from 'axios';
+import { Formik, Form, type FormikHelpers } from 'formik';
 import React from 'react';
 import * as Yup from 'yup';
 
@@ -32,6 +31,12 @@ import ToastMessage from '../../../components/toastMessage';
 import type { Product } from '../../../lib/product.repo';
 import { default as useProductStore } from '../../../store/product.store';
 import { PRODUCT_CATEGORY_OPTIONS } from '../tableColumns/productsColumn';
+
+// import type { FormikHelpers } from 'formik';
+
+function isAxiosError(error: unknown): error is AxiosError {
+  return typeof error === 'object' && error !== null && 'response' in error;
+}
 
 const productSchema = Yup.object({
   name: validateProductName,
@@ -91,7 +96,7 @@ export const ProductForm: React.FC<ProductFormProps> = ({
 
   const handleSubmit = async (
     values: ProductFormValues,
-    { resetForm }: { resetForm: () => void },
+    { resetForm }: FormikHelpers<ProductFormValues>,
   ) => {
     if (!values.name || !values.description || !values.category) {
       ToastMessage('error', 'Please fill in all required fields');
@@ -125,14 +130,17 @@ export const ProductForm: React.FC<ProductFormProps> = ({
         resetForm();
         onRefresh();
       }
-    } catch (error: any) {
-      ToastMessage(
-        'error',
-        error?.message ||
-          (mode === 'edit'
-            ? 'Failed to update product'
-            : 'Failed to create product'),
-      );
+    } catch (error: unknown) {
+      let message =
+        mode === 'edit'
+          ? 'Failed to update product'
+          : 'Failed to create product';
+      if (isAxiosError(error)) {
+        message = error.response?.data?.message || message;
+      } else if (error instanceof Error) {
+        message = error.message || message;
+      }
+      ToastMessage('error', message);
     }
   };
 

@@ -1,5 +1,3 @@
-/* eslint-disable react-hooks/exhaustive-deps */
-/* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable no-unused-vars */
 import {
   Search as SearchIcon,
@@ -38,8 +36,9 @@ export const ProductFiltersComponent: React.FC<ProductFiltersProps> = ({
   const { filters, setFilters, clearFilters, isLoading } = useProductStore();
 
   const [localFilters, setLocalFilters] = useState<ProductFilters>(filters);
-  const [searchDebounceTimer, setSearchDebounceTimer] =
-    useState<NodeJS.Timeout | null>(null);
+  const [searchDebounceTimer, setSearchDebounceTimer] = useState<ReturnType<
+    typeof setTimeout
+  > | null>(null);
 
   useEffect(() => {
     if (searchDebounceTimer) {
@@ -58,7 +57,14 @@ export const ProductFiltersComponent: React.FC<ProductFiltersProps> = ({
     return () => {
       if (timer) clearTimeout(timer);
     };
-  }, [localFilters.search]);
+  }, [
+    filters.search,
+    localFilters,
+    localFilters.search,
+    onFiltersChange,
+    searchDebounceTimer,
+    setFilters,
+  ]);
 
   useEffect(() => {
     setLocalFilters(filters);
@@ -69,8 +75,11 @@ export const ProductFiltersComponent: React.FC<ProductFiltersProps> = ({
     setLocalFilters((prev) => ({ ...prev, search: value }));
   };
 
-  const handleFilterChange = (key: keyof ProductFilters, value: any) => {
-    const newFilters = { [key]: value };
+  const handleFilterChange = <K extends keyof ProductFilters>(
+    key: K,
+    value: ProductFilters[K],
+  ) => {
+    const newFilters = { [key]: value } as Pick<ProductFilters, K>;
     setLocalFilters((prev) => ({ ...prev, ...newFilters }));
     setFilters(newFilters);
     onFiltersChange?.({ ...localFilters, ...newFilters });
