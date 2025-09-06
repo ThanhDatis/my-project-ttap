@@ -1,37 +1,18 @@
 /* eslint-disable no-unused-vars */
 import {
   MoreVert as MoreVertIcon,
-  Phone as PhoneIcon,
+  Person as PersonIcon,
+  Star as StarIcon,
   Email as EmailIcon,
+  Phone as PhoneIcon,
 } from '@mui/icons-material';
 import { Chip, IconButton, Box, Typography, Avatar } from '@mui/material';
 import { type GridColDef } from '@mui/x-data-grid';
 import React from 'react';
 
-// import { brand, gray } from '../../../common/color';
-import { type Customer } from '../../../lib/customer.repo';
+import { brand } from '../../../common/color';
+import { type Customer, type Tier } from '../../../lib/customer.repo';
 import { formatNumber, formatDateTime } from '../../../utils';
-
-interface CustomerData {
-  id: number | string;
-  name: string;
-  email: string;
-  phone: string;
-  customerType: 'individual' | 'business';
-  status: 'active' | 'inactive' | 'blocked';
-  totalOrders: number;
-  totalSpent: number;
-  lastOrderDate?: string;
-  fullAddress?: string;
-  customerSegment?: 'New' | 'Regular' | 'Premium' | 'VIP';
-  createdAt?: string;
-  updatedAt?: string;
-  createdBy?: {
-    _id: string;
-    name: string;
-    email: string;
-  };
-}
 
 export const getCustomerColumns = ({
   onMenuClick,
@@ -43,43 +24,67 @@ export const getCustomerColumns = ({
 }): GridColDef[] => [
   {
     field: 'name',
-    headerName: 'name',
+    headerName: 'Customer',
     type: 'string',
     flex: 1,
     minWidth: 200,
     headerAlign: 'center',
     renderCell: (params) => {
-      const name = params.row.name || 'Unknown';
-      const email = params.row.email || '';
-      const avatarText = name.charAt(0)?.toUpperCase() || 'C';
+      const customer = params.row as Customer;
+      const customerName = customer.name || 'Unnamed Customer';
+      const customerEmail = customer.email;
+
+      const getInitials = (name: string) => {
+        return name
+          .split(' ')
+          .map((word) => word.charAt(0))
+          .join('')
+          .toUpperCase()
+          .slice(0, 2);
+      };
 
       return (
         <Box
-          sx={{ display: 'flex', alignItems: 'center', gap: 1.25, minWidth: 0 }}
+          sx={{
+            height: '100%',
+            display: 'flex',
+            alignItems: 'center',
+            gap: 1.5,
+          }}
         >
-          <Avatar sx={{ width: 34, height: 34, fontSize: 14 }}>
-            {avatarText}
+          <Avatar
+            sx={{
+              width: 40,
+              height: 40,
+              bgcolor:
+                customer.tier === 'vip' ? 'warning.light' : 'primary.light',
+              fontSize: '0.875rem',
+            }}
+          >
+            {getInitials(customerName)}
           </Avatar>
-          <Box sx={{ minWidth: 0 }}>
-            <Typography
-              variant="body2"
-              sx={{ fontWeight: 600, lineHeight: 1.1 }}
-            >
-              {name}
+          <Box
+            sx={{
+              display: 'flex',
+              flexDirection: 'column',
+              justifyContent: 'center',
+            }}
+          >
+            <Typography variant="body2" sx={{ fontWeight: 500 }}>
+              {customerName}
             </Typography>
-            {email && (
+            {customerEmail && (
               <Typography
                 variant="caption"
                 sx={{
                   color: 'text.secondary',
-                  display: 'block',
-                  overflow: 'hidden',
-                  textOverflow: 'ellipsis',
-                  whiteSpace: 'nowrap',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: 0.5,
                 }}
-                title={email}
               >
-                {email}
+                <EmailIcon sx={{ fontSize: 12 }} />
+                {customerEmail}
               </Typography>
             )}
           </Box>
@@ -88,69 +93,47 @@ export const getCustomerColumns = ({
     },
   },
   {
-    field: 'email',
-    headerName: 'Email',
-    minWidth: 200,
-    flex: 1,
-    renderCell: (params) => {
-      const email = params.value || (params.row as Customer).email || '';
-      return (
-        <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
-          <EmailIcon sx={{ width: 16, height: 16, color: 'text.secondary' }} />
-          <Typography
-            variant="body2"
-            sx={{
-              overflow: 'hidden',
-              textOverflow: 'ellipsis',
-              whiteSpace: 'nowrap',
-              maxWidth: '100%',
-            }}
-            title={email}
-          >
-            {email}
-          </Typography>
-        </Box>
-      );
-    },
-  },
-  {
     field: 'phone',
-    headerName: 'Phone',
+    headerName: 'Contact',
     type: 'string',
-    minWidth: 140,
+    minWidth: 150,
     align: 'center',
     headerAlign: 'center',
     renderCell: (params) => {
-      const phone = params.value || (params.row as Customer).phone || '';
+      const customer = params.row as Customer;
       return (
-        <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
-          <PhoneIcon sx={{ width: 16, height: 16, color: 'text.secondary' }} />
-          <Typography variant="body2">{phone}</Typography>
+        <Box
+          sx={{
+            display: 'flex',
+            flexDirection: 'column',
+            justifyContent: 'center',
+            alignItems: 'center',
+          }}
+        >
+          {customer.phone ? (
+            <Typography
+              variant="body2"
+              sx={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: 0.5,
+              }}
+            >
+              <PhoneIcon sx={{ fontSize: 14 }} />
+              {customer.phone}
+            </Typography>
+          ) : (
+            <Typography
+              variant="caption"
+              sx={{ color: 'text.secondary', fontStyle: 'italic' }}
+            >
+              No phone
+            </Typography>
+          )}
         </Box>
       );
     },
   },
-  // {
-  //   field: 'customerType',
-  //   headerName: 'Type',
-  //   type: 'string',
-  //   width: 120,
-  //   align: 'center',
-  //   headerAlign: 'center',
-  //   renderCell: (params) => {
-  //     const type =
-  //       (params.value as CustomerData['customerType']) || 'individual';
-  //     return (
-  //       <Chip
-  //         label={type === 'business' ? 'Business' : 'Individual'}
-  //         size="small"
-  //         variant="outlined"
-  //         color={type === 'business' ? 'primary' : 'default'}
-  //         icon={type === 'business' ? <BusinessIcon /> : <PersonIcon />}
-  //       />
-  //     );
-  //   },
-  // },
   {
     field: 'tier',
     headerName: 'Tier',
@@ -159,14 +142,24 @@ export const getCustomerColumns = ({
     align: 'center',
     headerAlign: 'center',
     renderCell: (params) => {
-      const raw = (params.value as string) || '';
-      const isVip = raw.toLowerCase() === 'vip';
+      const tier = params.value as Tier;
+      const isVip = tier === 'vip';
+
       return (
         <Chip
           label={isVip ? 'VIP' : 'Normal'}
-          color={isVip ? 'warning' : 'default'}
-          variant="outlined"
           size="small"
+          color={isVip ? 'warning' : 'default'}
+          icon={isVip ? <StarIcon sx={{ fontSize: 16 }} /> : undefined}
+          variant={isVip ? 'filled' : 'outlined'}
+          sx={{
+            fontWeight: isVip ? 600 : 400,
+            ...(isVip && {
+              '& .MuiChip-icon': {
+                color: 'warning.contrastText',
+              },
+            }),
+          }}
         />
       );
     },
@@ -179,66 +172,129 @@ export const getCustomerColumns = ({
     align: 'center',
     headerAlign: 'center',
     renderCell: (params) => {
-      const orders = Number(params.value ?? 0);
+      const totalOrders = params.value || 0;
+
       return (
-        <Typography variant="body2" sx={{ fontWeight: 500 }}>
-          {formatNumber(orders)}
+        <Chip
+          label={formatNumber(totalOrders)}
+          size="small"
+          color={totalOrders > 0 ? 'primary' : 'default'}
+          variant="outlined"
+        />
+      );
+    },
+  },
+  {
+    field: 'lifetimeValue',
+    headerName: 'Lifetime Value',
+    type: 'number',
+    minWidth: 150,
+    align: 'center',
+    headerAlign: 'center',
+    valueFormatter: ({ value }) => {
+      if (value == null) return '-';
+      return new Intl.NumberFormat('vi-VN', {
+        style: 'currency',
+        currency: 'VND',
+        notation: 'compact',
+        compactDisplay: 'short',
+      }).format(value);
+    },
+    renderCell: (params) => {
+      const value = params.value || 0;
+      const color =
+        value > 10000000 ? 'success' : value > 1000000 ? 'warning' : 'default';
+
+      return (
+        <Typography
+          variant="body2"
+          sx={{
+            color:
+              color === 'success'
+                ? 'success.main'
+                : color === 'warning'
+                  ? 'warning.main'
+                  : 'text.primary',
+            fontWeight: value > 1000000 ? 600 : 400,
+          }}
+        >
+          {new Intl.NumberFormat('vi-VN', {
+            style: 'currency',
+            currency: 'VND',
+            notation: 'compact',
+            compactDisplay: 'short',
+          }).format(value)}
         </Typography>
       );
     },
   },
   {
-    field: 'totalSpent',
-    headerName: 'LTV',
-    type: 'number',
-    minWidth: 130,
-    align: 'center',
-    headerAlign: 'center',
-    valueFormatter: (value) =>
-      value == null ? '-' : formatNumber(Number(value)),
-    sortComparator: (a, b) => Number(a ?? 0) - Number(b ?? 0),
-  },
-  {
-    field: 'status',
-    headerName: 'Status',
+    field: 'address',
+    headerName: 'Address',
     type: 'string',
-    width: 110,
+    flex: 1,
+    minWidth: 200,
     align: 'center',
     headerAlign: 'center',
     renderCell: (params) => {
-      const status =
-        (params.value as 'active' | 'inactive' | 'blocked') || 'active';
-      const map = {
-        active: { color: 'success' as const, label: 'Active' },
-        inactive: { color: 'warning' as const, label: 'Inactive' },
-        blocked: { color: 'error' as const, label: 'Blocked' },
-      };
-      const { color, label } = map[status] ?? {
-        color: 'default' as const,
-        label: 'Unknown',
-      };
-      return <Chip label={label} color={color} size="small" />;
+      const address = params.value;
+
+      return (
+        <Typography
+          variant="body2"
+          sx={{
+            overflow: 'hidden',
+            textOverflow: 'ellipsis',
+            whiteSpace: 'nowrap',
+            maxWidth: '100%',
+            color: address ? 'text.primary' : 'text.secondary',
+            fontStyle: address ? 'normal' : 'italic',
+          }}
+          title={address || 'No address provided'}
+        >
+          {address || 'No address'}
+        </Typography>
+      );
+    },
+  },
+  {
+    field: 'isActive',
+    headerName: 'Status',
+    type: 'boolean',
+    width: 100,
+    align: 'center',
+    headerAlign: 'center',
+    renderCell: (params) => {
+      const isActive = params.value;
+
+      return (
+        <Chip
+          label={isActive ? 'Active' : 'Inactive'}
+          size="small"
+          color={isActive ? 'success' : 'default'}
+          variant={isActive ? 'filled' : 'outlined'}
+        />
+      );
     },
   },
   {
     field: 'createdAt',
     headerName: 'Created',
     type: 'string',
-    flex: 1,
     minWidth: 120,
     align: 'center',
     headerAlign: 'center',
-    renderCell: (params) => (
-      <Typography variant="caption">
-        {params.value ? formatDateTime(params.value) : ''}
-      </Typography>
-    ),
-    sortComparator: (a, b) =>
-      new Date(a || 0).getTime() - new Date(b || 0).getTime(),
+    renderCell: (params) => {
+      return (
+        <Typography variant="caption" color="text.secondary">
+          {formatDateTime(params.value)}
+        </Typography>
+      );
+    },
   },
   {
     field: 'action',
-    headerName: 'Action',
+    headerName: 'Actions',
     type: 'actions',
     minWidth: 80,
     maxWidth: 80,
@@ -246,12 +302,25 @@ export const getCustomerColumns = ({
     filterable: false,
     renderCell: (params) => {
       const customer = params.row as Customer;
+
       return (
-        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+        <Box
+          sx={{
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+          }}
+        >
           <IconButton
             size="small"
             onClick={(e) => onMenuClick(e, customer.id.toString())}
-            sx={{ color: 'text.secondary' }}
+            sx={{
+              color: 'text.secondary',
+              '&:hover': {
+                color: brand[500],
+                // backgroundColor: 'action.hover',
+              },
+            }}
             title="More options"
           >
             <MoreVertIcon fontSize="small" />
@@ -262,25 +331,19 @@ export const getCustomerColumns = ({
   },
 ];
 
-export const CUSTOMER_TYPE_OPTIONS = [
-  { value: 'all', label: 'All Types' },
-  { value: 'individual', label: 'Individual' },
-  { value: 'business', label: 'Business' },
+export const TIER_OPTIONS = [
+  { value: 'all', label: 'All Tiers' },
+  { value: 'vip', label: 'VIP Customers' },
+  { value: 'normal', label: 'Normal Customers' },
 ] as const;
 
-export const CUSTOMER_STATUS_OPTIONS = [
-  { value: 'all', label: 'All Status' },
-  { value: 'active', label: 'Active' },
-  { value: 'inactive', label: 'Inactive' },
-  { value: 'blocked', label: 'Blocked' },
+export const SORT_OPTIONS = [
+  { value: 'createdAt:desc', label: 'Newest First' },
+  { value: 'createdAt:asc', label: 'Oldest First' },
+  { value: 'name:asc', label: 'Name (A-Z)' },
+  { value: 'name:desc', label: 'Name (Z-A)' },
+  { value: 'lifetimeValue:desc', label: 'Highest Value' },
+  { value: 'lifetimeValue:asc', label: 'Lowest Value' },
+  { value: 'totalOrders:desc', label: 'Most Orders' },
+  { value: 'totalOrders:asc', label: 'Least Orders' },
 ] as const;
-
-export const CUSTOMER_SEGMENT_OPTIONS = [
-  { value: 'all', label: 'All Segments' },
-  { value: 'New', label: 'New' },
-  { value: 'Regular', label: 'Regular' },
-  { value: 'Premium', label: 'Premium' },
-  { value: 'VIP', label: 'VIP' },
-] as const;
-
-export type { CustomerData };

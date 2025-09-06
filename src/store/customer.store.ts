@@ -1,10 +1,9 @@
+/* eslint-disable no-unused-vars */
 import { create } from 'zustand';
-import { devtools } from 'zustand/middleware';
 
-import {
-  customerRepository,
+import customerRepository, {
   type Customer,
-  type CustomerPayload,
+  type CustomerListPayload,
   type ListParams,
 } from '../lib/customer.repo';
 
@@ -13,93 +12,115 @@ type State = {
   total: number;
   page: number;
   limit: number;
-  sortBy: string;
-  sortOrder: 'asc' | 'desc';
   search: string;
+  sort: string;
   tier: 'all' | 'vip' | 'normal';
   isLoading: boolean;
-  error?: string | null;
+  isDeleting: boolean;
+  error: string | null;
 };
 
 type Actions = {
-  fetch: (override?: Partial<ListParams>) => Promise<void>;
+  fetchCustomers: () => Promise<void>;
+
   setSearch: (search: string) => void;
   setPage: (page: number) => void;
   setLimit: (limit: number) => void;
-  setSort: (sortBy: string, sortOrder: 'asc' | 'desc') => void;
+  setSort: (sort: string) => void;
   setTier: (tier: 'all' | 'vip' | 'normal') => void;
-  create: (payload: CustomerPayload) => Promise<Customer>;
-  update: (id: string, payload: CustomerPayload) => Promise<Customer>;
-  remove: (id: string) => Promise<void>;
+
+  createCustomer: (payload: Partial<Customer>) => Promise<Customer>;
+  updateCustomer: (id: string, payload: Partial<Customer>) => Promise<Customer>;
+  deleteCustomer: (id: string) => Promise<void>;
+
+  clearError: () => void;
 };
 
-const initial: State = {
+export const useCustomerStore = create<State & Actions>((set, get) => ({
   customers: [],
   total: 0,
   page: 1,
   limit: 10,
-  sortBy: 'createdAt',
-  sortOrder: 'desc',
+
   search: '',
+  sort: 'createdAt:desc',
   tier: 'all',
+
   isLoading: false,
+  // isCreating: false,
+  isDeleting: false,
   error: null,
-};
 
-export const useCustomerStore = create<State & Actions>()(
-  devtools((set, get) => ({
-    ...initial,
-    fetch: async (override) => {
-      set({ isLoading: true, error: null });
-      try {
-        const { page, limit, search, tier, sortBy, sortOrder } = {
-          ...get(),
-          ...override,
-        };
-        const data = await customerRepository.list({
-          page,
-          limit,
-          search,
-          tier,
-          sortBy,
-          sortOrder,
-        });
-        set({
-          customers: data.items,
-          total: data.total,
-          page: data.page,
-          limit: data.limit,
-          isLoading: false,
-        });
-      } catch (error) {
-        set({
-          isLoading: false,
-          error: error?.message ?? 'Failed to fetch customers',
-        });
-      }
-    },
+  clearError: () => set({ error: null }),
 
-    setPage: (page) => set({ page }),
-    setLimit: (limit) => set({ limit }),
-    setSort: (sortBy, sortOrder) => set({ sortBy, sortOrder }),
-    setSearch: (search) => set({ search }),
-    setTier: (tier) => set({ tier }),
+  fetchCustomers: async () => {
+    set({ isLoading: true, error: null });
+    try {
+      const { page, limit, search, tier, sort } = get();
+      const [sortByRaw, sortOrderRaw] = (sort || 'createdAt:desc').split(':');
+      const sortBy = sortByRaw || 'createdAt';
+      const sortOrder = (sortOrderRaw === 'asc' ? 'asc' : 'desc') as
+        | 'asc'
+        | 'desc';
 
-    create: async (payload) => {
-      const created = await customerRepository.create(payload);
-      await get().fetch();
-      return created;
-    },
+      const params: ListParams = {
+        page,
+        limit,
+        search: search || undefined,
+        sortBy,
+        sortOrder,
+        ...(tier !== 'all' ? { tier } : {}),
+      };
 
-    update: async (id, payload) => {
-      const updated = await customerRepository.update(id, payload);
-      await get().fetch();
-      return updated;
-    },
+      const { items, pagination } = (await customerRepository.getAllCustomers(
+        params,
+      )) as CustomerListPayload;
 
-    remove: async (id) => {
-      await customerRepository.delete(id);
-      await get().fetch();
-    },
-  })),
-);
+      set({
+        customers: Array.isArray(items) ? items : [],
+        total: pagination?.total ?? 0,
+        page: pagination?.page ?? page,
+        limit: pagination?.limit ?? limit,
+        isLoading: false,
+      });
+    } catch (err: any) {
+      set({
+        isLoading: false,
+        error:
+          err?.response?.data?.message ||
+          err?.message ||
+          'Failed to fetch customers',
+      });
+    }
+  },
+
+  setSearch: (v) => set({ search: v }),
+  setPage: (page) => set({ page }),
+  setLimit: (limit) => set({ limit }),
+  setTier: (tier) => set({ tier }),
+  setSort: (sort) => set({ sort }),
+
+  createCustomer: async (payload) => {
+    const customer = await customerRepository.create(payload);
+    await get().fetchCustomers();
+    return customer;
+  },
+
+  updateCustomer: async (id, payload) => {
+    const customer = await customerRepository.update(id, payload);
+    await get().fetchCustomers();
+    return customer;
+  },
+
+  deleteCustomer: async (id) => {
+    set({ isDeleting: true });
+    try {
+      await customerRepository.softDelete(id);
+      await get().fetchCustomers();
+    } finally {
+      set({ isDeleting: false });
+    }
+  },
+}));
+
+export default useCustomerStore;
