@@ -185,7 +185,7 @@ export const CustomerForm: React.FC<CustomerFormProps> = ({
               <Grid container spacing={2}>
                 <Grid size={{ xs: 12, md: 4 }}>
                   <FormControl sx={{ width: '100%', mb: 2 }}>
-                    <FormLabel htmlFor="name">Customer Name *</FormLabel>
+                    <FormLabel htmlFor="name">Customer Name</FormLabel>
                     <Input
                       id="name"
                       name="name"
@@ -259,7 +259,7 @@ export const CustomerForm: React.FC<CustomerFormProps> = ({
 
                 <Grid size={{ xs: 12, md: 4 }}>
                   <FormControl sx={{ width: '100%', mb: 2 }}>
-                    <FormLabel htmlFor="tier">Customer Tier *</FormLabel>
+                    <FormLabel htmlFor="tier">Customer Tier</FormLabel>
                     <TextField
                       select
                       fullWidth

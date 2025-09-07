@@ -23,60 +23,31 @@ export const getCustomerColumns = ({
     type: 'string',
     flex: 1,
     minWidth: 200,
+    align: 'center',
     headerAlign: 'center',
     renderCell: (params) => {
-      const customer = params.row as Customer;
-      const customerName = customer.name || 'Unnamed Customer';
-      const customerEmail = customer.email;
-
-      // const getInitials = (name: string) => {
-      //   return name
-      //     .split(' ')
-      //     .map((word) => word.charAt(0))
-      //     .join('')
-      //     .toUpperCase()
-      //     .slice(0, 2);
-      // };
+      const createdBy = params.row as Customer;
+      const customerName = createdBy?.name || 'Unnamed Customer';
+      const customerEmail = createdBy?.email || 'Unknown Email';
 
       return (
         <Box
           sx={{
-            height: '100%',
-            // display: 'flex',
-            // alignItems: 'center',
-            // gap: 1.5,
+            display: 'flex',
+            flexDirection: 'column',
+            justifyContent: 'center',
+            py: 0.5,
           }}
         >
-          {/* <Avatar
+          <Typography variant="body2">{customerName}</Typography>
+          <Typography
+            variant="caption"
             sx={{
-              width: 40,
-              height: 40,
-              bgcolor:
-                customer.tier === 'vip' ? 'warning.light' : 'primary.light',
-              fontSize: '0.875rem',
+              color: 'text.secondary',
             }}
           >
-            {getInitials(customerName)}
-          </Avatar> */}
-          <Box
-            sx={{
-              display: 'flex',
-              flexDirection: 'column',
-              justifyContent: 'center',
-            }}
-          >
-            <Typography variant="body2">{customerName}</Typography>
-            {customerEmail && (
-              <Typography
-                variant="caption"
-                sx={{
-                  color: 'text.secondary',
-                }}
-              >
-                {customerEmail}
-              </Typography>
-            )}
-          </Box>
+            {customerEmail}
+          </Typography>
         </Box>
       );
     },
@@ -97,28 +68,18 @@ export const getCustomerColumns = ({
             display: 'flex',
             flexDirection: 'column',
             justifyContent: 'center',
-            alignItems: 'center',
+            py: 2,
           }}
         >
-          {customer.phone ? (
-            <Typography
-              variant="body2"
-              sx={{
-                display: 'flex',
-                // alignItems: 'center',
-                gap: 0.5,
-              }}
-            >
-              {customer.phone}
-            </Typography>
-          ) : (
-            <Typography
-              variant="caption"
-              sx={{ color: 'text.secondary', fontStyle: 'italic' }}
-            >
-              No phone
-            </Typography>
-          )}
+          <Typography
+            variant="body2"
+            sx={{
+              display: 'flex',
+              justifyContent: 'center',
+            }}
+          >
+            {customer.phone}
+          </Typography>
         </Box>
       );
     },
@@ -181,40 +142,12 @@ export const getCustomerColumns = ({
     minWidth: 150,
     align: 'center',
     headerAlign: 'center',
-    valueFormatter: ({ value }) => {
-      if (value == null) return '-';
+    valueFormatter: (params) => {
+      if (params == null) return '-';
       return new Intl.NumberFormat('vi-VN', {
         style: 'currency',
         currency: 'VND',
-        notation: 'compact',
-        compactDisplay: 'short',
-      }).format(value);
-    },
-    renderCell: (params) => {
-      const value = params.value || 0;
-      const color =
-        value > 10000000 ? 'success' : value > 1000000 ? 'warning' : 'default';
-
-      return (
-        <Typography
-          variant="body2"
-          sx={{
-            color:
-              color === 'success'
-                ? 'success.main'
-                : color === 'warning'
-                  ? 'warning.main'
-                  : 'text.primary',
-          }}
-        >
-          {new Intl.NumberFormat('vi-VN', {
-            style: 'currency',
-            currency: 'VND',
-            notation: 'compact',
-            compactDisplay: 'short',
-          }).format(value)}
-        </Typography>
-      );
+      }).format(params);
     },
   },
   {
@@ -238,7 +171,6 @@ export const getCustomerColumns = ({
             variant="body2"
             sx={{
               overflow: 'hidden',
-              // textOverflow: 'ellipsis',
               whiteSpace: 'nowrap',
               maxWidth: '100%',
               color: address ? 'text.primary' : 'text.secondary',
@@ -281,11 +213,7 @@ export const getCustomerColumns = ({
     align: 'center',
     headerAlign: 'center',
     renderCell: (params) => {
-      return (
-        <Typography variant="caption" color="text.primary">
-          {formatDateTime(params.value)}
-        </Typography>
-      );
+      return formatDateTime(params.value);
     },
   },
   {
@@ -312,10 +240,6 @@ export const getCustomerColumns = ({
             onClick={(e) => onMenuClick(e, customer.id.toString())}
             sx={{
               color: 'text.secondary',
-              '&:hover': {
-                color: brand[500],
-                // backgroundColor: 'action.hover',
-              },
             }}
             title="More options"
           >
