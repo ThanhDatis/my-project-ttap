@@ -18,6 +18,7 @@ export type Product = {
     email: string;
   } | null;
 };
+
 export type ProductsListPayload = {
   items: Product[];
   pagination: {

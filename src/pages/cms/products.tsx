@@ -160,7 +160,7 @@ const Products: React.FC = () => {
               },
               '& .MuiDataGrid-cell': {
                 fontSize: isMobile ? '0.75rem' : '0.875rem',
-                padding: isMobile ? '4px 8px' : '8px 16px',
+                // padding: isMobile ? '4px 8px' : '8px 16px',
               },
             },
             '& .MuiDataGrid-row': {

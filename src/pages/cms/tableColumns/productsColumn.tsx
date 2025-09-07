@@ -1,8 +1,6 @@
 /* eslint-disable no-unused-vars */
-import {
-  MoreVert as MoreVertIcon,
-  Category as CategoryIcon,
-} from '@mui/icons-material';
+import CategoryRoundedIcon from '@mui/icons-material/CategoryRounded';
+import MoreVertRoundedIcon from '@mui/icons-material/MoreVertRounded';
 import { Chip, IconButton, Box, Typography } from '@mui/material';
 import { type GridColDef } from '@mui/x-data-grid';
 import React from 'react';
@@ -73,7 +71,9 @@ export const getProductColumns = ({
             gap: 0.5,
           }}
         >
-          <CategoryIcon sx={{ width: 18, height: 18, color: brand[550] }} />
+          <CategoryRoundedIcon
+            sx={{ width: 18, height: 18, color: brand[550] }}
+          />
           <Box
             sx={{
               display: 'flex',
@@ -165,7 +165,7 @@ export const getProductColumns = ({
             display: 'flex',
             flexDirection: 'column',
             justifyContent: 'center',
-            // py: 0.5,
+            py: 0.5,
           }}
         >
           <Typography variant="body2"> {name} </Typography>
@@ -209,7 +209,7 @@ export const getProductColumns = ({
             }}
             title="More options"
           >
-            <MoreVertIcon fontSize="small" />
+            <MoreVertRoundedIcon fontSize="small" />
           </IconButton>
         </Box>
       );

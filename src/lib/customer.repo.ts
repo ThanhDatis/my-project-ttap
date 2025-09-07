@@ -16,7 +16,7 @@ export interface Customer {
 }
 
 export interface CustomerPayload {
-  name: string;
+  name?: string;
   email?: string;
   phone?: string;
   address?: string;
@@ -57,6 +57,7 @@ type ApiEnvelope<T> = {
 
 const base = '/customers';
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 function extractCustomer(raw: any): Customer | null {
   if (!raw) return null;
   const d = raw.data ?? raw;
@@ -173,6 +174,7 @@ class CustomerRepository {
         throw new Error('Failed to create customer');
       }
       return customer;
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (e: any) {
       const msg =
         e?.response?.data?.message ||
@@ -198,6 +200,7 @@ class CustomerRepository {
         throw new Error('Failed to update customer');
       }
       return customer;
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (e: any) {
       const msg =
         e?.response?.data?.message ||

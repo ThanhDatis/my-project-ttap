@@ -1,4 +1,3 @@
-// import AddRoundedIcon from '@mui/icons-material/AddRounded';
 import DeleteRoundedIcon from '@mui/icons-material/DeleteRounded';
 import EditRoundedIcon from '@mui/icons-material/EditRounded';
 import VisibilityRoundedIcon from '@mui/icons-material/VisibilityRounded';
@@ -6,7 +5,6 @@ import {
   Box,
   Typography,
   Button,
-  // Alert,
   Dialog,
   DialogTitle,
   DialogContent,
@@ -85,8 +83,6 @@ const Customers: React.FC = () => {
           height: '100vh',
           width: '100%',
           flexDirection: 'column',
-          alignItems: 'center',
-          justifyContent: 'center',
           overflow: 'hidden',
         }}
       >
@@ -145,10 +141,10 @@ const Customers: React.FC = () => {
           rowHeight={isMobile ? 60 : 90}
           columnHeaders={columns}
           isLoading={isLoading}
-          checkboxSelection={false}
+          checkboxSelection={true}
           items={customers}
           totalCount={total}
-          currentPage={page - 1} // MUI DataGrid uses 0-based indexing
+          currentPage={page - 1}
           maxPageSize={limit}
           onPageChange={handlePageChange}
           handleSortModelChange={handleSortModelChange}
@@ -166,7 +162,7 @@ const Customers: React.FC = () => {
               },
               '& .MuiDataGrid-cell': {
                 fontSize: isMobile ? '0.75rem' : '0.875rem',
-                padding: isMobile ? '4px 8px' : '8px 16px',
+                // padding: isMobile ? '4px 8px' : '8px 16px',
               },
             },
             '& .MuiDataGrid-row': {
@@ -184,7 +180,6 @@ const Customers: React.FC = () => {
         />
       </Box>
 
-      {/* Context Menu */}
       <Menu
         anchorEl={anchorEl}
         open={Boolean(anchorEl)}
@@ -232,7 +227,6 @@ const Customers: React.FC = () => {
         </MenuItem>
       </Menu>
 
-      {/* Customer Detail Dialog */}
       <CustomerDetailDialog
         open={showDetail}
         onClose={handleCloseDetail}
@@ -241,7 +235,6 @@ const Customers: React.FC = () => {
         onDelete={handleDeleteFromDetail}
       />
 
-      {/* Delete Confirmation Dialog */}
       <Dialog
         open={showDeleteDialog}
         onClose={handleCloseDeleteDialog}

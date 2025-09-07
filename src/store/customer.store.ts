@@ -83,6 +83,7 @@ export const useCustomerStore = create<State & Actions>((set, get) => ({
         limit: pagination?.limit ?? limit,
         isLoading: false,
       });
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (err: any) {
       set({
         isLoading: false,

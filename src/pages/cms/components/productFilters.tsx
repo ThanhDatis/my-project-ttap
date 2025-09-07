@@ -1,9 +1,7 @@
 /* eslint-disable no-unused-vars */
-import {
-  Search as SearchIcon,
-  Clear as ClearIcon,
-  FilterList as FilterIcon,
-} from '@mui/icons-material';
+import ClearRoundedIcon from '@mui/icons-material/ClearRounded';
+import FilterListRoundedIcon from '@mui/icons-material/FilterListRounded';
+import SearchRoundedIcon from '@mui/icons-material/SearchRounded';
 import {
   Box,
   TextField,
@@ -118,7 +116,7 @@ export const ProductFiltersComponent: React.FC<ProductFiltersProps> = ({
   return (
     <Paper sx={{ p: 2, mb: 2 }}>
       <Box sx={{ display: 'flex', alignItems: 'center', mb: 2, gap: 1 }}>
-        <FilterIcon color="action" />
+        <FilterListRoundedIcon color="action" />
         <Box sx={{ fontWeight: 500, fontSize: '1rem' }}>Filters</Box>
         {hasActiveFilters() && (
           <Chip
@@ -132,7 +130,7 @@ export const ProductFiltersComponent: React.FC<ProductFiltersProps> = ({
         {hasActiveFilters() && (
           <Button
             size="small"
-            startIcon={<ClearIcon />}
+            startIcon={<ClearRoundedIcon />}
             onClick={handleClearFilters}
             disabled={isLoading}
             sx={{ bgcolor: gray[200] }}
@@ -154,7 +152,7 @@ export const ProductFiltersComponent: React.FC<ProductFiltersProps> = ({
             InputProps={{
               startAdornment: (
                 <InputAdornment position="start">
-                  <SearchIcon color="action" />
+                  <SearchRoundedIcon color="action" />
                 </InputAdornment>
               ),
               endAdornment: localFilters.search && (
@@ -167,7 +165,7 @@ export const ProductFiltersComponent: React.FC<ProductFiltersProps> = ({
                       } as React.ChangeEvent<HTMLInputElement>)
                     }
                   >
-                    <ClearIcon fontSize="small" />
+                    <ClearRoundedIcon fontSize="small" />
                   </Button>
                 </InputAdornment>
               ),

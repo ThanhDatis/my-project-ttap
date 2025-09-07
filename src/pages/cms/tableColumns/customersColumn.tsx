@@ -1,12 +1,7 @@
 /* eslint-disable no-unused-vars */
-import {
-  MoreVert as MoreVertIcon,
-  Person as PersonIcon,
-  Star as StarIcon,
-  Email as EmailIcon,
-  Phone as PhoneIcon,
-} from '@mui/icons-material';
-import { Chip, IconButton, Box, Typography, Avatar } from '@mui/material';
+import MoreVertRoundedIcon from '@mui/icons-material/MoreVertRounded';
+import StarRoundedIcon from '@mui/icons-material/StarRounded';
+import { Chip, IconButton, Box, Typography } from '@mui/material';
 import { type GridColDef } from '@mui/x-data-grid';
 import React from 'react';
 
@@ -34,25 +29,25 @@ export const getCustomerColumns = ({
       const customerName = customer.name || 'Unnamed Customer';
       const customerEmail = customer.email;
 
-      const getInitials = (name: string) => {
-        return name
-          .split(' ')
-          .map((word) => word.charAt(0))
-          .join('')
-          .toUpperCase()
-          .slice(0, 2);
-      };
+      // const getInitials = (name: string) => {
+      //   return name
+      //     .split(' ')
+      //     .map((word) => word.charAt(0))
+      //     .join('')
+      //     .toUpperCase()
+      //     .slice(0, 2);
+      // };
 
       return (
         <Box
           sx={{
             height: '100%',
-            display: 'flex',
-            alignItems: 'center',
-            gap: 1.5,
+            // display: 'flex',
+            // alignItems: 'center',
+            // gap: 1.5,
           }}
         >
-          <Avatar
+          {/* <Avatar
             sx={{
               width: 40,
               height: 40,
@@ -62,7 +57,7 @@ export const getCustomerColumns = ({
             }}
           >
             {getInitials(customerName)}
-          </Avatar>
+          </Avatar> */}
           <Box
             sx={{
               display: 'flex',
@@ -70,20 +65,14 @@ export const getCustomerColumns = ({
               justifyContent: 'center',
             }}
           >
-            <Typography variant="body2" sx={{ fontWeight: 500 }}>
-              {customerName}
-            </Typography>
+            <Typography variant="body2">{customerName}</Typography>
             {customerEmail && (
               <Typography
                 variant="caption"
                 sx={{
                   color: 'text.secondary',
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: 0.5,
                 }}
               >
-                <EmailIcon sx={{ fontSize: 12 }} />
                 {customerEmail}
               </Typography>
             )}
@@ -96,7 +85,8 @@ export const getCustomerColumns = ({
     field: 'phone',
     headerName: 'Contact',
     type: 'string',
-    minWidth: 150,
+    flex: 1,
+    minWidth: 120,
     align: 'center',
     headerAlign: 'center',
     renderCell: (params) => {
@@ -115,11 +105,10 @@ export const getCustomerColumns = ({
               variant="body2"
               sx={{
                 display: 'flex',
-                alignItems: 'center',
+                // alignItems: 'center',
                 gap: 0.5,
               }}
             >
-              <PhoneIcon sx={{ fontSize: 14 }} />
               {customer.phone}
             </Typography>
           ) : (
@@ -150,7 +139,7 @@ export const getCustomerColumns = ({
           label={isVip ? 'VIP' : 'Normal'}
           size="small"
           color={isVip ? 'warning' : 'default'}
-          icon={isVip ? <StarIcon sx={{ fontSize: 16 }} /> : undefined}
+          icon={isVip ? <StarRoundedIcon sx={{ fontSize: 16 }} /> : undefined}
           variant={isVip ? 'filled' : 'outlined'}
           sx={{
             fontWeight: isVip ? 600 : 400,
@@ -173,13 +162,13 @@ export const getCustomerColumns = ({
     headerAlign: 'center',
     renderCell: (params) => {
       const totalOrders = params.value || 0;
-
+      const color = totalOrders > 0 ? 'primary' : 'default';
       return (
         <Chip
           label={formatNumber(totalOrders)}
           size="small"
-          color={totalOrders > 0 ? 'primary' : 'default'}
-          variant="outlined"
+          color={color}
+          variant={totalOrders === 0 ? 'filled' : 'outlined'}
         />
       );
     },
@@ -188,6 +177,7 @@ export const getCustomerColumns = ({
     field: 'lifetimeValue',
     headerName: 'Lifetime Value',
     type: 'number',
+    flex: 1,
     minWidth: 150,
     align: 'center',
     headerAlign: 'center',
@@ -215,7 +205,6 @@ export const getCustomerColumns = ({
                 : color === 'warning'
                   ? 'warning.main'
                   : 'text.primary',
-            fontWeight: value > 1000000 ? 600 : 400,
           }}
         >
           {new Intl.NumberFormat('vi-VN', {
@@ -240,20 +229,26 @@ export const getCustomerColumns = ({
       const address = params.value;
 
       return (
-        <Typography
-          variant="body2"
+        <Box
           sx={{
-            overflow: 'hidden',
-            textOverflow: 'ellipsis',
-            whiteSpace: 'nowrap',
-            maxWidth: '100%',
-            color: address ? 'text.primary' : 'text.secondary',
-            fontStyle: address ? 'normal' : 'italic',
+            py: 2,
           }}
-          title={address || 'No address provided'}
         >
-          {address || 'No address'}
-        </Typography>
+          <Typography
+            variant="body2"
+            sx={{
+              overflow: 'hidden',
+              // textOverflow: 'ellipsis',
+              whiteSpace: 'nowrap',
+              maxWidth: '100%',
+              color: address ? 'text.primary' : 'text.secondary',
+              fontStyle: address ? 'normal' : 'italic',
+            }}
+            title={address || 'No address provided'}
+          >
+            {address || 'No address'}
+          </Typography>
+        </Box>
       );
     },
   },
@@ -281,12 +276,13 @@ export const getCustomerColumns = ({
     field: 'createdAt',
     headerName: 'Created',
     type: 'string',
-    minWidth: 120,
+    flex: 1,
+    minWidth: 160,
     align: 'center',
     headerAlign: 'center',
     renderCell: (params) => {
       return (
-        <Typography variant="caption" color="text.secondary">
+        <Typography variant="caption" color="text.primary">
           {formatDateTime(params.value)}
         </Typography>
       );
@@ -323,7 +319,7 @@ export const getCustomerColumns = ({
             }}
             title="More options"
           >
-            <MoreVertIcon fontSize="small" />
+            <MoreVertRoundedIcon fontSize="small" />
           </IconButton>
         </Box>
       );

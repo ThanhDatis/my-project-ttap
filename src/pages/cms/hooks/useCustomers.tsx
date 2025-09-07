@@ -16,7 +16,6 @@ function isAxiosError(error: unknown): error is AxiosError {
 
 function useDebounced<T>(value: T, delay = 350) {
   const [debounced, setDebounced] = useState(value);
-  // const handler = useRef<ReturnType<typeof setTimeout>>();
 
   useEffect(() => {
     const t = setTimeout(() => setDebounced(value), delay);
@@ -62,8 +61,6 @@ export default function useCustomers() {
     setLimit,
     setTier,
     setSort,
-    // createCustomer: s.createCustomer,
-    // updateCustomer: s.updateCustomer,
     deleteCustomer,
     clearError,
   } = useCustomerStore(selector);
