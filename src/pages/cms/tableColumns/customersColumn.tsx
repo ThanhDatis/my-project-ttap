@@ -5,7 +5,7 @@ import { Chip, IconButton, Box, Typography } from '@mui/material';
 import { type GridColDef } from '@mui/x-data-grid';
 import React from 'react';
 
-import { brand } from '../../../common/color';
+// import { brand } from '../../../common/color';
 import { type Customer, type Tier } from '../../../lib/customer.repo';
 import { formatNumber, formatDateTime } from '../../../utils';
 

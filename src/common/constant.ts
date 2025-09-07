@@ -13,6 +13,7 @@ export const ROUTES = {
   PRODUCTS: '/products',
   CUSTOMERS: '/customers',
   ORDERS: '/orders',
+  EMPLOYEES: '/employees',
   SETTING: '/setting',
   PROFILE: '/profile',
 } as const;

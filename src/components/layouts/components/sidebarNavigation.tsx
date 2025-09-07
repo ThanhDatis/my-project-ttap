@@ -1,3 +1,4 @@
+import BadgeRoundedIcon from '@mui/icons-material/BadgeRounded';
 import CategoryRoundedIcon from '@mui/icons-material/CategoryRounded';
 import GroupRoundedIcon from '@mui/icons-material/GroupRounded';
 import SellRoundedIcon from '@mui/icons-material/SellRounded';
@@ -25,6 +26,7 @@ const menuItems: MenuItem[] = [
   { text: 'Products', icon: <CategoryRoundedIcon />, path: ROUTES.PRODUCTS },
   { text: 'Customers', icon: <GroupRoundedIcon />, path: ROUTES.CUSTOMERS },
   { text: 'Orders', icon: <SellRoundedIcon />, path: ROUTES.ORDERS },
+  { text: 'Employees', icon: <BadgeRoundedIcon />, path: ROUTES.EMPLOYEES },
 ];
 
 const bottomMenuItems: MenuItem[] = [
