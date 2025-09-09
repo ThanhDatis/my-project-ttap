@@ -14,27 +14,23 @@ import {
 } from '@mui/material';
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 
-import type { Tier } from '../../../lib/customer.repo';
-import { TIER_OPTIONS, SORT_OPTIONS } from '../tableColumns/customersColumn';
+import { SORT_OPTIONS } from '../tableColumns/customersColumn';
 
 const DEFAULT_SORT = 'createdAt:desc';
+
 interface CustomerFiltersProps {
   search: string;
-  tier: 'all' | Tier;
   sort: string;
   totalCount?: number;
   onSearchChange: (search: string) => void;
-  onTierChange: (tier: 'all' | Tier) => void;
   onSortChange: (sort: string) => void;
 }
 
 const CustomerFilters: React.FC<CustomerFiltersProps> = ({
   search,
-  tier,
   sort,
   totalCount = 0,
   onSearchChange,
-  onTierChange,
   onSortChange,
 }) => {
   const [localSearch, setLocalSearch] = useState(search);
@@ -59,29 +55,24 @@ const CustomerFilters: React.FC<CustomerFiltersProps> = ({
   }, [localSearch, onSearchChange, search]);
 
   const hasActiveFilters = useMemo(
-    () => Boolean(search) || tier !== 'all' || (sort && sort !== DEFAULT_SORT),
-    [search, tier, sort],
+    () => Boolean(search) || (sort && sort !== DEFAULT_SORT),
+    [search, sort],
   );
 
   const getActiveFilterCount = useMemo(() => {
     let c = 0;
     if (search) c += 1;
-    if (tier !== 'all') c += 1;
     if (sort && sort !== DEFAULT_SORT) c += 1;
     return c;
-  }, [search, tier, sort]);
+  }, [search, sort]);
 
   const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    onSearchChange(event.target.value);
+    setLocalSearch(event.target.value);
   };
 
   const handleClearSearch = () => {
     onSearchChange('');
     setLocalSearch('');
-  };
-
-  const handleTierChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    onTierChange(event.target.value as 'all' | Tier);
   };
 
   const handleSortChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -91,7 +82,6 @@ const CustomerFilters: React.FC<CustomerFiltersProps> = ({
   const clearAll = () => {
     setLocalSearch('');
     onSearchChange('');
-    onTierChange('all');
     onSortChange(DEFAULT_SORT);
   };
 
@@ -131,11 +121,11 @@ const CustomerFilters: React.FC<CustomerFiltersProps> = ({
       </Box>
 
       <Grid container spacing={2}>
-        <Grid size={{ xs: 12, md: 4 }}>
+        <Grid size={{ xs: 12, md: 8 }}>
           <TextField
             fullWidth
             size="small"
-            placeholder="Search customers by name, email, or phone..."
+            placeholder="Search customers by name, email, phone, or address..."
             value={localSearch}
             onChange={handleSearchChange}
             InputProps={{
@@ -154,24 +144,6 @@ const CustomerFilters: React.FC<CustomerFiltersProps> = ({
             }}
             inputProps={{ 'aria-label': 'search customers' }}
           />
-        </Grid>
-
-        <Grid size={{ xs: 12, md: 4 }}>
-          <TextField
-            select
-            fullWidth
-            size="small"
-            label="Filter by Tier"
-            value={tier}
-            onChange={handleTierChange}
-            inputProps={{ 'aria-label': 'Filter by tier' }}
-          >
-            {TIER_OPTIONS.map((option) => (
-              <MenuItem key={option.value} value={option.value}>
-                {option.label}
-              </MenuItem>
-            ))}
-          </TextField>
         </Grid>
 
         <Grid size={{ xs: 12, md: 4 }}>
@@ -207,15 +179,6 @@ const CustomerFilters: React.FC<CustomerFiltersProps> = ({
             label={`Search: "${localSearch}"`}
             size="small"
             onDelete={handleClearSearch}
-            color="default"
-          />
-        )}
-
-        {tier !== 'all' && (
-          <Chip
-            label={`Tier: ${tier.charAt(0).toUpperCase() + tier.slice(1)}`}
-            size="small"
-            onDelete={() => onTierChange('all')}
             color="default"
           />
         )}

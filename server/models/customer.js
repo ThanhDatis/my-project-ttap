@@ -23,21 +23,33 @@ const CustomerSchema = new mongoose.Schema({
     type: String,
     trim: true,
   },
-  tier: {
+  city: {
     type: String,
-    enum: ['vip', 'normal'],
-    default: 'normal',
-    // lowercase: true,
-    // trim: true,
+    trim: true,
   },
-  totalOrders: {
-    type: Number,
-    default: 0,
+  district: {
+    type: String,
+    trim: true,
   },
-  lifetimeValue: {
-    type: Number,
-    default: 0,
+  ward: {
+    type: String,
+    trim: true,
   },
+  // tier: {
+  //   type: String,
+  //   enum: ['vip', 'normal'],
+  //   default: 'normal',
+  //   // lowercase: true,
+  //   // trim: true,
+  // },
+  // totalOrders: {
+  //   type: Number,
+  //   default: 0,
+  // },
+  // lifetimeValue: {
+  //   type: Number,
+  //   default: 0,
+  // },
   isActive: {
     type: Boolean,
     default: true,

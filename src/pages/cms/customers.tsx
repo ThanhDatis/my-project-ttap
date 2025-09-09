@@ -52,7 +52,7 @@ const Customers: React.FC = () => {
     handleRefresh,
     handlePageChange,
     handleSearchChange,
-    handleTierChange,
+    // handleTierChange,
     handleSortChange,
     handleSortModelChange,
 
@@ -69,7 +69,7 @@ const Customers: React.FC = () => {
 
     // clearError,
     search,
-    tier,
+    // tier,
     sort,
   } = useCustomers();
 
@@ -119,11 +119,11 @@ const Customers: React.FC = () => {
 
       <CustomerFilters
         search={search}
-        tier={tier}
+        // tier={tier}
         sort={sort}
         totalCount={total}
         onSearchChange={handleSearchChange}
-        onTierChange={handleTierChange}
+        // onTierChange={handleTierChange}
         onSortChange={handleSortChange}
       />
 

@@ -1,15 +1,13 @@
 /* eslint-disable no-unused-vars */
-import AttachMoneyRoundedIcon from '@mui/icons-material/AttachMoneyRounded';
 import CloseRoundedIcon from '@mui/icons-material/CloseRounded';
 import DateRangeRoundedIcon from '@mui/icons-material/DateRangeRounded';
 import DeleteRoundedIcon from '@mui/icons-material/DeleteRounded';
 import EditRoundedIcon from '@mui/icons-material/EditRounded';
 import EmailRoundedIcon from '@mui/icons-material/EmailRounded';
 import LocationOnRoundedIcon from '@mui/icons-material/LocationOnRounded';
-// import PersonRoundedIcon from '@mui/icons-material/PersonRounded';
+import PersonRoundedIcon from '@mui/icons-material/PersonRounded';
 import PhoneRoundedIcon from '@mui/icons-material/PhoneRounded';
 import ShoppingCartRoundedIcon from '@mui/icons-material/ShoppingCartRounded';
-import StarRoundedIcon from '@mui/icons-material/StarRounded';
 import {
   Dialog,
   DialogTitle,
@@ -27,7 +25,7 @@ import {
 import React from 'react';
 
 import { type Customer } from '../../../lib/customer.repo';
-import { formatDateTime, formatNumber } from '../../../utils';
+import { formatDateTime } from '../../../utils';
 
 interface CustomerDetailDialogProps {
   open: boolean;
@@ -68,22 +66,22 @@ export const CustomerDetailDialog: React.FC<CustomerDetailDialogProps> = ({
     return null;
   }
 
-  const getTierChip = () => {
-    const tier = customer.tier;
-    const color = tier === 'vip' ? 'warning' : 'default';
-    const icon =
-      tier === 'vip' ? <StarRoundedIcon fontSize="small" /> : undefined;
+  // const getTierChip = () => {
+  //   const tier = customer.tier;
+  //   const color = tier === 'vip' ? 'warning' : 'default';
+  //   const icon =
+  //     tier === 'vip' ? <StarRoundedIcon fontSize="small" /> : undefined;
 
-    return (
-      <Chip
-        label={tier === 'vip' ? 'VIP Customer' : 'Normal Customer'}
-        color={color}
-        size="small"
-        icon={icon}
-        sx={{ textTransform: 'capitalize' }}
-      />
-    );
-  };
+  //   return (
+  //     <Chip
+  //       label={tier === 'vip' ? 'VIP Customer' : 'Normal Customer'}
+  //       color={color}
+  //       size="small"
+  //       icon={icon}
+  //       sx={{ textTransform: 'capitalize' }}
+  //     />
+  //   );
+  // };
 
   const getStatusChip = () => {
     const isActive = customer.isActive;
@@ -96,12 +94,12 @@ export const CustomerDetailDialog: React.FC<CustomerDetailDialogProps> = ({
     );
   };
 
-  const formatCurrency = (value: number) => {
-    return new Intl.NumberFormat('vi-VN', {
-      style: 'currency',
-      currency: 'VND',
-    }).format(value);
-  };
+  // const formatCurrency = (value: number) => {
+  //   return new Intl.NumberFormat('vi-VN', {
+  //     style: 'currency',
+  //     currency: 'VND',
+  //   }).format(value);
+  // };
 
   const getInitials = (name: string) => {
     return name
@@ -110,6 +108,16 @@ export const CustomerDetailDialog: React.FC<CustomerDetailDialogProps> = ({
       .join('')
       .toUpperCase()
       .slice(0, 2);
+  };
+
+  const getFullAddress = () => {
+    const parts = [
+      customer.address,
+      customer.ward,
+      customer.district,
+      customer.city,
+    ].filter(Boolean);
+    return parts.join(', ') || 'No address provided';
   };
 
   return (
@@ -160,8 +168,7 @@ export const CustomerDetailDialog: React.FC<CustomerDetailDialogProps> = ({
                   height: 120,
                   fontSize: '2.5rem',
                   mb: 2,
-                  bgcolor:
-                    customer.tier === 'vip' ? 'warning.light' : 'primary.light',
+                  bgcolor: 'primary.light',
                 }}
               >
                 {getInitials(customer.name)}
@@ -177,7 +184,7 @@ export const CustomerDetailDialog: React.FC<CustomerDetailDialogProps> = ({
                   justifyContent: 'center',
                 }}
               >
-                {getTierChip()}
+                {/* {getTierChip()} */}
                 {getStatusChip()}
               </Box>
             </Box>
@@ -189,6 +196,15 @@ export const CustomerDetailDialog: React.FC<CustomerDetailDialogProps> = ({
             </Typography>
 
             <Grid container spacing={2}>
+              <Grid size={{ xs: 12, sm: 6 }}>
+                <InfoItem
+                  icon={<PersonRoundedIcon />}
+                  label="Full Name"
+                  value={
+                    <Typography variant="body2">{customer.name}</Typography>
+                  }
+                />
+              </Grid>
               <Grid size={{ xs: 12, sm: 6 }}>
                 <InfoItem
                   icon={<EmailRoundedIcon />}
@@ -208,13 +224,15 @@ export const CustomerDetailDialog: React.FC<CustomerDetailDialogProps> = ({
                   }
                 />
               </Grid>
-              <Grid size={{ xs: 12, sm: 6 }}>
+              <Grid size={{ xs: 12, sm: 12 }}>
                 <InfoItem
                   icon={<PhoneRoundedIcon />}
-                  label="Phone"
+                  label="Phone Number"
                   value={
                     customer.phone ? (
-                      <Typography variant="body2">{customer.phone}</Typography>
+                      <Typography variant="body2" sx={{ lineHeight: 1.6 }}>
+                        {customer.phone}
+                      </Typography>
                     ) : (
                       <Typography
                         variant="body2"
@@ -227,118 +245,93 @@ export const CustomerDetailDialog: React.FC<CustomerDetailDialogProps> = ({
                   }
                 />
               </Grid>
-              <Grid size={{ xs: 12, sm: 12 }}>
-                <InfoItem
-                  icon={<LocationOnRoundedIcon />}
-                  label="Address"
-                  value={
-                    customer.address ? (
-                      <Typography variant="body2" sx={{ lineHeight: 1.6 }}>
-                        {customer.address}
-                      </Typography>
-                    ) : (
-                      <Typography
-                        variant="body2"
-                        color="text.secondary"
-                        fontStyle="italic"
-                      >
-                        No address provided
-                      </Typography>
-                    )
-                  }
-                />
-              </Grid>
             </Grid>
           </Grid>
 
           <Grid size={{ xs: 12, sm: 12 }}>
             <Divider sx={{ mb: 2 }} />
             <Typography variant="h6" gutterBottom>
-              Customer Statistics
+              Address Information
             </Typography>
 
             <Grid container spacing={3}>
               <Grid size={{ xs: 6, sm: 3 }}>
                 <InfoItem
                   icon={<ShoppingCartRoundedIcon />}
-                  label="Total Orders"
+                  label="Full Address"
                   value={
                     <Typography variant="h6" color="primary">
-                      {formatNumber(customer.totalOrders || 0)}
+                      {getFullAddress()}
                     </Typography>
                   }
                 />
               </Grid>
               <Grid size={{ xs: 6, sm: 3 }}>
                 <InfoItem
-                  icon={<AttachMoneyRoundedIcon />}
-                  label="Lifetime Value"
+                  icon={<LocationOnRoundedIcon />}
+                  label="Street Address"
                   value={
-                    <Typography variant="h6" color="success.main">
-                      {formatCurrency(customer.lifetimeValue || 0)}
+                    <Typography
+                      variant="body2"
+                      color={
+                        customer.address ? 'text.primary' : 'text.secondary'
+                      }
+                      fontStyle={customer.address ? 'normal' : 'italic'}
+                    >
+                      {customer.address || 'N/A'}
                     </Typography>
                   }
                 />
               </Grid>
               <Grid size={{ xs: 6, sm: 3 }}>
                 <InfoItem
-                  icon={<StarRoundedIcon />}
-                  label="Customer Tier"
-                  value={getTierChip()}
+                  icon={<LocationOnRoundedIcon />}
+                  label="Ward"
+                  value={
+                    <Typography
+                      variant="body2"
+                      color={customer.ward ? 'text.primary' : 'text.secondary'}
+                      fontStyle={customer.ward ? 'normal' : 'italic'}
+                    >
+                      {customer.ward || 'N/A'}
+                    </Typography>
+                  }
                 />
               </Grid>
               <Grid size={{ xs: 6, sm: 3 }}>
                 <InfoItem
-                  icon={<DateRangeRoundedIcon />}
-                  label="Member Since"
+                  icon={<LocationOnRoundedIcon />}
+                  label="District"
                   value={
-                    <Typography variant="body2">
-                      {formatDateTime(customer.createdAt)}
+                    <Typography
+                      variant="body2"
+                      color={
+                        customer.district ? 'text.primary' : 'text.secondary'
+                      }
+                      fontStyle={customer.district ? 'normal' : 'italic'}
+                    >
+                      {customer.district || 'N/A'}
+                    </Typography>
+                  }
+                />
+              </Grid>
+              <Grid size={{ xs: 12, sm: 4 }}>
+                <InfoItem
+                  icon={<LocationOnRoundedIcon />}
+                  label="City/Province"
+                  value={
+                    <Typography
+                      variant="body2"
+                      color={customer.city ? 'text.primary' : 'text.secondary'}
+                      fontStyle={customer.city ? 'normal' : 'italic'}
+                    >
+                      {customer.city || 'Not provided'}
                     </Typography>
                   }
                 />
               </Grid>
             </Grid>
           </Grid>
-
-          {(customer.totalOrders > 0 || customer.lifetimeValue > 0) && (
-            <Grid size={{ xs: 12, sm: 12 }}>
-              <Divider sx={{ mb: 2 }} />
-              <Typography variant="h6" gutterBottom>
-                Performance Summary
-              </Typography>
-              <Box sx={{ p: 2, bgcolor: 'grey.50', borderRadius: 2 }}>
-                <Grid container spacing={2}>
-                  <Grid size={{ xs: 12, sm: 6 }}>
-                    <Typography variant="body2" color="text.secondary">
-                      Average Order Value
-                    </Typography>
-                    <Typography variant="h6" color="primary">
-                      {customer.totalOrders > 0
-                        ? formatCurrency(
-                            (customer.lifetimeValue || 0) /
-                              customer.totalOrders,
-                          )
-                        : formatCurrency(0)}
-                    </Typography>
-                  </Grid>
-                  <Grid size={{ xs: 12, sm: 6 }}>
-                    <Typography variant="body2" color="text.secondary">
-                      Customer Status
-                    </Typography>
-                    <Typography
-                      variant="h6"
-                      color={
-                        customer.isActive ? 'success.main' : 'text.secondary'
-                      }
-                    >
-                      {customer.isActive ? 'Active' : 'Inactive'}
-                    </Typography>
-                  </Grid>
-                </Grid>
-              </Box>
-            </Grid>
-          )}
 
           <Grid size={{ xs: 12, sm: 12 }}>
             <Divider sx={{ mb: 2 }} />
@@ -346,24 +339,31 @@ export const CustomerDetailDialog: React.FC<CustomerDetailDialogProps> = ({
               Account Information
             </Typography>
             <Box sx={{ display: 'flex', gap: 4, flexWrap: 'wrap' }}>
-              <Box>
-                <Typography variant="caption" color="text.secondary">
-                  Created
-                </Typography>
-                <Typography variant="body2">
-                  {formatDateTime(customer.createdAt)}
-                </Typography>
-              </Box>
-              {customer.updatedAt && (
-                <Box>
-                  <Typography variant="caption" color="text.secondary">
-                    Last Updated
-                  </Typography>
+              <InfoItem
+                icon={<DateRangeRoundedIcon />}
+                label="Created"
+                value={
                   <Typography variant="body2">
-                    {formatDateTime(customer.updatedAt)}
+                    {formatDateTime(customer.createdAt)}
                   </Typography>
-                </Box>
+                }
+              />
+              {customer.updatedAt && (
+                <InfoItem
+                  icon={<DateRangeRoundedIcon />}
+                  label="Last Updated"
+                  value={
+                    <Typography variant="body2">
+                      {formatDateTime(customer.updatedAt)}
+                    </Typography>
+                  }
+                />
               )}
+              <InfoItem
+                icon={<PersonRoundedIcon />}
+                label="Status"
+                value={getStatusChip()}
+              />
             </Box>
           </Grid>
         </Grid>

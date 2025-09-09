@@ -32,7 +32,7 @@ export default function useCustomers() {
     page: state.page,
     limit: state.limit,
     search: state.search,
-    tier: state.tier,
+    // tier: state.tier,
     sort: state.sort,
     isLoading: state.isLoading,
     error: state.error,
@@ -40,7 +40,7 @@ export default function useCustomers() {
     setSearch: state.setSearch,
     setPage: state.setPage,
     setLimit: state.setLimit,
-    setTier: state.setTier,
+    // setTier: state.setTier,
     setSort: state.setSort,
     deleteCustomer: state.deleteCustomer,
     clearError: state.clearError,
@@ -51,7 +51,7 @@ export default function useCustomers() {
     page,
     limit,
     search,
-    tier,
+    // tier,
     sort,
     isLoading,
     error,
@@ -59,7 +59,7 @@ export default function useCustomers() {
     setSearch,
     setPage,
     setLimit,
-    setTier,
+    // setTier,
     setSort,
     deleteCustomer,
     clearError,
@@ -101,7 +101,7 @@ export default function useCustomers() {
   useEffect(() => {
     void fetchCustomers();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [page, limit, debouncedSearch, tier, sort]);
+  }, [page, limit, debouncedSearch, sort]);
 
   useEffect(() => {
     if (error) {
@@ -236,13 +236,13 @@ export default function useCustomers() {
     [setPage, setSearch],
   );
 
-  const handleTierChange = useCallback(
-    (newTier: 'all' | 'vip' | 'normal') => {
-      setTier(newTier);
-      setPage(1);
-    },
-    [setPage, setTier],
-  );
+  // const handleTierChange = useCallback(
+  //   (newTier: 'all' | 'vip' | 'normal') => {
+  //     setTier(newTier);
+  //     setPage(1);
+  //   },
+  //   [setPage, setTier],
+  // );
 
   const handleSortChange = useCallback(
     (newSort: string) => {
@@ -319,7 +319,7 @@ export default function useCustomers() {
     page,
     limit,
     search,
-    tier,
+    // tier,
     sort,
     selectedCustomer,
     customerToDelete,
@@ -350,7 +350,7 @@ export default function useCustomers() {
 
     handlePageChange,
     handleSearchChange,
-    handleTierChange,
+    // handleTierChange,
     handleSortChange,
     handleSortModelChange,
     handleRefresh,

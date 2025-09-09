@@ -1,15 +1,18 @@
 import axiosInstance from './axios';
 
-export type Tier = 'vip' | 'normal';
+// export type Tier = 'vip' | 'normal';
 export interface Customer {
   id: string;
   name: string;
   email?: string;
   phone?: string;
   address?: string;
-  tier: Tier;
-  totalOrders: number;
-  lifetimeValue: number;
+  city?: string;
+  district?: string;
+  ward?: string;
+  // tier: Tier;
+  // totalOrders: number;
+  // lifetimeValue: number;
   isActive: boolean;
   createdAt: string;
   updatedAt?: string;
@@ -20,9 +23,12 @@ export interface CustomerPayload {
   email?: string;
   phone?: string;
   address?: string;
-  tier?: Tier;
-  totalOrders?: number;
-  lifetimeValue?: number;
+  city?: string;
+  district?: string;
+  ward?: string;
+  // tier?: Tier;
+  // totalOrders?: number;
+  // lifetimeValue?: number;
   isActive?: boolean;
 }
 
@@ -39,7 +45,7 @@ export interface ListParams {
   page?: number;
   limit?: number;
   search?: string;
-  tier?: 'all' | Tier;
+  // tier?: 'all' | Tier;
   sortBy?: string;
   sortOrder?: 'asc' | 'desc';
 }
@@ -76,9 +82,12 @@ function sanitizePayload(p: CustomerPayload): CustomerPayload {
   if (p.email?.trim()) out.email = p.email.trim();
   if (p.phone?.trim()) out.phone = p.phone.trim();
   if (p.address?.trim()) out.address = p.address.trim();
-  if (p.tier) out.tier = p.tier;
-  if (typeof p.totalOrders === 'number') out.totalOrders = p.totalOrders;
-  if (typeof p.lifetimeValue === 'number') out.lifetimeValue = p.lifetimeValue;
+  if (p.city?.trim()) out.city = p.city.trim();
+  if (p.district?.trim()) out.district = p.district.trim();
+  if (p.ward?.trim()) out.ward = p.ward.trim();
+  // if (p.tier) out.tier = p.tier;
+  // if (typeof p.totalOrders === 'number') out.totalOrders = p.totalOrders;
+  // if (typeof p.lifetimeValue === 'number') out.lifetimeValue = p.lifetimeValue;
   if (typeof p.isActive === 'boolean') out.isActive = p.isActive;
   return out;
 }
