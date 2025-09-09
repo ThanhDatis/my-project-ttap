@@ -18,12 +18,12 @@ import React from 'react';
 import * as Yup from 'yup';
 
 import {
-  validateProductName,
+  validateName,
   validateProductDescription,
-  validateProductPrice,
-  validateProductStock,
+  validatePrice,
   validateCategory,
   validateSku,
+  validateStock,
 } from '../../../common/validate';
 import { Input } from '../../../components/fields';
 import LoadingButton from '../../../components/loadingButton';
@@ -39,10 +39,10 @@ function isAxiosError(error: unknown): error is AxiosError {
 }
 
 const productSchema = Yup.object({
-  name: validateProductName,
+  name: validateName.label('Product Name'),
   description: validateProductDescription,
-  price: validateProductPrice,
-  stock: validateProductStock,
+  price: validatePrice,
+  stock: validateStock,
   category: validateCategory,
   sku: validateSku,
 });

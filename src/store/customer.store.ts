@@ -14,7 +14,7 @@ type State = {
   limit: number;
   search: string;
   sort: string;
-  tier: 'all' | 'vip' | 'normal';
+  // tier: 'all' | 'vip' | 'normal';
   isLoading: boolean;
   isDeleting: boolean;
   error: string | null;
@@ -27,7 +27,7 @@ type Actions = {
   setPage: (page: number) => void;
   setLimit: (limit: number) => void;
   setSort: (sort: string) => void;
-  setTier: (tier: 'all' | 'vip' | 'normal') => void;
+  // setTier: (tier: 'all' | 'vip' | 'normal') => void;
 
   createCustomer: (payload: Partial<Customer>) => Promise<Customer>;
   updateCustomer: (id: string, payload: Partial<Customer>) => Promise<Customer>;
@@ -44,7 +44,7 @@ export const useCustomerStore = create<State & Actions>((set, get) => ({
 
   search: '',
   sort: 'createdAt:desc',
-  tier: 'all',
+  // tier: 'all',
 
   isLoading: false,
   // isCreating: false,
@@ -56,7 +56,7 @@ export const useCustomerStore = create<State & Actions>((set, get) => ({
   fetchCustomers: async () => {
     set({ isLoading: true, error: null });
     try {
-      const { page, limit, search, tier, sort } = get();
+      const { page, limit, search, sort } = get();
       const [sortByRaw, sortOrderRaw] = (sort || 'createdAt:desc').split(':');
       const sortBy = sortByRaw || 'createdAt';
       const sortOrder = (sortOrderRaw === 'asc' ? 'asc' : 'desc') as
@@ -69,7 +69,7 @@ export const useCustomerStore = create<State & Actions>((set, get) => ({
         search: search || undefined,
         sortBy,
         sortOrder,
-        ...(tier !== 'all' ? { tier } : {}),
+        // ...(tier !== 'all' ? { tier } : {}),
       };
 
       const { items, pagination } = (await customerRepository.getAllCustomers(
@@ -98,7 +98,7 @@ export const useCustomerStore = create<State & Actions>((set, get) => ({
   setSearch: (v) => set({ search: v }),
   setPage: (page) => set({ page }),
   setLimit: (limit) => set({ limit }),
-  setTier: (tier) => set({ tier }),
+  // setTier: (tier) => set({ tier }),
   setSort: (sort) => set({ sort }),
 
   createCustomer: async (payload) => {

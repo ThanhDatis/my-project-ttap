@@ -21,7 +21,7 @@ import * as Yup from 'yup';
 
 import { ROUTES } from '../../../common/constant';
 import {
-  validateEmail,
+  validateEmailSignIn,
   validatePasswordSignIn,
 } from '../../../common/validate';
 import { useAuthStore } from '../../../store/auth.store';
@@ -30,7 +30,7 @@ import LoadingButton from '../../loadingButton';
 import { ToastMessage } from '../../toastMessage';
 
 const signInSchema = Yup.object({
-  email: validateEmail,
+  email: validateEmailSignIn,
   password: validatePasswordSignIn,
 });
 

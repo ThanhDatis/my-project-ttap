@@ -21,11 +21,11 @@ import * as Yup from 'yup';
 
 import { ROUTES } from '../../../common/constant';
 import {
-  validateEmail,
   validatePasswordSignUp,
   validateName,
   validateConfirmPassword,
   validateAcceptTerms,
+  validateEmailSignUp,
 } from '../../../common/validate';
 import { useAuthStore } from '../../../store/auth.store';
 import { Input } from '../../fields';
@@ -34,9 +34,9 @@ import ToastMessage from '../../toastMessage';
 
 const signUpSchema = Yup.object({
   name: validateName,
-  email: validateEmail,
+  email: validateEmailSignUp,
   password: validatePasswordSignUp,
-  confirmPassword: validateConfirmPassword,
+  confirmPassword: validateConfirmPassword('password'),
   acceptTerms: validateAcceptTerms,
 });
 

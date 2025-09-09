@@ -17,13 +17,13 @@ import { useNavigate, Link as RouterLink } from 'react-router-dom';
 import * as Yup from 'yup';
 
 import { ROUTES } from '../../../common/constant';
-import { validateEmail } from '../../../common/validate';
+import { validateEmailSignIn } from '../../../common/validate';
 import { Input } from '../../fields';
 import LoadingButton from '../../loadingButton';
 import { ToastMessage } from '../../toastMessage';
 
 const forgotPasswordSchema = Yup.object({
-  email: validateEmail,
+  email: validateEmailSignIn,
 });
 
 export interface ForgotPasswordFormValues {

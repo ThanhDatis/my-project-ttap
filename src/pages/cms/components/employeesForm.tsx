@@ -7,9 +7,9 @@ import {
   TextField,
   MenuItem,
   Typography,
-  Chip,
-  Divider,
-  Avatar,
+  // Chip,
+  // Divider,
+  // Avatar,
 } from '@mui/material';
 import Grid from '@mui/material/Grid';
 import { Formik, Form, type FormikHelpers } from 'formik';
@@ -17,9 +17,11 @@ import React from 'react';
 import * as Yup from 'yup';
 
 import {
-  validateEmail,
+  validateAddress,
+  validateEmailFormInfo,
   validateName,
   validatePhone,
+  // validateRole,
 } from '../../../common/validate';
 import { Input } from '../../../components/fields';
 import LoadingButton from '../../../components/loadingButton';
@@ -32,14 +34,12 @@ import type {
 } from '../../../lib/employee.repo';
 
 const employeeSchema = Yup.object({
-  name: validateName,
+  name: validateName.label('Employee Name'),
   dateOfBirth: Yup.string().optional(),
-  address: Yup.string().max(200, 'Address is too long').optional(),
-  email: validateEmail.optional(),
+  address: validateAddress.optional(),
+  email: validateEmailFormInfo,
   phone: validatePhone.optional(),
-  role: Yup.mixed<Role>()
-    .oneOf(['admin', 'manager', 'staff'])
-    .required('Role is required'),
+  // role: validateRole,
   status: Yup.mixed<EmployeeStatus>()
     .oneOf(['active', 'inactive', 'suspended'])
     .required('Status is required'),
@@ -178,15 +178,16 @@ export const EmployeeForm: React.FC<EmployeeFormProps> = ({
                   </FormControl>
 
                   <FormControl sx={{ width: '100%', mb: 2 }}>
-                    <FormLabel htmlFor="dateOfBirth">Date of Birth</FormLabel>
+                    <FormLabel htmlFor="email">Email</FormLabel>
                     <Input
-                      id="dateOfBirth"
-                      name="dateOfBirth"
+                      id="email"
+                      name="email"
                       label=""
-                      typeInput="date"
-                      value={values.dateOfBirth}
-                      isError={!!(touched.dateOfBirth && errors.dateOfBirth)}
-                      errorText={errors.dateOfBirth}
+                      typeInput="email"
+                      value={values.email}
+                      placeholder="employee@example.com"
+                      isError={!!(touched.email && errors.email)}
+                      errorText={errors.email}
                       onChange={handleChange}
                       onBlur={handleBlur}
                       disabled={isLoading}
@@ -216,16 +217,19 @@ export const EmployeeForm: React.FC<EmployeeFormProps> = ({
                   <Grid container spacing={2}>
                     <Grid size={{ xs: 12, md: 6 }}>
                       <FormControl sx={{ width: '100%', mb: 2 }}>
-                        <FormLabel htmlFor="email">Email</FormLabel>
+                        <FormLabel htmlFor="dateOfBirth">
+                          Date of Birth
+                        </FormLabel>
                         <Input
-                          id="email"
-                          name="email"
+                          id="dateOfBirth"
+                          name="dateOfBirth"
                           label=""
-                          typeInput="email"
-                          value={values.email}
-                          placeholder="employee@example.com"
-                          isError={!!(touched.email && errors.email)}
-                          errorText={errors.email}
+                          typeInput="date"
+                          value={values.dateOfBirth}
+                          isError={
+                            !!(touched.dateOfBirth && errors.dateOfBirth)
+                          }
+                          errorText={errors.dateOfBirth}
                           onChange={handleChange}
                           onBlur={handleBlur}
                           disabled={isLoading}
@@ -337,77 +341,6 @@ export const EmployeeForm: React.FC<EmployeeFormProps> = ({
                       />
                     )}
                   </Box>
-                </Grid>
-
-                <Grid size={{ xs: 12, md: 4 }}>
-                  {/* <Box sx={{ p: 2, bgcolor: 'grey.50', borderRadius: 2 }}>
-                    <Typography variant="h6" sx={{ mb: 2, fontWeight: 'bold' }}>
-                      Employee Preview
-                    </Typography>
-
-                    <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
-                      <Avatar
-                        sx={{
-                          width: 50,
-                          height: 50,
-                          mr: 2,
-                          bgcolor: 'primary.light',
-                        }}
-                      >
-                        {getInitials(values.name)}
-                      </Avatar>
-                      <Box>
-                        <Typography
-                          variant="subtitle1"
-                          sx={{ fontWeight: 600 }}
-                        >
-                          {values.name || 'New Employee'}
-                        </Typography>
-                        <Box sx={{ display: 'flex', gap: 1, mt: 1 }}>
-                          <Chip
-                            label={values.role}
-                            size="small"
-                            color={getRoleColor(values.role)}
-                            variant="outlined"
-                            sx={{ textTransform: 'capitalize' }}
-                          />
-                          <Chip
-                            label={values.status}
-                            size="small"
-                            color={getStatusColor(values.status)}
-                            variant="outlined"
-                            sx={{ textTransform: 'capitalize' }}
-                          />
-                        </Box>
-                      </Box>
-                    </Box>
-
-                    <Divider sx={{ my: 2 }} />
-
-                    <Box sx={{ mb: 1 }}>
-                      <Typography variant="caption" color="text.secondary">
-                        Contact Information
-                      </Typography>
-                      <Typography variant="body2">
-                        Email: {values.email || 'Not provided'}
-                      </Typography>
-                      <Typography variant="body2">
-                        Phone: {values.phone || 'Not provided'}
-                      </Typography>
-                    </Box>
-
-                    <Box sx={{ mb: 1 }}>
-                      <Typography variant="caption" color="text.secondary">
-                        Personal Information
-                      </Typography>
-                      <Typography variant="body2">
-                        Date of Birth: {values.dateOfBirth || 'Not provided'}
-                      </Typography>
-                      <Typography variant="body2">
-                        Address: {values.address || 'Not provided'}
-                      </Typography>
-                    </Box>
-                  </Box> */}
                 </Grid>
               </Grid>
             </Box>
