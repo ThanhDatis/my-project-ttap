@@ -66,23 +66,6 @@ export const CustomerDetailDialog: React.FC<CustomerDetailDialogProps> = ({
     return null;
   }
 
-  // const getTierChip = () => {
-  //   const tier = customer.tier;
-  //   const color = tier === 'vip' ? 'warning' : 'default';
-  //   const icon =
-  //     tier === 'vip' ? <StarRoundedIcon fontSize="small" /> : undefined;
-
-  //   return (
-  //     <Chip
-  //       label={tier === 'vip' ? 'VIP Customer' : 'Normal Customer'}
-  //       color={color}
-  //       size="small"
-  //       icon={icon}
-  //       sx={{ textTransform: 'capitalize' }}
-  //     />
-  //   );
-  // };
-
   const getStatusChip = () => {
     const isActive = customer.isActive;
     return (
@@ -93,13 +76,6 @@ export const CustomerDetailDialog: React.FC<CustomerDetailDialogProps> = ({
       />
     );
   };
-
-  // const formatCurrency = (value: number) => {
-  //   return new Intl.NumberFormat('vi-VN', {
-  //     style: 'currency',
-  //     currency: 'VND',
-  //   }).format(value);
-  // };
 
   const getInitials = (name: string) => {
     return name
@@ -184,7 +160,6 @@ export const CustomerDetailDialog: React.FC<CustomerDetailDialogProps> = ({
                   justifyContent: 'center',
                 }}
               >
-                {/* {getTierChip()} */}
                 {getStatusChip()}
               </Box>
             </Box>
@@ -332,6 +307,20 @@ export const CustomerDetailDialog: React.FC<CustomerDetailDialogProps> = ({
               </Grid>
             </Grid>
           </Grid>
+
+          {customer.note && (
+            <Grid size={{ xs: 12 }}>
+              <Divider sx={{ mb: 2 }} />
+              <Typography variant="h6" gutterBottom>
+                Note
+              </Typography>
+              <Box sx={{ p: 2, bgcolor: 'grey.50', borderRadius: 2 }}>
+                <Typography variant="body2" sx={{ lineHeight: 1.6 }}>
+                  {customer.note}
+                </Typography>
+              </Box>
+            </Grid>
+          )}
 
           <Grid size={{ xs: 12, sm: 12 }}>
             <Divider sx={{ mb: 2 }} />

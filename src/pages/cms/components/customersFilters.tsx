@@ -12,7 +12,7 @@ import {
   Button,
   Grid,
 } from '@mui/material';
-import React, { useEffect, useMemo, useRef, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 
 import { SORT_OPTIONS } from '../tableColumns/customersColumn';
 
@@ -34,25 +34,16 @@ const CustomerFilters: React.FC<CustomerFiltersProps> = ({
   onSortChange,
 }) => {
   const [localSearch, setLocalSearch] = useState(search);
-  const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   useEffect(() => {
     setLocalSearch(search);
   }, [search]);
 
-  useEffect(() => {
-    if (debounceRef.current) clearTimeout(debounceRef.current);
-
-    debounceRef.current = setTimeout(() => {
-      if (localSearch !== search) {
-        onSearchChange(localSearch);
-      }
-    }, 350);
-
-    return () => {
-      if (debounceRef.current) clearTimeout(debounceRef.current);
-    };
-  }, [localSearch, onSearchChange, search]);
+  // useEffect(() => {
+  //   if (localSearch !== search) {
+  //     onSearchChange(localSearch);
+  //   }
+  // }, [localSearch, onSearchChange, search]);
 
   const hasActiveFilters = useMemo(
     () => Boolean(search) || (sort && sort !== DEFAULT_SORT),
@@ -68,6 +59,7 @@ const CustomerFilters: React.FC<CustomerFiltersProps> = ({
 
   const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setLocalSearch(event.target.value);
+    onSearchChange(event.target.value);
   };
 
   const handleClearSearch = () => {
@@ -86,7 +78,7 @@ const CustomerFilters: React.FC<CustomerFiltersProps> = ({
   };
 
   return (
-    <Paper sx={{ p: 2, mb: 2 }}>
+    <Paper sx={{ p: 2, m: 2 }}>
       <Box sx={{ display: 'flex', alignItems: 'center', mb: 2, gap: 1 }}>
         <FilterListRoundedIcon color="action" />
         <Box sx={{ fontWeight: 500, fontSize: 16 }}>Filter</Box>

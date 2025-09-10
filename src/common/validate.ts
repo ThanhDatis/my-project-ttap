@@ -1,8 +1,33 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import * as Yup from 'yup';
 
-const normalizeString = (value: string) =>
+const normalizeString = (value: unknown) =>
   typeof value === 'string' ? value.trim().replace(/\s+/g, ' ') : value;
+
+export const toUndef = (v?: string | null) => {
+  if (typeof v !== 'string') return undefined;
+  const s = v.trim();
+  return s ? s : undefined;
+};
+
+export const normalizeEmail = (e?: string | null) => {
+  const s = toUndef(e);
+  return s ? s.toLowerCase() : undefined;
+};
+
+const normalizePhone = (raw?: string) => {
+  if (!raw) return undefined;
+  const s = String(raw).replace(/\D+/g, '');
+  if (s.startsWith('+84')) {
+    const digits = s.slice(3).replace(/\D/g, '');
+    return digits.length >= 9 && digits.length <= 10
+      ? `+84${digits}`
+      : undefined;
+  }
+  if (/^0\d{9,10}$/.test(s)) return `+84${s.slice(1)}`;
+  if (/^84\d{9,10}$/.test(s)) return `+${s}`;
+  return undefined;
+};
 
 /**------------------EMAIL------------------ */
 const EMAIL_REGEX_SIMPLE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -27,7 +52,12 @@ export const validateEmailSignIn = baseEmail.test(
   (value) => !!value && EMAIL_REGEX_SIMPLE.test(value),
 );
 
-export const validateEmailFormInfo = validateEmailSignUp;
+export const validateEmailFormInfo = Yup.string()
+  .transform(normalizeEmail as any)
+  .test('email-format', 'Email is not valid', (v) => {
+    if (!v) return true;
+    return EMAIL_REGEX_SIMPLE.test(v);
+  });
 
 /**------------Password--------------- */
 const noSpaces = (msg = 'Password cannot contain spaces') =>
@@ -64,17 +94,25 @@ export const validateConfirmPassword = (passwordField: string = 'password') =>
 /**------------------NAME------------------ */
 export const validateName = Yup.string()
   .transform(normalizeString)
-  .min(2, 'Name is too short')
-  .max(100, 'Name is too long')
-  .required('Name is required');
+  .min(2, 'Full Name must be at least 2 characters')
+  .max(100, 'Full Name must be less than 100 characters')
+  .required('Full Name is required');
 
 /**------------------PHONE NUMBER------------------ */
-const phoneRegex = /^(0[1-9]{1}[0-9]{8}|(\+84)[1-9]{1}[0-9]{8})$/;
-
 export const validatePhone = Yup.string()
-  .transform(normalizeString)
-  .matches(phoneRegex, 'Phone number is not valid')
-  .required('Phone number is required');
+  .transform((_v, orig) => normalizePhone(orig) ?? '')
+  .test('phone-format', 'Phone number is invalid', (v) =>
+    /^\+84\d{9,10}$/.test(v || '')
+  );
+// const phoneRegex = /^\+84\d{9,10}$/;
+
+// export const validatePhone = Yup.string()
+//   .transform((v) => normalizePhone(v))
+//   .test('phone-format', 'Phone number is not valid', (v) => {
+//     if (!v) return true;
+//     return phoneRegex.test(v);
+//   })
+//   .required('Phone number is required');
 
 // export const phoneOptional = Yup.string()
 //   .transform(normalizeString)
@@ -117,30 +155,26 @@ export const validateSku = Yup.string()
   .max(50, 'SKU must be less than 50 characters');
 
 /**------------ADDRESS--------------- */
-export const ADDRESS_LINE_REGEX = /^[\p{L}\p{M}\p{N}\s\\.\-\\/,()#'"]+$/u;
-export const PLACE_NAME_REGEX = /^[\p{L}\p{M}\s\\.\-()'"]+$/u;
+export const validateAddress = Yup.string()
+  .transform((v) => toUndef(normalizeString(v) as string) as any)
+  .max(200, 'Address must be at most 200 characters');
 
-const baseAddressLine = Yup.string()
-  .transform(normalizeString)
-  .max(200, 'Address is too long')
-  .matches(ADDRESS_LINE_REGEX, 'Address contains invalid characters')
-  .nullable()
-  .optional();
+export const validateCity = Yup.string()
+  .transform((v) => toUndef(normalizeString(v) as string) as any)
+  .max(100, 'City must be at most 100 characters');
 
-const basePlaceName = Yup.string()
-  .transform(normalizeString)
-  .max(100, (ctx: any) => `${ctx.path} is too long`)
-  .matches(
-    PLACE_NAME_REGEX,
-    (ctx: any) => `${ctx?.label || 'Field'} contains invalid characters`,
-  )
-  .nullable()
-  .optional();
+export const validateDistrict = Yup.string()
+  .transform((v) => toUndef(normalizeString(v) as string) as any)
+  .max(100, 'District must be at most 100 characters');
 
-export const validateAddress = baseAddressLine.label('Address');
-export const validateCity = basePlaceName.label('City name');
-export const validateWard = basePlaceName.label('Ward name');
-export const validateDistrict = basePlaceName.label('District name');
+export const validateWard = Yup.string()
+  .transform((v) => toUndef(normalizeString(v) as string) as any)
+  .max(100, 'Ward must be at most 100 characters');
+
+// Note (optional)
+export const validateNote = Yup.string()
+  .transform((v) => toUndef(normalizeString(v) as string) as any)
+  .max(500, 'Note must be at most 500 characters');
 
 // export const requiredCity = basePlaceName
 //   .label('City name')
@@ -152,4 +186,23 @@ export const validateDistrict = basePlaceName.label('District name');
 //   .label('Ward name')
 //   .required('Ward name is required');
 
-export { validateAcceptTerms, validateCategory };
+// export const requiredCity = basePlaceName
+//   .label('City name')
+//   .required('City name is required');
+// export const requiredDistrict = basePlaceName
+//   .label('District name')
+//   .required('District name is required');
+// export const requiredWard = basePlaceName
+//   .label('Ward name')
+//   .required('Ward name is required');
+export { validateAcceptTerms, validateCategory, normalizePhone };
+export const customerSchema = Yup.object({
+  name: validateName.label('Full Name'),
+  email: validateEmailFormInfo,
+  phone: validatePhone,
+  address: validateAddress,
+  ward: validateWard,
+  district: validateDistrict,
+  city: validateCity,
+  note: validateNote,
+});
