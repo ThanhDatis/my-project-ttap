@@ -1,6 +1,8 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import * as Yup from 'yup';
 
+import type { EmployeeStatus, Gender, Role } from '../lib/employee.repo';
+
 const normalizeString = (value: unknown) =>
   typeof value === 'string' ? value.trim().replace(/\s+/g, ' ') : value;
 
@@ -102,9 +104,8 @@ export const validateName = Yup.string()
 export const validatePhone = Yup.string()
   .transform((_v, orig) => normalizePhone(orig) ?? '')
   .test('phone-format', 'Phone number is invalid', (v) =>
-    /^\+84\d{9,10}$/.test(v || '')
+    /^\+84\d{9,10}$/.test(v || ''),
   );
-// const phoneRegex = /^\+84\d{9,10}$/;
 
 // export const validatePhone = Yup.string()
 //   .transform((v) => normalizePhone(v))
@@ -176,25 +177,21 @@ export const validateNote = Yup.string()
   .transform((v) => toUndef(normalizeString(v) as string) as any)
   .max(500, 'Note must be at most 500 characters');
 
-// export const requiredCity = basePlaceName
-//   .label('City name')
-//   .required('City name is required');
-// export const requiredDistrict = basePlaceName
-//   .label('District name')
-//   .required('District name is required');
-// export const requiredWard = basePlaceName
-//   .label('Ward name')
-//   .required('Ward name is required');
+/**--------------ROLE---------------- */
+export const validateRole = Yup.mixed<Role>()
+  .oneOf(['admin', 'manager', 'staff'], 'Invalid role')
+  .required('Role is required');
 
-// export const requiredCity = basePlaceName
-//   .label('City name')
-//   .required('City name is required');
-// export const requiredDistrict = basePlaceName
-//   .label('District name')
-//   .required('District name is required');
-// export const requiredWard = basePlaceName
-//   .label('Ward name')
-//   .required('Ward name is required');
+/**------------Gender---------------- */
+export const validateGender = Yup.mixed<Gender>()
+  .oneOf(['male', 'female', 'other'], 'Invalid gender')
+  .required('Gender is required');
+
+/**------------Status---------------- */
+export const validateStatus = Yup.mixed<EmployeeStatus>()
+  .oneOf(['active', 'inactive', 'suspended'], 'Invalid status')
+  .required('Status is required');
+
 export { validateAcceptTerms, validateCategory, normalizePhone };
 export const customerSchema = Yup.object({
   name: validateName.label('Full Name'),
