@@ -35,21 +35,10 @@ const CustomerSchema = new mongoose.Schema({
     type: String,
     trim: true,
   },
-  // tier: {
-  //   type: String,
-  //   enum: ['vip', 'normal'],
-  //   default: 'normal',
-  //   // lowercase: true,
-  //   // trim: true,
-  // },
-  // totalOrders: {
-  //   type: Number,
-  //   default: 0,
-  // },
-  // lifetimeValue: {
-  //   type: Number,
-  //   default: 0,
-  // },
+  note: {
+    type: String,
+    trim: true,
+  },
   isActive: {
     type: Boolean,
     default: true,

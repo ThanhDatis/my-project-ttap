@@ -154,7 +154,6 @@ const customerController = {
         return fail(res, 400, 'Validation failed', errors);
       }
 
-      // Check for existing email if provided
       if (data.email && data.email.trim()) {
         const existingEmail = await Customer.findOne({
           email: data.email.trim().toLowerCase(),
@@ -165,7 +164,6 @@ const customerController = {
         }
       }
 
-      // Check for existing phone if provided
       if (data.phone && data.phone.trim()) {
         const existingPhone = await Customer.findOne({
           phone: data.phone.trim(),
@@ -184,9 +182,9 @@ const customerController = {
         'city',
         'district',
         'ward',
+        'note',
       ]);
 
-      // Clean up empty strings
       Object.keys(allowed).forEach(key => {
         if (allowed[key] === '') {
           delete allowed[key];
@@ -195,7 +193,6 @@ const customerController = {
         }
       });
 
-      // Ensure name is provided
       if (!allowed.name) {
         return fail(res, 400, 'Customer name is required');
       }
@@ -211,13 +208,11 @@ const customerController = {
     } catch (error) {
       console.error('Create customer error:', error);
 
-      // Handle MongoDB duplicate key errors
       if (error.code === 11000) {
         const field = Object.keys(error.keyPattern)[0];
         return fail(res, 400, `${field} already exists`);
       }
 
-      // Handle validation errors
       if (error.name === 'ValidationError') {
         const validationErrors = {};
         Object.keys(error.errors).forEach(key => {
@@ -239,9 +234,8 @@ const customerController = {
 
       const data = req.body;
 
-      // For update, we don't require name if it's not being changed
       const errors = validateCustomer({ ...data, name: data.name || 'dummy' });
-      if (!data.name) delete errors.name; // Remove name error if not updating name
+      if (!data.name) delete errors.name;
 
       if (Object.keys(errors).length > 0) {
         return fail(res, 400, 'Validation failed', errors);
@@ -255,9 +249,9 @@ const customerController = {
         'city',
         'district',
         'ward',
+        'note',
       ]);
 
-      // Clean up empty strings
       Object.keys(allowed).forEach(key => {
         if (allowed[key] === '') {
           allowed[key] = null;
