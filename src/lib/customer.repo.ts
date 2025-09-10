@@ -1,4 +1,5 @@
 import axiosInstance from './axios';
+import type { Pagination } from './base.repository';
 
 export interface Customer {
   id: string;
@@ -25,15 +26,6 @@ export interface CustomerPayload {
   ward?: string;
   note?: string;
   isActive?: boolean;
-}
-
-export interface Pagination {
-  page: number;
-  limit: number;
-  total: number;
-  totalPages: number;
-  hasNextPage?: boolean;
-  hasPreviousPage?: boolean;
 }
 
 export interface ListParams {

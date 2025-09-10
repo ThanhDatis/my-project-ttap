@@ -2,6 +2,14 @@
 // import { create } from 'zustand';
 import axiosInstance from './axios';
 
+export interface Pagination {
+  page: number;
+  total: number;
+  limit: number;
+  totalPages: number;
+  hasNextPage?: boolean;
+  hasPreviousPage?: boolean;
+}
 export class BaseRepository<T> {
   protected endpoint: string;
   protected axiosInstance = axiosInstance;
