@@ -13,6 +13,7 @@ const PORT = process.env.PORT || 3000;
 import authRoutes from './routes/auth.js';
 import productRoutes from './routes/product.js';
 import customerRoutes from './routes/customer.js';
+import employeeRoutes from './routes/employee.js';
 import User from './models/user.js';
 
 mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost:27017')
@@ -45,6 +46,7 @@ mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost:27017')
   app.use('/api/auth', authRoutes);
   app.use('/api/products', productRoutes);
   app.use('/api/customers', customerRoutes);
+  app.use('/api/employees', employeeRoutes);
 
 app.get('/api/health', (req, res) => {
   res.json({
@@ -69,10 +71,11 @@ app.use((err, req, res, next) => {
 app.listen(PORT, () => {
   console.log(`Backend Server running on port ${PORT}`);
   console.log(`Health Check: http://localhost:${PORT}/api/health`);
-  // console.log(`Test Route: http://localhost:${PORT}/api/test`);
+  console.log(`Test Route: http://localhost:${PORT}/api/test`);
   console.log(`Login: POST http://localhost:${PORT}/api/auth/signin`);
   console.log(`Products: GET http://localhost:${PORT}/api/products`);
   console.log(`Customers: GET http://localhost:${PORT}/api/customers`);
+  console.log(`Employees: GET http://localhost:${PORT}/api/employees`);
 });
 
 export default app;
