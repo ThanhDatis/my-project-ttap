@@ -105,14 +105,12 @@ export const formatCompactGrid = (params: { value: any }): string =>
 
 // Common formatters
 export const formatters = {
-  // Basic
   number: formatNumber,
   integer: formatInteger,
   decimal: formatDecimal,
   percentage: formatPercentage,
   compact: formatCompact,
 
-  // With units
   quantity: (value: number | string | null | undefined) =>
     formatWithUnit(value, 'cái'),
   weight: (value: number | string | null | undefined) =>
@@ -121,7 +119,28 @@ export const formatters = {
     formatWithUnit(value, 'km'),
 };
 
-// Default export
+export const formatPhoneGrid = (raw?: string) => {
+  if (!raw) return '-';
+  const s = String(raw).replace(/\D+/g, '');
+
+  if (s.startsWith('+84')) {
+    const digits = s.slice(3).replace(/\D/g, '');
+    return digits ? `+84 ${digits}` : s;
+  }
+
+  if (/^84\d+$/.test(s)) {
+    const digits = s.slice(2);
+    return `+84 0${digits}`;
+  }
+
+  if (s.startsWith('0') && /^\d{9,10}$/.test(s)) {
+    const digits = s.slice(1);
+    return `+84 ${digits}`;
+  }
+
+  return raw;
+};
+
 export default {
   formatNumber,
   formatInteger,
