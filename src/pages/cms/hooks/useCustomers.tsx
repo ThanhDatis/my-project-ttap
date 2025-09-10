@@ -4,6 +4,7 @@ import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { useShallow } from 'zustand/react/shallow';
 
 import { ToastMessage } from '../../../components/toastMessage';
+import { useDebounce } from '../../../hooks/useDebounce';
 import { type Customer } from '../../../lib/customer.repo';
 import useCustomerStore from '../../../store/customer.store';
 import { getCustomerColumns } from '../tableColumns/customersColumn';
@@ -14,17 +15,6 @@ function isAxiosError(error: unknown): error is AxiosError {
   return typeof error === 'object' && error !== null && 'response' in error;
 }
 
-function useDebounced<T>(value: T, delay = 350) {
-  const [debounced, setDebounced] = useState(value);
-
-  useEffect(() => {
-    const t = setTimeout(() => setDebounced(value), delay);
-    return () => clearTimeout(t);
-  }, [value, delay]);
-
-  return debounced;
-}
-
 export default function useCustomers() {
   const selector = useShallow((state: CustomerStoreState) => ({
     customers: state.customers,
@@ -32,7 +22,6 @@ export default function useCustomers() {
     page: state.page,
     limit: state.limit,
     search: state.search,
-    // tier: state.tier,
     sort: state.sort,
     isLoading: state.isLoading,
     error: state.error,
@@ -40,7 +29,6 @@ export default function useCustomers() {
     setSearch: state.setSearch,
     setPage: state.setPage,
     setLimit: state.setLimit,
-    // setTier: state.setTier,
     setSort: state.setSort,
     deleteCustomer: state.deleteCustomer,
     clearError: state.clearError,
@@ -51,7 +39,6 @@ export default function useCustomers() {
     page,
     limit,
     search,
-    // tier,
     sort,
     isLoading,
     error,
@@ -59,7 +46,6 @@ export default function useCustomers() {
     setSearch,
     setPage,
     setLimit,
-    // setTier,
     setSort,
     deleteCustomer,
     clearError,
@@ -96,7 +82,7 @@ export default function useCustomers() {
     return map;
   }, [safeCustomers]);
 
-  const debouncedSearch = useDebounced(search, 350);
+  const debouncedSearch = useDebounce(search, 350);
 
   useEffect(() => {
     void fetchCustomers();
@@ -235,14 +221,6 @@ export default function useCustomers() {
     },
     [setPage, setSearch],
   );
-
-  // const handleTierChange = useCallback(
-  //   (newTier: 'all' | 'vip' | 'normal') => {
-  //     setTier(newTier);
-  //     setPage(1);
-  //   },
-  //   [setPage, setTier],
-  // );
 
   const handleSortChange = useCallback(
     (newSort: string) => {
