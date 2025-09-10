@@ -14,7 +14,6 @@ type State = {
   limit: number;
   search: string;
   sort: string;
-  // tier: 'all' | 'vip' | 'normal';
   isLoading: boolean;
   isDeleting: boolean;
   error: string | null;
@@ -27,7 +26,6 @@ type Actions = {
   setPage: (page: number) => void;
   setLimit: (limit: number) => void;
   setSort: (sort: string) => void;
-  // setTier: (tier: 'all' | 'vip' | 'normal') => void;
 
   createCustomer: (payload: Partial<Customer>) => Promise<Customer>;
   updateCustomer: (id: string, payload: Partial<Customer>) => Promise<Customer>;
@@ -44,10 +42,8 @@ export const useCustomerStore = create<State & Actions>((set, get) => ({
 
   search: '',
   sort: 'createdAt:desc',
-  // tier: 'all',
 
   isLoading: false,
-  // isCreating: false,
   isDeleting: false,
   error: null,
 
@@ -69,7 +65,6 @@ export const useCustomerStore = create<State & Actions>((set, get) => ({
         search: search || undefined,
         sortBy,
         sortOrder,
-        // ...(tier !== 'all' ? { tier } : {}),
       };
 
       const { items, pagination } = (await customerRepository.getAllCustomers(
@@ -98,7 +93,6 @@ export const useCustomerStore = create<State & Actions>((set, get) => ({
   setSearch: (v) => set({ search: v }),
   setPage: (page) => set({ page }),
   setLimit: (limit) => set({ limit }),
-  // setTier: (tier) => set({ tier }),
   setSort: (sort) => set({ sort }),
 
   createCustomer: async (payload) => {
