@@ -2,113 +2,43 @@ import { type GridSortModel } from '@mui/x-data-grid';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 
 import { ToastMessage } from '../../../components/toastMessage';
+import { useDebounce } from '../../../hooks/useDebounce';
 import {
   type Employee,
   type Role,
   type EmployeeStatus,
+  type EmployeePayload,
 } from '../../../lib/employee.repo';
+import useEmployeeStore from '../../../store/employee.store';
 import { getEmployeeColumns } from '../tableColumns/employeesColumn';
 
-// Mock data for demo purposes
-const mockEmployees: Employee[] = [
-  {
-    id: '1',
-    name: 'Nguyễn Văn An',
-    email: 'an.nguyen@company.com',
-    phone: '0123456789',
-    dateOfBirth: '1990-05-15',
-    address: '123 Lê Lợi, Quận 1, TP.HCM',
-    role: 'admin',
-    status: 'active',
-    createdAt: '2023-01-15T08:00:00Z',
-    updatedAt: '2024-01-15T08:00:00Z',
-    createdBy: {
-      _id: 'user1',
-      name: 'System Admin',
-      email: 'admin@company.com',
-    },
-  },
-  {
-    id: '2',
-    name: 'Trần Thị Bình',
-    email: 'binh.tran@company.com',
-    phone: '0987654321',
-    dateOfBirth: '1985-08-22',
-    address: '456 Nguyễn Huệ, Quận 1, TP.HCM',
-    role: 'manager',
-    status: 'active',
-    createdAt: '2023-02-20T09:30:00Z',
-    updatedAt: '2024-02-20T09:30:00Z',
-    createdBy: {
-      _id: 'user1',
-      name: 'System Admin',
-      email: 'admin@company.com',
-    },
-  },
-  {
-    id: '3',
-    name: 'Lê Minh Cường',
-    email: 'cuong.le@company.com',
-    phone: '0369852147',
-    dateOfBirth: '1992-12-03',
-    address: '789 Pasteur, Quận 3, TP.HCM',
-    role: 'staff',
-    status: 'suspended',
-    createdAt: '2023-03-10T10:15:00Z',
-    updatedAt: '2024-03-10T10:15:00Z',
-    createdBy: {
-      _id: 'user2',
-      name: 'HR Manager',
-      email: 'hr@company.com',
-    },
-  },
-  {
-    id: '4',
-    name: 'Phạm Thu Dung',
-    email: 'dung.pham@company.com',
-    phone: '0741852963',
-    dateOfBirth: '1988-07-18',
-    address: '321 Cách Mạng Tháng 8, Quận 10, TP.HCM',
-    role: 'staff',
-    status: 'active',
-    createdAt: '2023-04-05T11:00:00Z',
-    updatedAt: '2024-04-05T11:00:00Z',
-    createdBy: {
-      _id: 'user2',
-      name: 'HR Manager',
-      email: 'hr@company.com',
-    },
-  },
-  {
-    id: '5',
-    name: 'Hoàng Văn Em',
-    email: 'em.hoang@company.com',
-    phone: '0159753486',
-    dateOfBirth: '1993-11-25',
-    address: '654 Võ Văn Tần, Quận 3, TP.HCM',
-    role: 'staff',
-    status: 'inactive',
-    createdAt: '2023-05-12T14:20:00Z',
-    updatedAt: '2024-05-12T14:20:00Z',
-    createdBy: {
-      _id: 'user2',
-      name: 'HR Manager',
-      email: 'hr@company.com',
-    },
-  },
-];
-
-function useDebounced<T>(value: T, delay = 350) {
-  const [debounced, setDebounced] = useState(value);
-  useEffect(() => {
-    const t = setTimeout(() => setDebounced(value), delay);
-    return () => clearTimeout(t);
-  }, [value, delay]);
-  return debounced;
-}
-
 export default function useEmployees() {
-  const [employees, setEmployees] = useState<Employee[]>(mockEmployees);
+  const {
+    employees,
+    total,
+    page,
+    limit,
+    search,
+    role,
+    status,
+    sort,
+    isLoading,
+    isCreating,
+    isDeleting,
+    error,
+    fetchEmployees,
+    setSearch,
+    setPage,
+    setLimit,
+    setRole,
+    setStatus,
+    setSort,
+    createEmployee,
+    updateEmployee,
+    deleteEmployee,
+    // getEmployeeById,
+    clearError,
+  } = useEmployeeStore();
   const [selectedEmployee, setSelectedEmployee] = useState<Employee | null>(
     null,
   );
@@ -120,71 +50,31 @@ export default function useEmployees() {
   const [showForm, setShowForm] = useState(false);
   const [showDetail, setShowDetail] = useState(false);
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
 
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const [selectedEmployeeForMenu, setSelectedEmployeeForMenu] =
     useState<string>('');
 
-  const [search, setSearch] = useState('');
-  const [role, setRole] = useState<'all' | Role>('all');
-  const [status, setStatus] = useState<'all' | EmployeeStatus>('all');
-  const [sort, setSort] = useState('createdAt:desc');
+  useEffect(() => {
+    fetchEmployees();
+  }, [fetchEmployees]);
 
-  const [page, setPage] = useState(1);
-  const [limit, setLimit] = useState(10);
-
-  const debouncedSearch = useDebounced(search, 350);
-
-  const filteredEmployees = useMemo(() => {
-    let filtered = [...employees];
-    if (debouncedSearch) {
-      const searchLower = debouncedSearch.toLowerCase();
-      filtered = filtered.filter(
-        (emp) =>
-          emp.name?.toLowerCase().includes(searchLower) ||
-          emp.email?.toLowerCase().includes(searchLower) ||
-          emp.phone?.includes(searchLower),
-      );
+  useEffect(() => {
+    if (error) {
+      ToastMessage('error', error);
+      clearError();
     }
+  }, [error, clearError]);
 
-    if (role !== 'all') {
-      filtered = filtered.filter((emp) => emp.role === role);
-    }
-
-    if (status !== 'all') {
-      filtered = filtered.filter((emp) => emp.status === status);
-    }
-
-    if (sort) {
-      const [field, direction] = sort.split(':') as [
-        keyof Employee,
-        'asc' | 'desc',
-      ];
-      filtered.sort((a, b) => {
-        const aVal = a[field ?? ''] as string;
-        const bVal = b[field ?? ''] as string;
-
-        if (direction === 'desc') {
-          return aVal > bVal ? -1 : aVal < bVal ? 1 : 0;
-        }
-        return aVal < bVal ? -1 : aVal > bVal ? 1 : 0;
-      });
-    }
-    return filtered;
-  }, [employees, debouncedSearch, role, status, sort]);
-
-  // Pagination
-  const total = filteredEmployees.length;
-  const paginated = useMemo(() => {
-    const start = (page - 1) * limit;
-    return filteredEmployees.slice(start, start + limit);
-  }, [filteredEmployees, page, limit]);
+  const debouncedSearch = useDebounce(search, 350);
+  useEffect(() => {
+    fetchEmployees();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [page, limit, debouncedSearch, role, status, sort]);
 
   const safeEmployees = useMemo(
-    () => paginated.map((e) => ({ ...e, id: e.id?.toString() })),
-    [paginated],
+    () => employees.map((e) => ({ ...e, id: e.id?.toString() || '' })),
+    [employees],
   );
 
   const mapById = useMemo(() => {
@@ -219,14 +109,8 @@ export default function useEmployees() {
 
   const handleConfirmDelete = useCallback(async () => {
     if (!employeeToDelete?.id) return;
-    setIsLoading(true);
     try {
-      await new Promise((resolve) => setTimeout(resolve, 800));
-
-      // Remove from mock data
-      setEmployees((prev) =>
-        prev.filter((emp) => emp.id !== employeeToDelete.id),
-      );
+      await deleteEmployee(employeeToDelete.id);
       ToastMessage('success', 'Employee deleted successfully!');
       setShowDeleteDialog(false);
       setEmployeeToDelete(null);
@@ -234,10 +118,8 @@ export default function useEmployees() {
       const msg =
         error instanceof Error ? error.message : 'Failed to delete employee';
       ToastMessage('error', msg);
-    } finally {
-      setIsLoading(false);
     }
-  }, [employeeToDelete]);
+  }, [deleteEmployee, employeeToDelete]);
 
   // Menu actions
   const handleMenuClick = useCallback(
@@ -314,50 +196,53 @@ export default function useEmployees() {
         setLimit(pageSize);
       }
     },
-    [limit],
+    [limit, setLimit, setPage],
   );
 
-  const handleSearchChange = useCallback((v: string) => {
-    setSearch(v);
-    setPage(1);
-  }, []);
+  const handleSearchChange = useCallback(
+    (v: string) => {
+      setSearch(v);
+    },
+    [setSearch],
+  );
 
-  const handleRoleChange = useCallback((newRole: 'all' | Role) => {
-    setRole(newRole);
-    setPage(1);
-  }, []);
+  const handleRoleChange = useCallback(
+    (newRole: 'all' | Role) => {
+      setRole(newRole);
+    },
+    [setRole],
+  );
 
   const handleStatusChange = useCallback(
     (newStatus: 'all' | EmployeeStatus) => {
       setStatus(newStatus);
-      setPage(1);
     },
-    [],
+    [setStatus],
   );
 
-  const handleSortChange = useCallback((newSort: string) => {
-    setSort(newSort);
-    setPage(1);
-  }, []);
+  const handleSortChange = useCallback(
+    (newSort: string) => {
+      setSort(newSort);
+    },
+    [setSort],
+  );
 
-  const handleSortModelChange = useCallback((model: GridSortModel) => {
-    if (!model?.length || !model[0].sort) {
-      setSort('createdAt:desc');
-      setPage(1);
-      return;
-    }
-    const { field, sort } = model[0];
-    setSort(`${field}:${sort}`);
-    setPage(1);
-  }, []);
+  const handleSortModelChange = useCallback(
+    (model: GridSortModel) => {
+      if (!model?.length || !model[0].sort) {
+        setSort('createdAt:desc');
+        return;
+      }
+      const { field, sort } = model[0];
+      setSort(`${field}:${sort}`);
+    },
+    [setSort],
+  );
 
   const handleRefresh = useCallback(() => {
-    setIsLoading(true);
-    setTimeout(() => {
-      setIsLoading(false);
-      ToastMessage('success', 'Data refreshed successfully!');
-    }, 800);
-  }, []);
+    fetchEmployees();
+    ToastMessage('success', 'Data refreshed successfully!');
+  }, [fetchEmployees]);
 
   const handleCloseForm = useCallback(() => {
     setShowForm(false);
@@ -391,9 +276,37 @@ export default function useEmployees() {
     [handleCloseDetail, handleDeleteEmployee],
   );
 
-  const clearError = useCallback(() => {
-    setError(null);
-  }, []);
+  const handleCreateEmployeeSubmit = useCallback(
+    async (payload: EmployeePayload) => {
+      try {
+        await createEmployee(payload);
+        ToastMessage('success', 'Employee created successfully!');
+        return true;
+      } catch (error: unknown) {
+        const msg =
+          error instanceof Error ? error.message : 'Failed to create employee';
+        ToastMessage('error', msg);
+        return false;
+      }
+    },
+    [createEmployee],
+  );
+
+  const handleUpdateEmployeeSubmit = useCallback(
+    async (id: string, payload: Partial<EmployeePayload>) => {
+      try {
+        await updateEmployee(id, payload);
+        ToastMessage('success', 'Employee updated successfully!');
+        return true;
+      } catch (error: unknown) {
+        const msg =
+          error instanceof Error ? error.message : 'Failed to update employee';
+        ToastMessage('error', msg);
+        return false;
+      }
+    },
+    [updateEmployee],
+  );
 
   // Table columns
   const columns = useMemo(
@@ -417,6 +330,8 @@ export default function useEmployees() {
     employeeToDelete,
 
     isLoading,
+    isCreating,
+    isDeleting,
     error,
     formMode,
     showForm,
@@ -425,7 +340,6 @@ export default function useEmployees() {
 
     anchorEl,
     selectedEmployeeForMenu,
-
     columns,
 
     handleCreateEmployee,
@@ -433,6 +347,8 @@ export default function useEmployees() {
     handleDeleteEmployee,
     handleViewEmployee,
     handleConfirmDelete,
+    handleUpdateEmployeeSubmit,
+    handleCreateEmployeeSubmit,
 
     handleMenuClick,
     handleMenuClose,
@@ -454,6 +370,7 @@ export default function useEmployees() {
     handleEditFromDetail,
     handleDeleteFromDetail,
 
+    findEmployeeById,
     clearError,
   };
 }

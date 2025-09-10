@@ -76,6 +76,9 @@ interface EmployeeFormProps {
   mode: 'create' | 'edit';
   employee?: Employee;
   onClose?: () => void;
+  onCreateSubmit?: (payload: EmployeePayload) => Promise<boolean>;
+  onUpdateSubmit?: (id: string, payload: Partial<EmployeePayload>) => Promise<boolean>;
+  isCreating?: boolean;
 }
 
 export const EmployeeForm: React.FC<EmployeeFormProps> = ({
@@ -84,21 +87,26 @@ export const EmployeeForm: React.FC<EmployeeFormProps> = ({
   mode,
   employee,
   onClose,
+  onCreateSubmit,
+  onUpdateSubmit,
+  isCreating = false,
 }) => {
   const [isLoading] = React.useState(false);
 
   const initialValues: EmployeeFormValues = React.useMemo(() => {
     if (mode === 'edit' && employee) {
+      const addressParts = employee.address ? employee.address.split(',') : [];
+      const [street = '', ward = '', district = '', city = ''] = addressParts;
       return {
         name: employee.name ?? '',
         email: employee.email ?? '',
         phone: employee.phone ?? '',
         dateOfBirth: employee.dateOfBirth ?? '',
         gender: employee.gender ?? 'other',
-        street: '',
-        ward: employee.ward ?? '',
-        district: employee.district ?? '',
-        city: employee.city ?? '',
+        street: street,
+        ward: employee.ward ?? ward,
+        district: employee.district ?? district,
+        city: employee.city ?? city,
         role: employee.role ?? 'staff',
         status: employee.status ?? 'active',
       };
@@ -138,37 +146,38 @@ export const EmployeeForm: React.FC<EmployeeFormProps> = ({
 
     const employeeData: EmployeePayload = {
       name: values.name.trim(),
+      role: values.role,
       dateOfBirth: values.dateOfBirth.trim() || undefined,
       address: fullAddress || undefined,
       email: values.email.trim() || undefined,
       phone: values.phone.trim() || undefined,
-      role: values.role,
+      gender: values.gender,
+      ward: values.ward.trim() || undefined,
+      district: values.district.trim() || undefined,
+      city: values.city.trim() || undefined,
       status: values.status,
     };
     console.log('employeeData', employeeData);
 
     try {
-      if (mode === 'edit' && employee) {
-        // await updateEmployee(employee.id, employeeData);
-        ToastMessage('success', 'Employee updated successfully');
-        onClose?.();
-        onRefresh();
-        return;
-      } else {
-        // await createEmployee(employeeData);
-        ToastMessage('success', 'Employee created successfully');
-        resetForm();
-        onRefresh();
+      let success = false;
+      if (mode === 'edit' && employee && onUpdateSubmit) {
+        success = await onUpdateSubmit(employee.id, employeeData);
+        if (success) {
+          ToastMessage('success', 'Employee updated successfully');
+          onClose?.();
+          onRefresh();
+        }
+      } else if (mode === 'create' && onCreateSubmit) {
+        success = await onCreateSubmit?.(employeeData);
+        if (success) {
+          ToastMessage('success', 'Employee created successfully');
+          resetForm();
+          onRefresh();
+        }
       }
     } catch (error: unknown) {
-      let message =
-        mode === 'edit'
-          ? 'Failed to update employee'
-          : 'Failed to create employee';
-      if (error instanceof Error) {
-        message = error.message || message;
-      }
-      ToastMessage('error', message);
+      console.error('Error submitting employee form:', error);
     }
   };
 
@@ -207,7 +216,7 @@ export const EmployeeForm: React.FC<EmployeeFormProps> = ({
                       errorText={errors.name}
                       onChange={handleChange}
                       onBlur={handleBlur}
-                      disabled={isLoading}
+                      disabled={isCreating}
                     />
                   </FormControl>
                   <FormControl sx={{ width: '100%', mb: 2 }}>
@@ -238,7 +247,9 @@ export const EmployeeForm: React.FC<EmployeeFormProps> = ({
                             target: { name: 'dateOfBirth', value: iso },
                           } as React.ChangeEvent<HTMLInputElement>);
                         }}
-                        slotProps={{ textField: { size: 'small' } }}
+                        slotProps={{
+                          textField: { size: 'small', disabled: isCreating },
+                        }}
                       />
                     </LocalizationProvider>
                     {/* <Input
@@ -269,7 +280,7 @@ export const EmployeeForm: React.FC<EmployeeFormProps> = ({
                       errorText={errors.email}
                       onChange={handleChange}
                       onBlur={handleBlur}
-                      disabled={isLoading}
+                      disabled={isCreating}
                     />
                   </FormControl>
                   <Grid container spacing={2}>
@@ -285,7 +296,7 @@ export const EmployeeForm: React.FC<EmployeeFormProps> = ({
                           onBlur={handleBlur}
                           error={!!(touched.role && errors.role)}
                           helperText={errors.role}
-                          disabled={isLoading}
+                          disabled={isCreating}
                         >
                           <MenuItem value="staff">Staff</MenuItem>
                           <MenuItem value="manager">Manager</MenuItem>
@@ -305,7 +316,7 @@ export const EmployeeForm: React.FC<EmployeeFormProps> = ({
                           onBlur={handleBlur}
                           error={!!(touched.gender && errors.gender)}
                           helperText={errors.gender}
-                          disabled={isLoading}
+                          disabled={isCreating}
                         >
                           <MenuItem value="male">Male</MenuItem>
                           <MenuItem value="female">Female</MenuItem>
@@ -328,8 +339,27 @@ export const EmployeeForm: React.FC<EmployeeFormProps> = ({
                       errorText={errors.phone}
                       onChange={handleChange}
                       onBlur={handleBlur}
-                      disabled={isLoading}
+                      disabled={isCreating}
                     />
+                  </FormControl>
+                  <FormControl sx={{ width: '100%', mb: 2 }}>
+                    <FormLabel htmlFor="status">Status</FormLabel>
+                    <TextField
+                      select
+                      fullWidth
+                      size="small"
+                      name="status"
+                      value={values.status}
+                      onChange={handleChange}
+                      onBlur={handleBlur}
+                      error={!!(touched.status && errors.status)}
+                      helperText={errors.status}
+                      disabled={isCreating}
+                    >
+                      <MenuItem value="active">Active</MenuItem>
+                      <MenuItem value="inactive">Inactive</MenuItem>
+                      <MenuItem value="suspended">Suspended</MenuItem>
+                    </TextField>
                   </FormControl>
                 </Grid>
               </Grid>
@@ -358,7 +388,7 @@ export const EmployeeForm: React.FC<EmployeeFormProps> = ({
                       errorText={errors.street}
                       onChange={handleChange}
                       onBlur={handleBlur}
-                      disabled={isLoading}
+                      disabled={isCreating}
                     />
                   </FormControl>
                   <FormControl sx={{ width: '100%', mb: 2 }}>
@@ -373,7 +403,7 @@ export const EmployeeForm: React.FC<EmployeeFormProps> = ({
                       errorText={errors.city}
                       onChange={handleChange}
                       onBlur={handleBlur}
-                      disabled={isLoading}
+                      disabled={isCreating}
                     />
                   </FormControl>
                 </Grid>
@@ -390,7 +420,7 @@ export const EmployeeForm: React.FC<EmployeeFormProps> = ({
                       errorText={errors.ward}
                       onChange={handleChange}
                       onBlur={handleBlur}
-                      disabled={isLoading}
+                      disabled={isCreating}
                     />
                   </FormControl>
                 </Grid>
@@ -407,7 +437,7 @@ export const EmployeeForm: React.FC<EmployeeFormProps> = ({
                       errorText={errors.district}
                       onChange={handleChange}
                       onBlur={handleBlur}
-                      disabled={isLoading}
+                      disabled={isCreating}
                     />
                   </FormControl>
                 </Grid>

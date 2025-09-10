@@ -76,7 +76,7 @@ const EmployeeFilters: React.FC<EmployeeFiltersProps> = ({
     [search, role, status, sort],
   );
 
-  const getActiveFilterCount = useMemo(() => {
+  const activeFilterCount = useMemo(() => {
     let c = 0;
     if (search) c += 1;
     if (role !== 'all') c += 1;
@@ -122,7 +122,7 @@ const EmployeeFilters: React.FC<EmployeeFiltersProps> = ({
 
         {hasActiveFilters && (
           <Chip
-            label={`${getActiveFilterCount()} active`}
+            label={`${activeFilterCount} active`}
             size="small"
             color="primary"
             variant="outlined"
