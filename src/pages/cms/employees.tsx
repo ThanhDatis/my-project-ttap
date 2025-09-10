@@ -39,7 +39,6 @@ const Employees: React.FC = () => {
     employeeToDelete,
 
     isLoading,
-    // error,
     formMode,
     showDetail,
     showDeleteDialog,
@@ -51,11 +50,6 @@ const Employees: React.FC = () => {
     handleConfirmDelete,
     handleRefresh,
     handlePageChange,
-    handleSearchChange,
-    handleRoleChange,
-    handleStatusChange,
-    handleSortChange,
-    handleSortModelChange,
 
     handleMenuClose,
     handleMenuEdit,
@@ -68,11 +62,15 @@ const Employees: React.FC = () => {
     handleEditFromDetail,
     handleDeleteFromDetail,
 
-    // clearError,
     search,
     role,
     status,
     sort,
+    handleSearchChange,
+    handleRoleChange,
+    handleStatusChange,
+    handleSortChange,
+    handleSortModelChange,
   } = useEmployees();
 
   const isMobile = useMediaQuery(theme.breakpoints.down('md'));
@@ -101,9 +99,9 @@ const Employees: React.FC = () => {
       <Box sx={{ mb: 2 }}>
         <Typography
           variant={isMobile ? 'h6' : 'h3'}
-          sx={{ fontWeight: 'bold', mb: 1 }}
+          sx={{ fontWeight: 'bold', mb: 1, letterSpacing: 1 }}
         >
-          Employees Management
+          EMPLOYEE MANAGEMENT
         </Typography>
       </Box>
 
@@ -141,7 +139,7 @@ const Employees: React.FC = () => {
           rowHeight={isMobile ? 60 : 90}
           columnHeaders={columns}
           isLoading={isLoading}
-          checkboxSelection={true}
+          checkboxSelection
           items={employees}
           totalCount={total}
           currentPage={page - 1}
@@ -166,14 +164,10 @@ const Employees: React.FC = () => {
             },
             '& .MuiDataGrid-row': {
               cursor: 'pointer',
-              '&:hover': {
-                backgroundColor: 'action.hover',
-              },
+              '&:hover': { backgroundColor: 'action.hover' },
             },
             ...(isMobile && {
-              '& .MuiDataGrid-virtualScroller': {
-                overflow: 'auto !important',
-              },
+              '& .MuiDataGrid-virtualScroller': { overflow: 'auto !important' },
             }),
           }}
         />
@@ -183,21 +177,13 @@ const Employees: React.FC = () => {
         anchorEl={anchorEl}
         open={Boolean(anchorEl)}
         onClose={handleMenuClose}
-        anchorOrigin={{
-          vertical: 'bottom',
-          horizontal: 'left',
-        }}
-        transformOrigin={{
-          vertical: 'top',
-          horizontal: 'left',
-        }}
+        anchorOrigin={{ vertical: 'bottom', horizontal: 'left' }}
+        transformOrigin={{ vertical: 'top', horizontal: 'left' }}
         PaperProps={{
           sx: {
             minWidth: 150,
             boxShadow: '0px 4px 20px rgba(0, 0, 0, 0.1)',
-            ...(!isMobile && {
-              minWidth: 120,
-            }),
+            ...(!isMobile && { minWidth: 120 }),
           },
         }}
       >
@@ -241,9 +227,7 @@ const Employees: React.FC = () => {
         aria-describedby="delete-dialog-description"
         fullWidth
         fullScreen={isMobile}
-        PaperProps={{
-          sx: { ...(isMobile && { margin: 0, borderRadius: 0 }) },
-        }}
+        PaperProps={{ sx: { ...(isMobile && { margin: 0, borderRadius: 0 }) } }}
       >
         <DialogTitle id="delete-dialog-title">Delete Employee</DialogTitle>
         <DialogContent>

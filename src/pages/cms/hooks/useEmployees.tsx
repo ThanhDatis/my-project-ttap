@@ -100,17 +100,14 @@ const mockEmployees: Employee[] = [
 
 function useDebounced<T>(value: T, delay = 350) {
   const [debounced, setDebounced] = useState(value);
-
   useEffect(() => {
     const t = setTimeout(() => setDebounced(value), delay);
     return () => clearTimeout(t);
   }, [value, delay]);
-
   return debounced;
 }
 
 export default function useEmployees() {
-  // State management
   const [employees, setEmployees] = useState<Employee[]>(mockEmployees);
   const [selectedEmployee, setSelectedEmployee] = useState<Employee | null>(
     null,
@@ -119,7 +116,6 @@ export default function useEmployees() {
     null,
   );
 
-  // UI state
   const [formMode, setFormMode] = useState<'create' | 'edit'>('create');
   const [showForm, setShowForm] = useState(false);
   const [showDetail, setShowDetail] = useState(false);
@@ -127,28 +123,22 @@ export default function useEmployees() {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  // Menu state
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const [selectedEmployeeForMenu, setSelectedEmployeeForMenu] =
     useState<string>('');
 
-  // Filter state
   const [search, setSearch] = useState('');
   const [role, setRole] = useState<'all' | Role>('all');
   const [status, setStatus] = useState<'all' | EmployeeStatus>('all');
   const [sort, setSort] = useState('createdAt:desc');
 
-  // Pagination state
   const [page, setPage] = useState(1);
   const [limit, setLimit] = useState(10);
 
   const debouncedSearch = useDebounced(search, 350);
 
-  // Filter and sort employees
   const filteredEmployees = useMemo(() => {
     let filtered = [...employees];
-
-    // Apply search filter
     if (debouncedSearch) {
       const searchLower = debouncedSearch.toLowerCase();
       filtered = filtered.filter(
@@ -159,25 +149,22 @@ export default function useEmployees() {
       );
     }
 
-    // Apply role filter
     if (role !== 'all') {
       filtered = filtered.filter((emp) => emp.role === role);
     }
 
-    // Apply status filter
     if (status !== 'all') {
       filtered = filtered.filter((emp) => emp.status === status);
     }
 
-    // Apply sorting
     if (sort) {
       const [field, direction] = sort.split(':') as [
         keyof Employee,
         'asc' | 'desc',
       ];
       filtered.sort((a, b) => {
-        const aVal = a[field] || '';
-        const bVal = b[field] || '';
+        const aVal = a[field ?? ''] as string;
+        const bVal = b[field ?? ''] as string;
 
         if (direction === 'desc') {
           return aVal > bVal ? -1 : aVal < bVal ? 1 : 0;
@@ -185,25 +172,22 @@ export default function useEmployees() {
         return aVal < bVal ? -1 : aVal > bVal ? 1 : 0;
       });
     }
-
     return filtered;
   }, [employees, debouncedSearch, role, status, sort]);
 
   // Pagination
   const total = filteredEmployees.length;
-  const paginatedEmployees = useMemo(() => {
-    const startIndex = (page - 1) * limit;
-    return filteredEmployees.slice(startIndex, startIndex + limit);
+  const paginated = useMemo(() => {
+    const start = (page - 1) * limit;
+    return filteredEmployees.slice(start, start + limit);
   }, [filteredEmployees, page, limit]);
 
-  const safeEmployees = useMemo(() => {
-    return paginatedEmployees.map((emp) => ({
-      ...emp,
-      id: emp.id?.toString(),
-    }));
-  }, [paginatedEmployees]);
+  const safeEmployees = useMemo(
+    () => paginated.map((e) => ({ ...e, id: e.id?.toString() })),
+    [paginated],
+  );
 
-  const employeesMap = useMemo(() => {
+  const mapById = useMemo(() => {
     const map = new Map<string, Employee>();
     for (const emp of employees) {
       if (emp?.id) map.set(emp.id.toString(), emp);
@@ -211,7 +195,6 @@ export default function useEmployees() {
     return map;
   }, [employees]);
 
-  // Employee actions
   const handleViewEmployee = useCallback((employee: Employee) => {
     setSelectedEmployee(employee);
     setShowDetail(true);
@@ -236,17 +219,14 @@ export default function useEmployees() {
 
   const handleConfirmDelete = useCallback(async () => {
     if (!employeeToDelete?.id) return;
-
     setIsLoading(true);
     try {
-      // Simulate API call
-      await new Promise((resolve) => setTimeout(resolve, 1000));
+      await new Promise((resolve) => setTimeout(resolve, 800));
 
       // Remove from mock data
       setEmployees((prev) =>
         prev.filter((emp) => emp.id !== employeeToDelete.id),
       );
-
       ToastMessage('success', 'Employee deleted successfully!');
       setShowDeleteDialog(false);
       setEmployeeToDelete(null);
@@ -274,16 +254,18 @@ export default function useEmployees() {
   }, []);
 
   const findEmployeeById = useCallback(
-    (id: string) => employeesMap.get(id),
-    [employeesMap],
+    (id: string) => mapById.get(id),
+    [mapById],
   );
 
   const handleMenuEdit = useCallback(() => {
     if (!selectedEmployeeForMenu) return handleMenuClose();
     const employee = findEmployeeById(selectedEmployeeForMenu);
-    employee
-      ? handleEditEmployee(employee)
-      : ToastMessage('error', 'Employee not found');
+    if (employee) {
+      handleEditEmployee(employee);
+    } else {
+      ToastMessage('error', 'Employee not found');
+    }
     handleMenuClose();
   }, [
     selectedEmployeeForMenu,
@@ -295,9 +277,11 @@ export default function useEmployees() {
   const handleMenuDelete = useCallback(() => {
     if (!selectedEmployeeForMenu) return handleMenuClose();
     const employee = findEmployeeById(selectedEmployeeForMenu);
-    employee
-      ? handleDeleteEmployee(employee)
-      : ToastMessage('error', 'Employee not found');
+    if (employee) {
+      handleDeleteEmployee(employee);
+    } else {
+      ToastMessage('error', 'Employee not found');
+    }
     handleMenuClose();
   }, [
     selectedEmployeeForMenu,
@@ -309,9 +293,11 @@ export default function useEmployees() {
   const handleMenuView = useCallback(() => {
     if (!selectedEmployeeForMenu) return handleMenuClose();
     const employee = findEmployeeById(selectedEmployeeForMenu);
-    employee
-      ? handleViewEmployee(employee)
-      : ToastMessage('error', 'Employee not found');
+    if (employee) {
+      handleViewEmployee(employee);
+    } else {
+      ToastMessage('error', 'Employee not found');
+    }
     handleMenuClose();
   }, [
     selectedEmployeeForMenu,
@@ -367,14 +353,12 @@ export default function useEmployees() {
 
   const handleRefresh = useCallback(() => {
     setIsLoading(true);
-    // Simulate API refresh
     setTimeout(() => {
       setIsLoading(false);
       ToastMessage('success', 'Data refreshed successfully!');
-    }, 1000);
+    }, 800);
   }, []);
 
-  // Dialog actions
   const handleCloseForm = useCallback(() => {
     setShowForm(false);
     setSelectedEmployee(null);

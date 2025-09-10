@@ -22,10 +22,10 @@ export const getEmployeeColumns = ({
 }): GridColDef[] => [
   {
     field: 'name',
-    headerName: 'Employee Name',
+    headerName: 'Employee',
     type: 'string',
     flex: 1,
-    minWidth: 150,
+    minWidth: 200,
     align: 'center',
     headerAlign: 'center',
     renderCell: (params) => {
@@ -38,7 +38,6 @@ export const getEmployeeColumns = ({
           sx={{
             display: 'flex',
             flexDirection: 'column',
-            justifyContent: 'center',
             py: 0.5,
           }}
         >
@@ -60,30 +59,22 @@ export const getEmployeeColumns = ({
     headerName: 'Contact',
     type: 'string',
     flex: 1,
-    minWidth: 120,
+    minWidth: 100,
     align: 'center',
     headerAlign: 'center',
     renderCell: (params) => {
       const employee = params.row as Employee;
       return (
-        <Box
+        <Typography
+          variant="body2"
           sx={{
             display: 'flex',
-            flexDirection: 'column',
             justifyContent: 'center',
             py: 2,
           }}
         >
-          <Typography
-            variant="body2"
-            sx={{
-              display: 'flex',
-              justifyContent: 'center',
-            }}
-          >
-            {employee.phone || 'No phone'}
-          </Typography>
-        </Box>
+          {employee.phone || 'No phone'}
+        </Typography>
       );
     },
   },
@@ -91,7 +82,7 @@ export const getEmployeeColumns = ({
     field: 'role',
     headerName: 'Role',
     type: 'string',
-    width: 130,
+    minWidth: 120,
     align: 'center',
     headerAlign: 'center',
     renderCell: (params) => {
@@ -149,7 +140,7 @@ export const getEmployeeColumns = ({
     field: 'status',
     headerName: 'Status',
     type: 'string',
-    width: 120,
+    minWidth: 120,
     align: 'center',
     headerAlign: 'center',
     renderCell: (params) => {
@@ -185,7 +176,7 @@ export const getEmployeeColumns = ({
     headerName: 'Date of Birth',
     type: 'string',
     flex: 1,
-    minWidth: 120,
+    minWidth: 100,
     align: 'center',
     headerAlign: 'center',
     renderCell: (params) => {
@@ -196,6 +187,7 @@ export const getEmployeeColumns = ({
           sx={{
             color: dateOfBirth ? 'text.primary' : 'text.secondary',
             fontStyle: dateOfBirth ? 'normal' : 'italic',
+            py: 2,
           }}
         >
           {dateOfBirth ? formatDateTime(dateOfBirth).split(' ')[0] : 'No date'}
@@ -208,12 +200,11 @@ export const getEmployeeColumns = ({
     headerName: 'Address',
     type: 'string',
     flex: 1,
-    minWidth: 200,
+    minWidth: 350,
     align: 'center',
     headerAlign: 'center',
     renderCell: (params) => {
       const address = params.value;
-
       return (
         <Box
           sx={{
@@ -223,9 +214,6 @@ export const getEmployeeColumns = ({
           <Typography
             variant="body2"
             sx={{
-              overflow: 'hidden',
-              whiteSpace: 'nowrap',
-              maxWidth: '100%',
               color: address ? 'text.primary' : 'text.secondary',
               fontStyle: address ? 'normal' : 'italic',
             }}
@@ -242,7 +230,7 @@ export const getEmployeeColumns = ({
     headerName: 'Created',
     type: 'string',
     flex: 1,
-    minWidth: 160,
+    minWidth: 180,
     align: 'center',
     headerAlign: 'center',
     renderCell: (params) => {
@@ -288,14 +276,14 @@ export const ROLE_OPTIONS = [
   { value: 'all', label: 'All Roles' },
   { value: 'admin', label: 'Admin' },
   { value: 'manager', label: 'Manager' },
-  { value: 'employee', label: 'Employee' },
+  { value: 'staff', label: 'Staff' },
 ] as const;
 
 export const STATUS_OPTIONS = [
   { value: 'all', label: 'All Status' },
   { value: 'active', label: 'Active' },
   { value: 'inactive', label: 'Inactive' },
-  { value: 'on_leave', label: 'On Leave' },
+  { value: 'suspended', label: 'Suspended' },
 ] as const;
 
 export const EMPLOYEE_SORT_OPTIONS = [
