@@ -40,7 +40,7 @@ const Employees: React.FC = () => {
 
     isLoading,
     isCreating,
-    isDeleting,
+    // isDeleting,
     formMode,
     showDetail,
     showDeleteDialog,

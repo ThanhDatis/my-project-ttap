@@ -121,6 +121,25 @@ export const validatePhone = Yup.string()
 //   .nullable()
 //   .optional();
 
+/**------------Date----------- */
+const toDate = (v: unknown) => {
+  if (v instanceof Date) return v;
+  if (typeof v === 'string' && v) {
+    const d = new Date(v);
+    return isNaN(d.getTime()) ? v : d;
+  }
+  return v;
+};
+
+export const validateBirthdate = Yup.date()
+  .transform(toDate)
+  .typeError('Birthdate must be a valid date')
+  .min(new Date(1900, 0, 1), 'Birthdate is too far in the past')
+  .max(new Date(), 'Birthdate cannot be in the future')
+  .nullable()
+  .optional();
+
+/**------------ACCEPT TERMS--------------- */
 const validateAcceptTerms = Yup.boolean()
   .oneOf([true], 'You must accept the terms and conditions')
   .required('You must accept the terms and conditions');
@@ -193,6 +212,7 @@ export const validateStatus = Yup.mixed<EmployeeStatus>()
   .required('Status is required');
 
 export { validateAcceptTerms, validateCategory, normalizePhone };
+
 export const customerSchema = Yup.object({
   name: validateName.label('Full Name'),
   email: validateEmailFormInfo,
@@ -202,4 +222,18 @@ export const customerSchema = Yup.object({
   district: validateDistrict,
   city: validateCity,
   note: validateNote,
+});
+
+export const employeeSchema = Yup.object({
+  name: validateName.label('Employee Name'),
+  email: validateEmailFormInfo,
+  phone: validatePhone,
+  dateOfBirth: validateBirthdate,
+  role: validateRole,
+  gender: validateGender,
+  street: validateAddress,
+  ward: validateWard,
+  district: validateDistrict,
+  city: validateCity,
+  status: validateStatus,
 });

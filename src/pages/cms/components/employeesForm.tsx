@@ -17,20 +17,9 @@ import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { vi } from 'date-fns/locale';
 import { Formik, Form, type FormikHelpers } from 'formik';
 import React from 'react';
-import * as Yup from 'yup';
+// import * as Yup from 'yup';
 
-import {
-  validateAddress,
-  validateCity,
-  validateDistrict,
-  validateEmailFormInfo,
-  validateGender,
-  validateName,
-  validatePhone,
-  validateRole,
-  validateStatus,
-  validateWard,
-} from '../../../common/validate';
+import { employeeSchema, toUndef } from '../../../common/validate';
 import { Input } from '../../../components/fields';
 import LoadingButton from '../../../components/loadingButton';
 import ToastMessage from '../../../components/toastMessage';
@@ -41,20 +30,6 @@ import type {
   Gender,
   EmployeeStatus,
 } from '../../../lib/employee.repo';
-
-const employeeSchema = Yup.object({
-  name: validateName.label('Employee Name'),
-  email: validateEmailFormInfo,
-  phone: validatePhone,
-  dateOfBirth: Yup.string().optional(),
-  role: validateRole.label('Role'),
-  gender: validateGender.label('Gender'),
-  street: validateAddress.label('Street'),
-  ward: validateWard,
-  district: validateDistrict,
-  city: validateCity,
-  status: validateStatus.label('Status'),
-});
 
 export interface EmployeeFormValues {
   name: string;
@@ -77,7 +52,10 @@ interface EmployeeFormProps {
   employee?: Employee;
   onClose?: () => void;
   onCreateSubmit?: (payload: EmployeePayload) => Promise<boolean>;
-  onUpdateSubmit?: (id: string, payload: Partial<EmployeePayload>) => Promise<boolean>;
+  onUpdateSubmit?: (
+    id: string,
+    payload: Partial<EmployeePayload>,
+  ) => Promise<boolean>;
   isCreating?: boolean;
 }
 
@@ -134,28 +112,24 @@ export const EmployeeForm: React.FC<EmployeeFormProps> = ({
       ToastMessage('error', 'Please fill in employee name');
       return;
     }
-    const fullAddress = [
-      values.street,
-      values.ward,
-      values.district,
-      values.city,
-    ]
+    const v = employeeSchema.cast(values) as EmployeeFormValues;
+    const fullAddress = [v.street, v.ward, v.district, v.city]
       .map((s) => s?.trim())
       .filter(Boolean)
       .join(', ');
 
     const employeeData: EmployeePayload = {
-      name: values.name.trim(),
-      role: values.role,
-      dateOfBirth: values.dateOfBirth.trim() || undefined,
-      address: fullAddress || undefined,
-      email: values.email.trim() || undefined,
-      phone: values.phone.trim() || undefined,
-      gender: values.gender,
-      ward: values.ward.trim() || undefined,
-      district: values.district.trim() || undefined,
-      city: values.city.trim() || undefined,
-      status: values.status,
+      name: v.name,
+      email: v.email,
+      phone: v.phone,
+      role: v.role,
+      gender: v.gender,
+      dateOfBirth: toUndef(v.dateOfBirth),
+      address: toUndef(fullAddress),
+      ward: toUndef(v.ward),
+      district: toUndef(v.district),
+      city: toUndef(v.city),
+      status: v.status,
     };
     console.log('employeeData', employeeData);
 
