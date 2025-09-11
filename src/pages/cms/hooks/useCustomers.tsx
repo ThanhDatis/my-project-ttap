@@ -297,7 +297,6 @@ export default function useCustomers() {
     page,
     limit,
     search,
-    // tier,
     sort,
     selectedCustomer,
     customerToDelete,
@@ -328,7 +327,6 @@ export default function useCustomers() {
 
     handlePageChange,
     handleSearchChange,
-    // handleTierChange,
     handleSortChange,
     handleSortModelChange,
     handleRefresh,

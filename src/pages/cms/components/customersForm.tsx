@@ -1,5 +1,6 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import RefreshRoundedIcon from '@mui/icons-material/RefreshRounded';
-import { Button, Box, FormControl, FormLabel, Typography } from '@mui/material';
+import { Button, Box, FormControl, FormLabel } from '@mui/material';
 import Grid from '@mui/material/Grid';
 import type { AxiosError } from 'axios';
 import { Formik, Form, type FormikHelpers } from 'formik';
@@ -106,14 +107,15 @@ export const CustomerForm: React.FC<CustomerFormProps> = ({
         mode === 'edit'
           ? 'Failed to update customer'
           : 'Failed to create customer';
-      if (isAxiosError(error)) {
-        const data = (error.response?.data ?? {}) as {
-          message?: string;
-          errors?: Record<string, string>;
-        };
 
-        if (data.errors) {
-          Object.entries(data.errors).forEach(([Field, msg]) => {
+      if (isAxiosError(error)) {
+        const data = error.response?.data as any;
+        const payload = data?.payload ?? data;
+
+        message = payload?.message || message;
+
+        if (payload?.errors) {
+          Object.entries(payload.errors).forEach(([field, msg]) => {
             if (
               [
                 'name',
@@ -124,27 +126,27 @@ export const CustomerForm: React.FC<CustomerFormProps> = ({
                 'district',
                 'city',
                 'note',
-              ].includes(Field)
+              ].includes(field)
             ) {
-              helpers.setFieldError(Field, msg);
+              setFieldError(field as keyof CustomerFormValues, msg as string);
             }
           });
-        } else if (data.message) {
-          const low = data.message.toLowerCase();
-          if (low.includes('email')) setFieldError('email', data.message);
-          if (low.includes('phone')) setFieldError('phone', data.message);
-          message = data.message;
+        } else {
+          const low = message.toLowerCase();
+          if (low.includes('email')) setFieldError('email', message);
+          if (low.includes('phone')) setFieldError('phone', message);
         }
       } else if (error instanceof Error) {
         message = error.message || message;
       }
+
       ToastMessage('error', message);
     }
   };
 
   return (
     <Box sx={{ p: 3, mb: 2 }}>
-      <Typography
+      {/* <Typography
         variant="h6"
         sx={{
           p: 2,
@@ -152,7 +154,7 @@ export const CustomerForm: React.FC<CustomerFormProps> = ({
         }}
       >
         {mode === 'edit' ? 'Edit Customer' : 'Create New Customer'}
-      </Typography>
+      </Typography> */}
       <Formik
         initialValues={initialValues}
         validationSchema={customerSchema}

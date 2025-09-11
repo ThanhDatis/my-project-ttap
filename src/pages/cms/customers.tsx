@@ -39,7 +39,6 @@ const Customers: React.FC = () => {
     customerToDelete,
 
     isLoading,
-    // error,
     formMode,
     showDetail,
     showDeleteDialog,
@@ -52,7 +51,6 @@ const Customers: React.FC = () => {
     handleRefresh,
     handlePageChange,
     handleSearchChange,
-    // handleTierChange,
     handleSortChange,
     handleSortModelChange,
 
@@ -67,9 +65,7 @@ const Customers: React.FC = () => {
     handleEditFromDetail,
     handleDeleteFromDetail,
 
-    // clearError,
     search,
-    // tier,
     sort,
   } = useCustomers();
 
@@ -119,11 +115,9 @@ const Customers: React.FC = () => {
 
       <CustomerFilters
         search={search}
-        // tier={tier}
         sort={sort}
         totalCount={total}
         onSearchChange={handleSearchChange}
-        // onTierChange={handleTierChange}
         onSortChange={handleSortChange}
       />
 

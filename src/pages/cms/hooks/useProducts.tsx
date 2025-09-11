@@ -276,9 +276,6 @@ export default function useProducts() {
 
   // === TABLE COLUMNS ===
   const columns = getProductColumns({
-    // onView: handleViewProduct,
-    // onEdit: handleEditProduct,
-    // onDelete: handleDeleteProduct,
     onMenuClick: handleMenuClick,
   });
 

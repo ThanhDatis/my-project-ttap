@@ -169,13 +169,15 @@ class CustomerRepository {
       return customer;
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (e: any) {
+      const data = e?.response?.data;
       const msg =
-        e?.response?.data?.message ||
-        e?.response?.data?.error ||
+        data?.message ||
+        data?.payload.message ||
+        data?.error ||
         e?.message ||
         'Failed to create customer';
 
-      console.error('create error:', e?.response?.data ?? e);
+      console.error('create error:', data ?? e);
       throw new Error(msg);
     }
   }
@@ -195,12 +197,14 @@ class CustomerRepository {
       return customer;
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (e: any) {
+      const data = e?.response?.data;
       const msg =
-        e?.response?.data?.message ||
-        e?.response?.data?.error ||
+        data?.message ||
+        data?.payload.message ||
+        data?.error ||
         e?.message ||
         'Failed to update customer';
-      console.error('update error:', e?.response?.data ?? e);
+      console.error('update error:', data ?? e);
       throw new Error(msg);
     }
   }
