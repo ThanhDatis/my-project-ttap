@@ -122,22 +122,23 @@ export const validatePhone = Yup.string()
 //   .optional();
 
 /**------------Date----------- */
-const toDate = (v: unknown) => {
-  if (v instanceof Date) return v;
-  if (typeof v === 'string' && v) {
-    const d = new Date(v);
-    return isNaN(d.getTime()) ? v : d;
-  }
-  return v;
-};
+const ISO_DATE = /^\d{4}-\d{2}-\d{2}$/;
 
-export const validateBirthdate = Yup.date()
-  .transform(toDate)
-  .typeError('Birthdate must be a valid date')
-  .min(new Date(1900, 0, 1), 'Birthdate is too far in the past')
-  .max(new Date(), 'Birthdate cannot be in the future')
+export const validateBirthdate = Yup.string()
+  .transform(normalizeString)
   .nullable()
-  .optional();
+  .optional()
+  .test('iso', 'Birthdate must be YYYY-MM-DD', (v) => !v || ISO_DATE.test(v))
+  .test(
+    'min',
+    'Birthdate is too far in the past',
+    (v) => !v || new Date(v) >= new Date(1900, 0, 1),
+  )
+  .test(
+    'max',
+    'Birthdate cannot be in the future',
+    (v) => !v || new Date(v) <= new Date(),
+  );
 
 /**------------ACCEPT TERMS--------------- */
 const validateAcceptTerms = Yup.boolean()
