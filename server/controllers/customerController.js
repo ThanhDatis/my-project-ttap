@@ -209,7 +209,10 @@ const customerController = {
       console.error('Create customer error:', error);
 
       if (error.code === 11000) {
-        const field = Object.keys(error.keyPattern)[0];
+        const kp = error.keyPattern || [];
+        if (kp.email) return fail(res, 400, 'Email already exists');
+        if (kp.phone) return fail(res, 400, 'Phone number already exists');
+        const field = Object.keys(kp)[0] || 'Field';
         return fail(res, 400, `${field} already exists`);
       }
 
@@ -276,7 +279,10 @@ const customerController = {
       console.error('Update customer error:', error);
 
       if (error.code === 11000) {
-        const field = Object.keys(error.keyPattern)[0];
+        const kp = error.keyPattern || [];
+        if (kp.email) return fail(res, 400, 'Email already exists');
+        if (kp.phone) return fail(res, 400, 'Phone number already exists');
+        const field = Object.keys(kp)[0] || 'Field';
         return fail(res, 400, `${field} already exists`);
       }
 

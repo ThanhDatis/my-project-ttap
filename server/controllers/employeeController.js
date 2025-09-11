@@ -48,7 +48,7 @@ function validateEmployee(data = {}) {
     }
   }
 
-  if (!data.role || !['admin', 'manager', 'employee'].includes(data.role)) {
+  if (!data.role || !['admin', 'manager', 'staff'].includes(data.role)) {
     errors.role = 'Invalid role';
   }
 
@@ -218,7 +218,7 @@ const employeeController = {
         return fail(res, 400, 'Employee name is required');
       }
 
-      allowed.createdBy = req.user.id;
+      allowed.createdBy = req.user._id;
 
       const doc = new Employee(allowed);
       await doc.save();
