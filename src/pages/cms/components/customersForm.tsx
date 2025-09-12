@@ -1,6 +1,13 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import RefreshRoundedIcon from '@mui/icons-material/RefreshRounded';
-import { Button, Box, FormControl, FormLabel } from '@mui/material';
+import {
+  Button,
+  Box,
+  FormControl,
+  FormLabel,
+  Typography,
+  Divider,
+} from '@mui/material';
 import Grid from '@mui/material/Grid';
 import type { AxiosError } from 'axios';
 import { Formik, Form, type FormikHelpers } from 'formik';
@@ -163,10 +170,20 @@ export const CustomerForm: React.FC<CustomerFormProps> = ({
       >
         {({ values, errors, touched, handleBlur, handleChange, isValid }) => (
           <Form>
+            <Typography
+              variant="h4"
+              fontWeight="bold"
+              sx={{
+                mb: 1,
+                textAlign: 'left',
+              }}
+            >
+              Personal Information
+            </Typography>
             <Grid container spacing={3}>
               <Grid size={{ xs: 12, md: 4 }}>
                 <FormControl sx={{ width: '100%', mb: 2 }}>
-                  <FormLabel htmlFor="name">Full Name</FormLabel>
+                  <FormLabel htmlFor="fullname">Full Name</FormLabel>
                   <Input
                     id="name"
                     name="name"
@@ -180,6 +197,57 @@ export const CustomerForm: React.FC<CustomerFormProps> = ({
                     disabled={isLoading}
                   />
                 </FormControl>
+              </Grid>
+              <Grid size={{ xs: 12, md: 4 }}>
+                <FormControl sx={{ width: '100%', mb: 2 }}>
+                  <FormLabel htmlFor="email">Email</FormLabel>
+                  <Input
+                    id="email"
+                    name="email"
+                    label=""
+                    typeInput="email"
+                    value={values.email}
+                    placeholder=""
+                    isError={!!(touched.email && errors.email)}
+                    errorText={errors.email}
+                    onChange={handleChange}
+                    onBlur={handleBlur}
+                    disabled={isLoading}
+                  />
+                </FormControl>
+              </Grid>
+              <Grid size={{ xs: 12, md: 4 }}>
+                <FormControl sx={{ width: '100%', mb: 2 }}>
+                  <FormLabel htmlFor="phone">Phone</FormLabel>
+                  <Input
+                    id="phone"
+                    name="phone"
+                    label=""
+                    value={values.phone}
+                    placeholder=""
+                    isError={!!(touched.phone && errors.phone)}
+                    errorText={errors.phone}
+                    onChange={handleChange}
+                    onBlur={handleBlur}
+                    disabled={isLoading}
+                  />
+                </FormControl>
+              </Grid>
+            </Grid>
+
+            <Divider sx={{ my: 2 }} />
+            <Typography
+              variant="h4"
+              fontWeight="bold"
+              sx={{
+                mb: 1,
+                textAlign: 'left',
+              }}
+            >
+              Address Information
+            </Typography>
+            <Grid container spacing={3}>
+              <Grid size={{ xs: 12, md: 4 }}>
                 <FormControl sx={{ width: '100%', mb: 2 }}>
                   <FormLabel htmlFor="address">Street Address</FormLabel>
                   <Input
@@ -212,22 +280,6 @@ export const CustomerForm: React.FC<CustomerFormProps> = ({
                 </FormControl>
               </Grid>
               <Grid size={{ xs: 12, md: 4 }}>
-                <FormControl sx={{ width: '100%', mb: 2 }}>
-                  <FormLabel htmlFor="email">Email</FormLabel>
-                  <Input
-                    id="email"
-                    name="email"
-                    label=""
-                    typeInput="email"
-                    value={values.email}
-                    placeholder=""
-                    isError={!!(touched.email && errors.email)}
-                    errorText={errors.email}
-                    onChange={handleChange}
-                    onBlur={handleBlur}
-                    disabled={isLoading}
-                  />
-                </FormControl>
                 <FormControl sx={{ width: '100%', mb: 2 }}>
                   <FormLabel htmlFor="ward">Ward</FormLabel>
                   <Input
@@ -263,21 +315,6 @@ export const CustomerForm: React.FC<CustomerFormProps> = ({
               </Grid>
               <Grid size={{ xs: 12, md: 4 }}>
                 <FormControl sx={{ width: '100%', mb: 2 }}>
-                  <FormLabel htmlFor="phone">Phone</FormLabel>
-                  <Input
-                    id="phone"
-                    name="phone"
-                    label=""
-                    value={values.phone}
-                    placeholder=""
-                    isError={!!(touched.phone && errors.phone)}
-                    errorText={errors.phone}
-                    onChange={handleChange}
-                    onBlur={handleBlur}
-                    disabled={isLoading}
-                  />
-                </FormControl>
-                <FormControl sx={{ width: '100%', mb: 2 }}>
                   <FormLabel htmlFor="city">City/Province</FormLabel>
                   <Input
                     id="city"
@@ -292,51 +329,51 @@ export const CustomerForm: React.FC<CustomerFormProps> = ({
                     disabled={isLoading}
                   />
                 </FormControl>
-                <Box
-                  sx={{
-                    mt: 2,
-                    display: 'flex',
-                    justifyContent: 'space-between',
-                  }}
-                >
-                  <Button
-                    variant="outlined"
-                    startIcon={<RefreshRoundedIcon />}
-                    onClick={onRefresh}
-                    disabled={isTableLoading || isLoading}
-                  >
-                    Refresh
-                  </Button>
-                  {mode === 'edit' ? (
-                    <Box sx={{ display: 'flex', gap: 1 }}>
-                      <Button
-                        variant="outlined"
-                        color="inherit"
-                        onClick={onClose}
-                        disabled={isLoading}
-                      >
-                        Cancel
-                      </Button>
-                      <LoadingButton
-                        type="submit"
-                        loading={isLoading}
-                        disabled={!isValid || isLoading}
-                        textButton="Update Customer"
-                        variant="contained"
-                      />
-                    </Box>
-                  ) : (
-                    <LoadingButton
-                      type="submit"
-                      loading={isLoading}
-                      disabled={!isValid || isLoading}
-                      textButton="Add Customer"
-                      variant="contained"
-                    />
-                  )}
-                </Box>
               </Grid>
             </Grid>
+            <Box
+              sx={{
+                mt: 2,
+                display: 'flex',
+                justifyContent: 'space-around',
+              }}
+            >
+              <Button
+                variant="outlined"
+                startIcon={<RefreshRoundedIcon />}
+                onClick={onRefresh}
+                disabled={isTableLoading || isLoading}
+              >
+                Refresh
+              </Button>
+              {mode === 'edit' ? (
+                <Box sx={{ display: 'flex', gap: 1 }}>
+                  <Button
+                    variant="outlined"
+                    color="inherit"
+                    onClick={onClose}
+                    disabled={isLoading}
+                  >
+                    Cancel
+                  </Button>
+                  <LoadingButton
+                    // type="submit"
+                    loading={isLoading}
+                    disabled={!isValid || isLoading}
+                    textButton="Update Customer"
+                    // variant="contained"
+                  />
+                </Box>
+              ) : (
+                <LoadingButton
+                  // type="submit"
+                  loading={isLoading}
+                  disabled={!isValid || isLoading}
+                  textButton="Add Customer"
+                  // variant="contained"
+                />
+              )}
+            </Box>
           </Form>
         )}
       </Formik>

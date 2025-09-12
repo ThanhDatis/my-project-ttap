@@ -195,7 +195,7 @@ export const EmployeeDetailDialog: React.FC<EmployeeDetailDialogProps> = ({
                 display: 'flex',
                 flexDirection: 'column',
                 alignItems: 'center',
-                mb: 3,
+                mt: 3,
               }}
             >
               <Avatar
@@ -212,7 +212,7 @@ export const EmployeeDetailDialog: React.FC<EmployeeDetailDialogProps> = ({
               <Typography variant="h5" gutterBottom align="center">
                 {employee.name}
               </Typography>
-              <Box
+              {/* <Box
                 sx={{
                   display: 'flex',
                   gap: 1,
@@ -222,7 +222,7 @@ export const EmployeeDetailDialog: React.FC<EmployeeDetailDialogProps> = ({
               >
                 {getRoleChip()}
                 {getStatusChip()}
-              </Box>
+              </Box> */}
             </Box>
           </Grid>
 
@@ -250,27 +250,6 @@ export const EmployeeDetailDialog: React.FC<EmployeeDetailDialogProps> = ({
                     )
                   }
                 />
-              </Grid>
-              <Grid size={{ xs: 12, sm: 6 }}>
-                <InfoItem
-                  icon={<PhoneRoundedIcon />}
-                  label="Phone"
-                  value={
-                    employee.phone ? (
-                      <Typography variant="body2">{employee.phone}</Typography>
-                    ) : (
-                      <Typography
-                        variant="body2"
-                        color="text.secondary"
-                        fontStyle="italic"
-                      >
-                        No phone provided
-                      </Typography>
-                    )
-                  }
-                />
-              </Grid>
-              <Grid size={{ xs: 12, sm: 12 }}>
                 <InfoItem
                   icon={<LocationOnRoundedIcon />}
                   label="Address"
@@ -291,31 +270,24 @@ export const EmployeeDetailDialog: React.FC<EmployeeDetailDialogProps> = ({
                   }
                 />
               </Grid>
-            </Grid>
-          </Grid>
-
-          <Grid size={{ xs: 12, sm: 12 }}>
-            <Divider sx={{ mb: 2 }} />
-            <Typography variant="h6" gutterBottom>
-              Work Information
-            </Typography>
-
-            <Grid container spacing={3}>
-              <Grid size={{ xs: 6, sm: 3 }}>
+              <Grid size={{ xs: 12, sm: 6 }}>
                 <InfoItem
-                  icon={<WorkRoundedIcon />}
-                  label="Role"
-                  value={getRoleChip()}
+                  icon={<PhoneRoundedIcon />}
+                  label="Phone"
+                  value={
+                    employee.phone ? (
+                      <Typography variant="body2">{employee.phone}</Typography>
+                    ) : (
+                      <Typography
+                        variant="body2"
+                        color="text.secondary"
+                        fontStyle="italic"
+                      >
+                        No phone provided
+                      </Typography>
+                    )
+                  }
                 />
-              </Grid>
-              <Grid size={{ xs: 6, sm: 3 }}>
-                <InfoItem
-                  icon={<PersonRoundedIcon />}
-                  label="Status"
-                  value={getStatusChip()}
-                />
-              </Grid>
-              <Grid size={{ xs: 6, sm: 3 }}>
                 <InfoItem
                   icon={<CakeRoundedIcon />}
                   label="Date of Birth"
@@ -326,7 +298,29 @@ export const EmployeeDetailDialog: React.FC<EmployeeDetailDialogProps> = ({
                   }
                 />
               </Grid>
-              <Grid size={{ xs: 6, sm: 3 }}>
+            </Grid>
+
+            <Divider sx={{ mb: 2 }} />
+            <Typography variant="h6" gutterBottom>
+              Work Information
+            </Typography>
+
+            <Grid container spacing={3}>
+              <Grid size={{ xs: 12, sm: 4 }}>
+                <InfoItem
+                  icon={<WorkRoundedIcon />}
+                  label="Role"
+                  value={getRoleChip()}
+                />
+              </Grid>
+              <Grid size={{ xs: 12, sm: 4 }}>
+                <InfoItem
+                  icon={<PersonRoundedIcon />}
+                  label="Status"
+                  value={getStatusChip()}
+                />
+              </Grid>
+              <Grid size={{ xs: 12, sm: 4 }}>
                 <InfoItem
                   icon={<DateRangeRoundedIcon />}
                   label="Joined Date"

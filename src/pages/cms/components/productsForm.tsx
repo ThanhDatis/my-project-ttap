@@ -399,7 +399,7 @@ export const ProductForm: React.FC<ProductFormProps> = ({
                     sx={{
                       mt: 2,
                       display: 'flex',
-                      justifyContent: 'space-between',
+                      justifyContent: 'space-around',
                     }}
                   >
                     <Button
@@ -407,7 +407,6 @@ export const ProductForm: React.FC<ProductFormProps> = ({
                       startIcon={<RefreshRoundedIcon />}
                       onClick={onRefresh}
                       disabled={isTableLoading || isCreating}
-                      // size="large"
                     >
                       Refresh
                     </Button>
@@ -422,16 +421,15 @@ export const ProductForm: React.FC<ProductFormProps> = ({
                           Cancel
                         </Button>
                         <LoadingButton
-                          type="submit"
+                          // type="submit"
                           loading={isCreating}
                           disabled={!isValid || isCreating}
                           textButton="Update Product"
-                          variant="contained"
                         />
                       </Box>
                     ) : (
                       <LoadingButton
-                        type="submit"
+                        // type="submit"
                         loading={isCreating}
                         disabled={!isValid || isCreating}
                         textButton="Add Product"

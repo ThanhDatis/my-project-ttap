@@ -114,7 +114,7 @@ export const ProductFiltersComponent: React.FC<ProductFiltersProps> = ({
   };
 
   return (
-    <Paper sx={{ p: 2, mb: 2 }}>
+    <Paper sx={{ p: 2, m: 2 }}>
       <Box sx={{ display: 'flex', alignItems: 'center', mb: 2, gap: 1 }}>
         <FilterListRoundedIcon color="action" />
         <Box sx={{ fontWeight: 500, fontSize: '1rem' }}>Filters</Box>

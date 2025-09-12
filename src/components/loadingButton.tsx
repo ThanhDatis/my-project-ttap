@@ -18,10 +18,9 @@ interface LoadingButtonProps {
 
 export const LoadingButton: React.FC<LoadingButtonProps> = ({
   sxButton = {
-    py: 1.5,
+    // py: 1,
     fontSize: '16px',
     fontWeight: 600,
-    mb: 1,
   },
   textButton = '',
   type = 'submit',
