@@ -241,7 +241,7 @@ export default function useEmployees() {
 
   const handleRefresh = useCallback(() => {
     fetchEmployees();
-    ToastMessage('success', 'Data refreshed successfully!');
+    // ToastMessage('success', 'Data refreshed successfully!');
   }, [fetchEmployees]);
 
   const handleCloseForm = useCallback(() => {
@@ -280,7 +280,7 @@ export default function useEmployees() {
     async (payload: EmployeePayload) => {
       try {
         await createEmployee(payload);
-        ToastMessage('success', 'Employee created successfully!');
+        // ToastMessage('success', 'Employee created successfully!');
         return true;
       } catch (error: unknown) {
         const msg =
@@ -296,7 +296,7 @@ export default function useEmployees() {
     async (id: string, payload: Partial<EmployeePayload>) => {
       try {
         await updateEmployee(id, payload);
-        ToastMessage('success', 'Employee updated successfully!');
+        // ToastMessage('success', 'Employee updated successfully!');
         return true;
       } catch (error: unknown) {
         const msg =

@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 import AdminPanelSettingsRoundedIcon from '@mui/icons-material/AdminPanelSettingsRounded';
 import ManageAccountsRoundedIcon from '@mui/icons-material/ManageAccountsRounded';
 import MoreVertRoundedIcon from '@mui/icons-material/MoreVertRounded';

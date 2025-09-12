@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 import { create } from 'zustand';
 
 import employeeRepository, {
@@ -39,10 +40,7 @@ type Actions = {
     payload: Partial<EmployeePayload>,
   ) => Promise<Employee>;
   deleteEmployee: (id: string) => Promise<void>;
-  getEmployeeById: (id: string) => Promise<Employee>;
-
   clearError: () => void;
-  resetFilters: () => void;
 };
 
 export const useEmployeeStore = create<State & Actions>((set, get) => ({
@@ -82,23 +80,29 @@ export const useEmployeeStore = create<State & Actions>((set, get) => ({
         search: search || undefined,
         role: role !== 'all' ? role : undefined,
         status: status !== 'all' ? status : undefined,
-        sort,
+        sortBy: sort.split(':')[0],
+        sortOrder: 'desc',
       };
 
       const result = await employeeRepository.getAllEmployees(params);
       set({
         employees: Array.isArray(result.items) ? result.items : [],
-        total: result.total ?? 0,
-        page: result.page ?? page,
-        limit: result.limit ?? limit,
+        total: result.pagination.total ?? 0,
+        page: result.pagination.page ?? page,
+        limit: result.pagination.limit ?? limit,
         isLoading: false,
       });
-    } catch (error: any) {
+    } catch (error: unknown) {
+      let msg = 'Failed to fetch employees';
+      if (typeof error === 'object' && error !== null) {
+        const e = error as {
+          response?: { data?: { message?: string } };
+          message?: string;
+        };
+        msg = e.response?.data?.message || e.message || msg;
+      }
       set({
-        error:
-          error?.response?.data?.message ||
-          error?.message ||
-          'Failed to fetch employees',
+        error: msg,
         isLoading: false,
       });
     }
@@ -141,11 +145,22 @@ export const useEmployeeStore = create<State & Actions>((set, get) => ({
   createEmployee: async (payload: EmployeePayload) => {
     set({ isCreating: true, error: null });
     try {
-      const emp = await employeeRepository.create(payload);
-      await get().fetchEmployees();
-      return emp;
-    } catch (error) {
-      set({ error: (error as Error).message });
+      const newEmployee = await employeeRepository.create(payload);
+      set((state) => ({
+        employees: [newEmployee, ...state.employees],
+        total: state.total + 1,
+      }));
+      return newEmployee;
+    } catch (error: unknown) {
+      let msg = 'Failed to create employee';
+      if (typeof error === 'object' && error !== null) {
+        const e = error as {
+          response?: { data?: { message?: string } };
+          message?: string;
+        };
+        msg = e.response?.data?.message || e.message || msg;
+      }
+      set({ error: msg });
       throw error;
     } finally {
       set({ isCreating: false });
@@ -155,11 +170,24 @@ export const useEmployeeStore = create<State & Actions>((set, get) => ({
   updateEmployee: async (id: string, payload: Partial<EmployeePayload>) => {
     set({ isCreating: true, error: null });
     try {
-      const emp = await employeeRepository.update(id, payload);
-      await get().fetchEmployees();
-      return emp;
-    } catch (error) {
-      set({ error: (error as Error).message });
+      const updatedEmp = await employeeRepository.update(id, payload);
+      set((state) => ({
+        employees: state.employees.map((emp) =>
+          emp.id === updatedEmp.id ? updatedEmp : emp,
+        ),
+      }));
+      // await get().fetchEmployees();
+      return updatedEmp;
+    } catch (error: unknown) {
+      let msg = 'Failed to update employee';
+      if (typeof error === 'object' && error !== null) {
+        const e = error as {
+          response?: { data?: { message?: string } };
+          message?: string;
+        };
+        msg = e.response?.data?.message || e.message || msg;
+      }
+      set({ error: msg });
       throw error;
     } finally {
       set({ isCreating: false });
@@ -170,7 +198,7 @@ export const useEmployeeStore = create<State & Actions>((set, get) => ({
     set({ isDeleting: true, error: null });
     try {
       await employeeRepository.softDelete(id);
-      await get().fetchEmployees();
+      // await get().fetchEmployees();
     } catch (error) {
       set({ error: (error as Error).message });
       throw error;
