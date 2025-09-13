@@ -7,7 +7,6 @@ import {
   type Employee,
   type Role,
   type EmployeeStatus,
-  type EmployeePayload,
 } from '../../../lib/employee.repo';
 import useEmployeeStore from '../../../store/employee.store';
 import { getEmployeeColumns } from '../tableColumns/employeesColumn';
@@ -33,8 +32,6 @@ export default function useEmployees() {
     setRole,
     setStatus,
     setSort,
-    createEmployee,
-    updateEmployee,
     deleteEmployee,
     // getEmployeeById,
     clearError,
@@ -276,38 +273,6 @@ export default function useEmployees() {
     [handleCloseDetail, handleDeleteEmployee],
   );
 
-  const handleCreateEmployeeSubmit = useCallback(
-    async (payload: EmployeePayload) => {
-      try {
-        await createEmployee(payload);
-        // ToastMessage('success', 'Employee created successfully!');
-        return true;
-      } catch (error: unknown) {
-        const msg =
-          error instanceof Error ? error.message : 'Failed to create employee';
-        ToastMessage('error', msg);
-        return false;
-      }
-    },
-    [createEmployee],
-  );
-
-  const handleUpdateEmployeeSubmit = useCallback(
-    async (id: string, payload: Partial<EmployeePayload>) => {
-      try {
-        await updateEmployee(id, payload);
-        // ToastMessage('success', 'Employee updated successfully!');
-        return true;
-      } catch (error: unknown) {
-        const msg =
-          error instanceof Error ? error.message : 'Failed to update employee';
-        ToastMessage('error', msg);
-        return false;
-      }
-    },
-    [updateEmployee],
-  );
-
   // Table columns
   const columns = useMemo(
     () =>
@@ -347,8 +312,8 @@ export default function useEmployees() {
     handleDeleteEmployee,
     handleViewEmployee,
     handleConfirmDelete,
-    handleUpdateEmployeeSubmit,
-    handleCreateEmployeeSubmit,
+    // handleUpdateEmployeeSubmit,
+    // handleCreateEmployeeSubmit,
 
     handleMenuClick,
     handleMenuClose,

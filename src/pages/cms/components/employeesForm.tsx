@@ -1,4 +1,4 @@
-/* eslint-disable no-unused-vars */
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import RefreshRoundedIcon from '@mui/icons-material/RefreshRounded';
 import {
   Button,
@@ -15,6 +15,7 @@ import Grid from '@mui/material/Grid';
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
+import { isAxiosError } from 'axios';
 import { vi } from 'date-fns/locale';
 import { Formik, Form, type FormikHelpers } from 'formik';
 import React from 'react';
@@ -31,6 +32,7 @@ import type {
   Gender,
   EmployeeStatus,
 } from '../../../lib/employee.repo';
+import { useEmployeeStore } from '../../../store/employee.store';
 
 export interface EmployeeFormValues {
   name: string;
@@ -52,12 +54,6 @@ interface EmployeeFormProps {
   mode: 'create' | 'edit';
   employee?: Employee;
   onClose?: () => void;
-  onCreateSubmit?: (payload: EmployeePayload) => Promise<boolean>;
-  onUpdateSubmit?: (
-    id: string,
-    payload: Partial<EmployeePayload>,
-  ) => Promise<boolean>;
-  isCreating?: boolean;
 }
 
 export const EmployeeForm: React.FC<EmployeeFormProps> = ({
@@ -66,11 +62,9 @@ export const EmployeeForm: React.FC<EmployeeFormProps> = ({
   mode,
   employee,
   onClose,
-  onCreateSubmit,
-  onUpdateSubmit,
-  isCreating = false,
 }) => {
-  const [isLoading] = React.useState(false);
+  const { createEmployee, updateEmployee, isCreating, isLoading } =
+    useEmployeeStore();
 
   const initialValues: EmployeeFormValues = React.useMemo(() => {
     if (mode === 'edit' && employee) {
@@ -107,13 +101,15 @@ export const EmployeeForm: React.FC<EmployeeFormProps> = ({
 
   const handleSubmit = async (
     values: EmployeeFormValues,
-    { resetForm }: FormikHelpers<EmployeeFormValues>,
+    helpers: FormikHelpers<EmployeeFormValues>,
   ) => {
+    const { resetForm, setFieldError } = helpers;
+    const v = employeeSchema.cast(values) as EmployeeFormValues;
+
     if (!values.name) {
       ToastMessage('error', 'Please fill in employee name');
       return;
     }
-    const v = employeeSchema.cast(values) as EmployeeFormValues;
     const fullAddress = [v.street, v.ward, v.district, v.city]
       .map((s) => s?.trim())
       .filter(Boolean)
@@ -135,24 +131,61 @@ export const EmployeeForm: React.FC<EmployeeFormProps> = ({
     console.log('employeeData', employeeData);
 
     try {
-      let success = false;
-      if (mode === 'edit' && employee && onUpdateSubmit) {
-        success = await onUpdateSubmit(employee.id, employeeData);
-        if (success) {
-          ToastMessage('success', 'Employee updated successfully');
-          onClose?.();
-          onRefresh();
-        }
-      } else if (mode === 'create' && onCreateSubmit) {
-        success = await onCreateSubmit?.(employeeData);
-        if (success) {
-          ToastMessage('success', 'Employee created successfully');
-          resetForm();
-          onRefresh();
-        }
+      // let success = false;
+      if (mode === 'edit' && employee) {
+        await updateEmployee(employee.id, employeeData);
+        ToastMessage('success', 'Employee updated successfully');
+        onClose?.();
+        onRefresh();
+        return;
+      } else {
+        await createEmployee(employeeData);
+        ToastMessage('success', 'Employee created successfully');
+        resetForm();
+        onRefresh();
       }
     } catch (error: unknown) {
-      console.error('Error submitting employee form:', error);
+      let message =
+        mode === 'edit'
+          ? 'Failed to update employee'
+          : 'Failed to create employee';
+
+      if (isAxiosError(error)) {
+        const data = error.response?.data as any;
+        const payload = data?.payload ?? data;
+
+        message = data?.message || message;
+
+        if (payload?.errors) {
+          Object.entries(payload.errors).forEach(([field, msg]) => {
+            if (
+              [
+                'name',
+                'email',
+                'phone',
+                'dateOfBirth',
+                'gender',
+                'role',
+                'street',
+                'ward',
+                'district',
+                'city',
+                'status',
+              ].includes(field)
+            ) {
+              setFieldError(field as keyof EmployeeFormValues, msg as string);
+            }
+          });
+        } else {
+          const low = message.toLowerCase();
+          if (low.includes('email')) setFieldError('email', message);
+          if (low.includes('phone')) setFieldError('phone', message);
+          if (low.includes('name')) setFieldError('name', message);
+        }
+      } else if (error instanceof Error) {
+        message = error.message || message;
+      }
+      ToastMessage('error', message);
     }
   };
 
@@ -220,7 +253,7 @@ export const EmployeeForm: React.FC<EmployeeFormProps> = ({
                         } as React.ChangeEvent<HTMLInputElement>);
                       }}
                       slotProps={{
-                        textField: { size: 'small', disabled: isCreating },
+                        textField: { size: 'medium', disabled: isCreating },
                       }}
                     />
                   </LocalizationProvider>
@@ -319,7 +352,7 @@ export const EmployeeForm: React.FC<EmployeeFormProps> = ({
                   <TextField
                     select
                     fullWidth
-                    size="small"
+                    // size="small"
                     name="status"
                     value={values.status}
                     onChange={handleChange}
@@ -335,7 +368,9 @@ export const EmployeeForm: React.FC<EmployeeFormProps> = ({
                 </FormControl>
               </Grid>
             </Grid>
+
             <Divider sx={{ my: 2 }} />
+
             <Typography
               variant="h4"
               fontWeight="bold"
@@ -418,8 +453,8 @@ export const EmployeeForm: React.FC<EmployeeFormProps> = ({
               sx={{
                 mt: 2,
                 display: 'flex',
-                textAlign: 'center',
-                justifyContent: 'space-around',
+                justifyContent: 'center',
+                gap: 2,
               }}
             >
               <Button
@@ -443,7 +478,7 @@ export const EmployeeForm: React.FC<EmployeeFormProps> = ({
                   <LoadingButton
                     type="submit"
                     loading={isLoading}
-                    disabled={!isValid || isLoading}
+                    disabled={!isValid || isCreating}
                     textButton="Update Employee"
                     // variant="contained"
                   />
@@ -452,7 +487,7 @@ export const EmployeeForm: React.FC<EmployeeFormProps> = ({
                 <LoadingButton
                   type="submit"
                   loading={isLoading}
-                  disabled={!isValid || isLoading}
+                  disabled={!isValid || isCreating}
                   textButton="Add Employee"
                   // variant="contained"
                 />

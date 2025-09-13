@@ -39,7 +39,6 @@ const Employees: React.FC = () => {
     employeeToDelete,
 
     isLoading,
-    isCreating,
     // isDeleting,
     formMode,
     showDetail,
@@ -63,9 +62,6 @@ const Employees: React.FC = () => {
     handleCloseDeleteDialog,
     handleEditFromDetail,
     handleDeleteFromDetail,
-
-    handleUpdateEmployeeSubmit,
-    handleCreateEmployeeSubmit,
 
     search,
     role,
@@ -113,12 +109,12 @@ const Employees: React.FC = () => {
       <EmployeeForm
         mode={formMode}
         employee={selectedEmployee ?? undefined}
-        isCreating={isCreating}
+        // isCreating={isCreating}
         isTableLoading={isLoading}
         onRefresh={handleRefresh}
         onClose={handleCloseForm}
-        onUpdateSubmit={handleUpdateEmployeeSubmit}
-        onCreateSubmit={handleCreateEmployeeSubmit}
+        // onUpdateSubmit={handleUpdateEmployeeSubmit}
+        // onCreateSubmit={handleCreateEmployeeSubmit}
       />
 
       <EmployeeFilters

@@ -50,7 +50,8 @@ export const CustomerForm: React.FC<CustomerFormProps> = ({
   customer,
   onClose,
 }) => {
-  const { createCustomer, updateCustomer, isLoading } = useCustomerStore();
+  const { createCustomer, updateCustomer, isCreating, isLoading } =
+    useCustomerStore();
 
   const initialValues: CustomerFormValues = React.useMemo(() => {
     if (mode === 'edit' && customer) {
@@ -194,7 +195,7 @@ export const CustomerForm: React.FC<CustomerFormProps> = ({
                     errorText={errors.name}
                     onChange={handleChange}
                     onBlur={handleBlur}
-                    disabled={isLoading}
+                    disabled={isCreating}
                   />
                 </FormControl>
               </Grid>
@@ -212,7 +213,7 @@ export const CustomerForm: React.FC<CustomerFormProps> = ({
                     errorText={errors.email}
                     onChange={handleChange}
                     onBlur={handleBlur}
-                    disabled={isLoading}
+                    disabled={isCreating}
                   />
                 </FormControl>
               </Grid>
@@ -229,7 +230,7 @@ export const CustomerForm: React.FC<CustomerFormProps> = ({
                     errorText={errors.phone}
                     onChange={handleChange}
                     onBlur={handleBlur}
-                    disabled={isLoading}
+                    disabled={isCreating}
                   />
                 </FormControl>
               </Grid>
@@ -260,7 +261,7 @@ export const CustomerForm: React.FC<CustomerFormProps> = ({
                     errorText={errors.address}
                     onChange={handleChange}
                     onBlur={handleBlur}
-                    disabled={isLoading}
+                    disabled={isCreating}
                   />
                 </FormControl>
                 <FormControl sx={{ width: '100%', mb: 2 }}>
@@ -275,7 +276,7 @@ export const CustomerForm: React.FC<CustomerFormProps> = ({
                     errorText={errors.district}
                     onChange={handleChange}
                     onBlur={handleBlur}
-                    disabled={isLoading}
+                    disabled={isCreating}
                   />
                 </FormControl>
               </Grid>
@@ -292,7 +293,7 @@ export const CustomerForm: React.FC<CustomerFormProps> = ({
                     errorText={errors.ward}
                     onChange={handleChange}
                     onBlur={handleBlur}
-                    disabled={isLoading}
+                    disabled={isCreating}
                   />
                 </FormControl>
                 <FormControl fullWidth>
@@ -309,7 +310,7 @@ export const CustomerForm: React.FC<CustomerFormProps> = ({
                     errorText={errors.note}
                     onChange={handleChange}
                     onBlur={handleBlur}
-                    disabled={isLoading}
+                    disabled={isCreating}
                   />
                 </FormControl>
               </Grid>
@@ -326,7 +327,7 @@ export const CustomerForm: React.FC<CustomerFormProps> = ({
                     errorText={errors.city}
                     onChange={handleChange}
                     onBlur={handleBlur}
-                    disabled={isLoading}
+                    disabled={isCreating}
                   />
                 </FormControl>
               </Grid>
@@ -335,7 +336,8 @@ export const CustomerForm: React.FC<CustomerFormProps> = ({
               sx={{
                 mt: 2,
                 display: 'flex',
-                justifyContent: 'space-around',
+                justifyContent: 'center',
+                gap: 2,
               }}
             >
               <Button
@@ -359,7 +361,7 @@ export const CustomerForm: React.FC<CustomerFormProps> = ({
                   <LoadingButton
                     // type="submit"
                     loading={isLoading}
-                    disabled={!isValid || isLoading}
+                    disabled={!isValid || isCreating}
                     textButton="Update Customer"
                     // variant="contained"
                   />
@@ -368,7 +370,7 @@ export const CustomerForm: React.FC<CustomerFormProps> = ({
                 <LoadingButton
                   // type="submit"
                   loading={isLoading}
-                  disabled={!isValid || isLoading}
+                  disabled={!isValid || isCreating}
                   textButton="Add Customer"
                   // variant="contained"
                 />

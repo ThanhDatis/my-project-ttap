@@ -71,7 +71,8 @@ export const ProductForm: React.FC<ProductFormProps> = ({
   product,
   onClose,
 }) => {
-  const { createProduct, updateProduct, isCreating } = useProductStore();
+  const { createProduct, updateProduct, isCreating, isLoading } =
+    useProductStore();
 
   const initialValues: ProductFormValues = React.useMemo(() => {
     if (mode === 'edit' && product) {
@@ -395,50 +396,51 @@ export const ProductForm: React.FC<ProductFormProps> = ({
                       />
                     </Box>
                   </Card>
-                  <Box
-                    sx={{
-                      mt: 2,
-                      display: 'flex',
-                      justifyContent: 'space-around',
-                    }}
-                  >
-                    <Button
-                      variant="outlined"
-                      startIcon={<RefreshRoundedIcon />}
-                      onClick={onRefresh}
-                      disabled={isTableLoading || isCreating}
-                    >
-                      Refresh
-                    </Button>
-                    {mode === 'edit' ? (
-                      <Box sx={{ display: 'flex', gap: 1 }}>
-                        <Button
-                          variant="outlined"
-                          color="inherit"
-                          onClick={onClose}
-                          disabled={isCreating}
-                        >
-                          Cancel
-                        </Button>
-                        <LoadingButton
-                          // type="submit"
-                          loading={isCreating}
-                          disabled={!isValid || isCreating}
-                          textButton="Update Product"
-                        />
-                      </Box>
-                    ) : (
-                      <LoadingButton
-                        // type="submit"
-                        loading={isCreating}
-                        disabled={!isValid || isCreating}
-                        textButton="Add Product"
-                        variant="contained"
-                      />
-                    )}
-                  </Box>
                 </Grid>
               </Grid>
+              <Box
+                sx={{
+                  mt: 2,
+                  display: 'flex',
+                  justifyContent: 'center',
+                  gap: 2,
+                }}
+              >
+                <Button
+                  variant="outlined"
+                  startIcon={<RefreshRoundedIcon />}
+                  onClick={onRefresh}
+                  disabled={isTableLoading || isLoading}
+                >
+                  Refresh
+                </Button>
+                {mode === 'edit' ? (
+                  <Box sx={{ display: 'flex', gap: 1 }}>
+                    <Button
+                      variant="outlined"
+                      color="inherit"
+                      onClick={onClose}
+                      disabled={isCreating}
+                    >
+                      Cancel
+                    </Button>
+                    <LoadingButton
+                      // type="submit"
+                      loading={isCreating}
+                      disabled={!isValid || isCreating}
+                      textButton="Update Product"
+                    />
+                  </Box>
+                ) : (
+                  <LoadingButton
+                    // type="submit"
+                    loading={isLoading}
+                    disabled={!isValid || isCreating}
+                    textButton="Add Product"
+                    variant="contained"
+                  />
+                )}
+              </Box>
             </Box>
           </Form>
         )}

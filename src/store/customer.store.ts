@@ -15,6 +15,7 @@ type State = {
   search: string;
   sort: string;
   isLoading: boolean;
+  isCreating: boolean;
   isDeleting: boolean;
   error: string | null;
 };
@@ -44,6 +45,7 @@ export const useCustomerStore = create<State & Actions>((set, get) => ({
   sort: 'createdAt:desc',
 
   isLoading: false,
+  isCreating: false,
   isDeleting: false,
   error: null,
 
@@ -96,15 +98,31 @@ export const useCustomerStore = create<State & Actions>((set, get) => ({
   setSort: (sort) => set({ sort }),
 
   createCustomer: async (payload) => {
-    const customer = await customerRepository.create(payload);
-    await get().fetchCustomers();
-    return customer;
+    set({ isCreating: true, error: null });
+    try {
+      const customer = await customerRepository.create(payload);
+      await get().fetchCustomers();
+      return customer;
+    } catch (error) {
+      set({ error: (error as Error).message });
+      throw error;
+    } finally {
+      set({ isCreating: false });
+    }
   },
 
   updateCustomer: async (id, payload) => {
-    const customer = await customerRepository.update(id, payload);
-    await get().fetchCustomers();
-    return customer;
+    set({ isCreating: true, error: null });
+    try {
+      const customer = await customerRepository.update(id, payload);
+      await get().fetchCustomers();
+      return customer;
+    } catch (error) {
+      set({ error: (error as Error).message });
+      throw error;
+    } finally {
+      set({ isCreating: false });
+    }
   },
 
   deleteCustomer: async (id) => {
