@@ -14,6 +14,7 @@ import authRoutes from './routes/auth.js';
 import productRoutes from './routes/product.js';
 import customerRoutes from './routes/customer.js';
 import employeeRoutes from './routes/employee.js';
+import orderRoutes from './routes/order.js';
 import User from './models/user.js';
 
 mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost:27017')
@@ -47,6 +48,7 @@ mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost:27017')
   app.use('/api/products', productRoutes);
   app.use('/api/customers', customerRoutes);
   app.use('/api/employees', employeeRoutes);
+  app.use('/api/orders', orderRoutes);
 
 app.get('/api/health', (req, res) => {
   res.json({
@@ -76,6 +78,7 @@ app.listen(PORT, () => {
   console.log(`Products: GET http://localhost:${PORT}/api/products`);
   console.log(`Customers: GET http://localhost:${PORT}/api/customers`);
   console.log(`Employees: GET http://localhost:${PORT}/api/employees`);
+  console.log(`Orders: GET http://localhost:${PORT}/api/orders`);
 });
 
 export default app;
