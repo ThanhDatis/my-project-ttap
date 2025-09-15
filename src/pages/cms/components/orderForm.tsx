@@ -18,11 +18,13 @@ import {
   Divider,
 } from '@mui/material';
 import { Formik, Form, Field } from 'formik';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import * as Yup from 'yup';
 
 import { Input } from '../../../components/fields';
 import LoadingButton from '../../../components/loadingButton';
+import { useDebounce } from '../../../hooks/useDebounce';
+import { useOrderStore } from '../../../store';
 
 interface OrderItem {
   id: string;
@@ -42,6 +44,7 @@ interface OrderFormData {
   items: OrderItem[];
   subtotal: number;
   total: number;
+  notes: string;
 }
 
 interface OrderFormProps {
@@ -62,36 +65,43 @@ const OrderForm: React.FC<OrderFormProps> = ({
   onCancel,
   initialData,
 }) => {
-  const [orderItems, setOrderItems] = useState<OrderItem[]>([
-    {
-      id: '1',
-      productName: 'Sport',
-      sku: 'HHH-776',
-      quantity: 8,
-      price: 7000000,
-      lineTotal: 56000000,
-    },
-    {
-      id: '2',
-      productName: 'Car',
-      sku: 'CCC-225',
-      quantity: 2,
-      price: 800000,
-      lineTotal: 1600000,
-    },
-  ]);
+  const {
+    customers,
+    products,
+    isLoadingCustomers,
+    isLoadingProducts,
+    fetchCustomers,
+    fetchProducts,
+  } = useOrderStore();
+  const [orderItems, setOrderItems] = useState<OrderItem[]>([]);
+  const [customerSearch, setCustomerSearch] = useState('');
+  const [selectedCustomer, setSelectedCustomer] = useState<any>(null);
+  const [orderId, setOrderId] = useState<string>('Loading...');
+  const debouncedCustomerSearch = useDebounce(customerSearch, 350);
 
-  // Mock products for dropdown (replace with real data)
-  const mockProducts = [
-    { id: '1', name: 'Sport', sku: 'HHH-776', price: 7000000 },
-    { id: '2', name: 'Car', sku: 'CCC-225', price: 800000 },
-    { id: '3', name: 'Phone', sku: 'PHN-123', price: 15000000 },
-    { id: '4', name: 'Laptop', sku: 'LPT-456', price: 25000000 },
-  ];
+  useEffect(() => {
+    const generateTempOrderId = () => {
+      const date = new Date();
+      const year = date.getFullYear().toString().slice(-2);
+      const month = String(date.getMonth() + 1).padStart(2, '0');
+      const day = String(date.getDate()).padStart(2, '0');
+      const time = Date.now().toString().slice(-6);
+      return `ORD${year}${month}${day}${time}`;
+    };
+    setOrderId(generateTempOrderId());
+    fetchCustomers();
+    fetchProducts();
+  }, [fetchCustomers, fetchProducts]);
+
+  useEffect(() => {
+    if (debouncedCustomerSearch) {
+      fetchCustomers(debouncedCustomerSearch);
+    }
+  }, [debouncedCustomerSearch, fetchCustomers]);
 
   const paymentMethods = [
-    { value: 'cash', label: 'Cash' },
     { value: 'credit_card', label: 'Credit Card' },
+    { value: 'paypal', label: 'PayPal' },
     { value: 'bank_transfer', label: 'Bank Transfer' },
     { value: 'e_wallet', label: 'E-Wallet' },
   ];
@@ -105,6 +115,7 @@ const OrderForm: React.FC<OrderFormProps> = ({
     items: orderItems,
     subtotal: 0,
     total: 0,
+    notes: '',
     ...initialData,
   };
 
@@ -134,14 +145,12 @@ const OrderForm: React.FC<OrderFormProps> = ({
         if (item.id === id) {
           const updatedItem = { ...item, [field]: value };
 
-          // Recalculate line total when quantity or price changes
           if (field === 'quantity' || field === 'price') {
             updatedItem.lineTotal = updatedItem.quantity * updatedItem.price;
           }
 
-          // Auto-fill SKU and price when product is selected
           if (field === 'productName') {
-            const selectedProduct = mockProducts.find((p) => p.name === value);
+            const selectedProduct = products.find((p) => p.name === value);
             if (selectedProduct) {
               updatedItem.sku = selectedProduct.sku;
               updatedItem.price = selectedProduct.price;
@@ -164,11 +173,21 @@ const OrderForm: React.FC<OrderFormProps> = ({
   const handleSubmit = (values: OrderFormData) => {
     const finalData = {
       ...values,
-      items: orderItems,
-      subtotal: calculateSubtotal(),
-      total: calculateSubtotal(), // Add tax calculation if needed
+      items: orderItems.map((item) => ({
+        productId: products.find((p) => p.name === item.productName)?._id || '',
+        productName: item.productName,
+        sku: item.sku,
+        quantity: item.quantity,
+        price: item.price,
+      })),
+      // subtotal: calculateSubtotal(),
+      // total: calculateSubtotal(), // Add tax calculation if needed
     };
     onSubmit(finalData);
+  };
+
+  const handleCustomerSelect = (customer: any) => {
+    setSelectedCustomer(customer);
   };
 
   return (
