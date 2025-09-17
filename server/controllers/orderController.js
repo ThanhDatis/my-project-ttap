@@ -188,13 +188,11 @@ const orderController = {
         return fail(res, 400, 'Validation errors', errors);
       }
 
-      // Verify customer exists
       const customer = await Customer.findById(data.customerId);
       if (!customer || !customer.isActive) {
         return fail(res, 400, 'Customer not found');
       }
 
-      // Verify products exist and calculate line totals
       const processedItems = [];
       for (const item of data.items) {
         const product = await Product.findById(item.productId);
@@ -202,31 +200,39 @@ const orderController = {
           return fail(res, 400, `Product ${item.productName || item.productId} not found`);
         }
 
-        // Check stock availability
         if (product.stock < item.quantity) {
           return fail(res, 400, `Insufficient stock for ${product.name}. Available: ${product.stock}, Requested: ${item.quantity}`);
         }
 
-        const lineTotal = item.quantity * item.price;
+        const lineTotal = Number(item.quantity) * Number(item.price);
         processedItems.push({
           productId: item.productId,
           productName: product.name,
           sku: product.sku,
-          quantity: item.quantity,
-          price: item.price,
-          lineTotal: lineTotal,
+          quantity: Number(item.quantity),
+          price: Number(item.price),
+          lineTotal,
         });
       }
 
-      const allowed = pick(data, [
-        'customerId',
-        'customerName',
-        'customerEmail',
-        'customerPhone',
-        'paymentMethod',
-        'notes',
-        'tax',
-      ]);
+      // const tax = Number(data.tax) || 0;
+      const subtotal = processedItems.reduce((sum, item) => sum + item.lineTotal, 0);
+      const total = subtotal;
+
+      const allowed = {
+        orderId: String(data.orderId || '').trim(),
+        customerId: data.customerId,
+        customerName: String(data.customerName || '').trim(),
+        customerEmail: data.customerEmail?.trim() || undefined,
+        customerPhone: data.customerPhone?.trim() || undefined,
+        paymentMethod: data.paymentMethod,
+        items: processedItems,
+        subtotal,
+        total,
+        notes: data.notes?.trim() || undefined,
+        // tax,
+        createdBy: req.user._id,
+      };
 
       allowed.items = processedItems;
       allowed.createdBy = req.user._id;
@@ -234,7 +240,6 @@ const orderController = {
       const order = new Order(allowed);
       await order.save();
 
-      // Update product stock
       for (const item of processedItems) {
         await Product.findByIdAndUpdate(
           item.productId,

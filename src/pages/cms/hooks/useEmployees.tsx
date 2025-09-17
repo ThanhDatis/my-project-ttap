@@ -118,7 +118,6 @@ export default function useEmployees() {
     }
   }, [deleteEmployee, employeeToDelete]);
 
-  // Menu actions
   const handleMenuClick = useCallback(
     (event: React.MouseEvent<HTMLElement>, employeeId: string) => {
       setAnchorEl(event.currentTarget);
@@ -185,7 +184,6 @@ export default function useEmployees() {
     handleMenuClose,
   ]);
 
-  // Filter and pagination handlers
   const handlePageChange = useCallback(
     (page: number, pageSize: number) => {
       setPage(page + 1);

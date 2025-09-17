@@ -1,91 +1,120 @@
-// import FilterListIcon from '@mui/icons-material/FilterList';
+/* eslint-disable no-unused-vars */
+import ClearRoundedIcon from '@mui/icons-material/ClearRounded';
 import FilterListRoundedIcon from '@mui/icons-material/FilterListRounded';
-import SearchIcon from '@mui/icons-material/Search';
-import SortIcon from '@mui/icons-material/Sort';
+import SearchRoundedIcon from '@mui/icons-material/SearchRounded';
 import {
   Box,
   TextField,
   MenuItem,
   InputAdornment,
+  Chip,
+  Paper,
   Button,
   Grid,
-  Paper,
 } from '@mui/material';
-import React, { useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 
-interface OrderFilterProps {
-  onFilterChange: (filters: OrderFilters) => void;
-}
+import type { OrderStatus, PaymentMethod } from '../../../lib/order.repo';
+import {
+  ORDER_STATUS_OPTIONS,
+  PAYMENT_METHOD_OPTIONS,
+  ORDER_SORT_OPTIONS,
+} from '../tableColumns/ordersColumn';
 
-export interface OrderFilters {
+
+const DEFAULT_SORT = 'createdAt:desc';
+
+interface OrderFiltersProps {
   search: string;
-  status: string;
-  paymentMethod: string;
-  sortBy: string;
-  sortOrder: 'asc' | 'desc';
-  dateFrom?: string;
-  dateTo?: string;
+  status: 'all' | OrderStatus;
+  paymentMethod: 'all' | PaymentMethod;
+  sort: string;
+  totalCount?: number;
+  onSearchChange: (search: string) => void;
+  onStatusChange: (status: 'all' | OrderStatus) => void;
+  onPaymentMethodChange: (paymentMethod: 'all' | PaymentMethod) => void;
+  onSortChange: (sort: string) => void;
 }
 
-const OrderFilter: React.FC<OrderFilterProps> = ({ onFilterChange }) => {
-  const [filters, setFilters] = useState<OrderFilters>({
-    search: '',
-    status: 'all',
-    paymentMethod: 'all',
-    sortBy: 'createdAt',
-    sortOrder: 'desc',
-  });
+const OrderFilters: React.FC<OrderFiltersProps> = ({
+  search = '',
+  status = 'all',
+  paymentMethod = 'all',
+  sort,
+  totalCount = 0,
+  onSearchChange,
+  onStatusChange,
+  onPaymentMethodChange,
+  onSortChange,
+}) => {
+  const [localSearch, setLocalSearch] = useState(search);
+  const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-  const orderStatuses = [
-    { value: 'all', label: 'All Status' },
-    { value: 'pending', label: 'Pending' },
-    { value: 'processing', label: 'Processing' },
-    { value: 'shipped', label: 'Shipped' },
-    { value: 'delivered', label: 'Delivered' },
-    { value: 'cancelled', label: 'Cancelled' },
-  ];
+  useEffect(() => {
+    setLocalSearch(search);
+  }, [search]);
 
-  const paymentMethods = [
-    { value: 'all', label: 'All Payment Methods' },
-    { value: 'cash', label: 'Cash' },
-    { value: 'credit_card', label: 'Credit Card' },
-    { value: 'bank_transfer', label: 'Bank Transfer' },
-    { value: 'e_wallet', label: 'E-Wallet' },
-  ];
+  useEffect(() => {
+    if (debounceRef.current) clearTimeout(debounceRef.current);
 
-  const sortOptions = [
-    { value: 'createdAt:desc', label: 'Newest First' },
-    { value: 'createdAt:asc', label: 'Oldest First' },
-    { value: 'total:desc', label: 'Highest Total' },
-    { value: 'total:asc', label: 'Lowest Total' },
-    { value: 'customerName:asc', label: 'Customer A-Z' },
-    { value: 'customerName:desc', label: 'Customer Z-A' },
-  ];
+    debounceRef.current = setTimeout(() => {
+      if (localSearch !== search) {
+        onSearchChange(localSearch);
+      }
+    }, 350);
 
-  const handleFilterChange = (field: keyof OrderFilters, value: any) => {
-    const newFilters = { ...filters, [field]: value };
+    return () => {
+      if (debounceRef.current) clearTimeout(debounceRef.current);
+    };
+  }, [localSearch, onSearchChange, search]);
 
-    // Handle sort field
-    if (field === 'sortBy') {
-      const [sortField, sortDirection] = value.split(':');
-      newFilters.sortBy = sortField;
-      newFilters.sortOrder = sortDirection as 'asc' | 'desc';
-    }
+  const hasActiveFilters = useMemo(
+    () =>
+      Boolean(search) ||
+      status !== 'all' ||
+      paymentMethod !== 'all' ||
+      (sort && sort !== DEFAULT_SORT),
+    [search, status, paymentMethod, sort],
+  );
 
-    setFilters(newFilters);
-    onFilterChange(newFilters);
+  const activeFilterCount = useMemo(() => {
+    let c = 0;
+    if (search) c += 1;
+    if (status !== 'all') c += 1;
+    if (paymentMethod !== 'all') c += 1;
+    if (sort && sort !== DEFAULT_SORT) c += 1;
+    return c;
+  }, [search, status, paymentMethod, sort]);
+
+  const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setLocalSearch(event.target.value);
   };
 
-  const handleClearFilters = () => {
-    const defaultFilters: OrderFilters = {
-      search: '',
-      status: 'all',
-      paymentMethod: 'all',
-      sortBy: 'createdAt',
-      sortOrder: 'desc',
-    };
-    setFilters(defaultFilters);
-    onFilterChange(defaultFilters);
+  const handleClearSearch = () => {
+    onSearchChange('');
+    setLocalSearch('');
+  };
+
+  const handleStatusChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    onStatusChange(event.target.value as 'all' | OrderStatus);
+  };
+
+  const handlePaymentMethodChange = (
+    event: React.ChangeEvent<HTMLInputElement>,
+  ) => {
+    onPaymentMethodChange(event.target.value as 'all' | PaymentMethod);
+  };
+
+  const handleSortChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    onSortChange(event.target.value);
+  };
+
+  const clearAll = () => {
+    setLocalSearch('');
+    onSearchChange('');
+    onStatusChange('all');
+    onPaymentMethodChange('all');
+    onSortChange(DEFAULT_SORT);
   };
 
   return (
@@ -93,49 +122,59 @@ const OrderFilter: React.FC<OrderFilterProps> = ({ onFilterChange }) => {
       <Box sx={{ display: 'flex', alignItems: 'center', mb: 2, gap: 1 }}>
         <FilterListRoundedIcon color="action" />
         <Box sx={{ fontWeight: 500, fontSize: 16 }}>Filter</Box>
-      </Box>
-      {/* {hasActiveFilters && (
+
+        {hasActiveFilters && (
+          <Chip
+            label={`${activeFilterCount} active`}
+            size="small"
+            color="primary"
+            variant="outlined"
+            sx={{ ml: 1 }}
+          />
+        )}
         <Chip
-          label={`${getActiveFilterCount} active`}
+          label={`${totalCount} result${totalCount !== 1 ? 's' : ''}`}
           size="small"
-          color="primary"
+          color="default"
           variant="outlined"
           sx={{ ml: 1 }}
         />
-      )}
-      <Chip
-        label={`${totalCount} result${totalCount !== 1 ? 's' : ''}`}
-        size="small"
-        color="default"
-        variant="outlined"
-        sx={{ ml: 1 }}
-      />
-      <Box sx={{ flex: 1 }} />
+        <Box sx={{ flex: 1 }} />
 
-      {hasActiveFilters && (
-        <Button
-          size="small"
-          startIcon={<ClearRoundedIcon />}
-          onClick={clearAll}
-        >
-          Clear Filters
-        </Button>
-      )} */}
-      <Grid container spacing={2} alignItems="center">
+        {hasActiveFilters && (
+          <Button
+            size="small"
+            startIcon={<ClearRoundedIcon />}
+            onClick={clearAll}
+          >
+            Clear Filters
+          </Button>
+        )}
+      </Box>
+
+      <Grid container spacing={2}>
         <Grid size={{ xs: 12, md: 4 }}>
           <TextField
             fullWidth
             size="small"
-            placeholder="Search orders, customers..."
-            value={filters.search}
-            onChange={(e) => handleFilterChange('search', e.target.value)}
+            placeholder="Search orders, customers, order ID..."
+            value={localSearch}
+            onChange={handleSearchChange}
             InputProps={{
               startAdornment: (
                 <InputAdornment position="start">
-                  <SearchIcon color="action" />
+                  <SearchRoundedIcon sx={{ color: 'action' }} />
+                </InputAdornment>
+              ),
+              endAdornment: localSearch && (
+                <InputAdornment position="end">
+                  <Button size="small" onClick={handleClearSearch}>
+                    <ClearRoundedIcon sx={{ color: 'action' }} />
+                  </Button>
                 </InputAdornment>
               ),
             }}
+            inputProps={{ 'aria-label': 'search orders' }}
           />
         </Grid>
 
@@ -144,63 +183,12 @@ const OrderFilter: React.FC<OrderFilterProps> = ({ onFilterChange }) => {
             select
             fullWidth
             size="small"
-            label="Status"
-            value={filters.status}
-            onChange={(e) => handleFilterChange('status', e.target.value)}
-            InputProps={{
-              startAdornment: (
-                <InputAdornment position="start">
-                  <FilterListRoundedIcon fontSize="small" color="action" />
-                </InputAdornment>
-              ),
-            }}
+            label="Filter by Status"
+            value={status}
+            onChange={handleStatusChange}
+            inputProps={{ 'aria-label': 'Filter by status' }}
           >
-            {orderStatuses.map((status) => (
-              <MenuItem key={status.value} value={status.value}>
-                {status.label}
-              </MenuItem>
-            ))}
-          </TextField>
-        </Grid>
-
-        {/* Payment Method Filter */}
-        <Grid size={{ xs: 12, md: 2 }}>
-          <TextField
-            select
-            fullWidth
-            size="small"
-            label="Payment"
-            value={filters.paymentMethod}
-            onChange={(e) =>
-              handleFilterChange('paymentMethod', e.target.value)
-            }
-          >
-            {paymentMethods.map((method) => (
-              <MenuItem key={method.value} value={method.value}>
-                {method.label}
-              </MenuItem>
-            ))}
-          </TextField>
-        </Grid>
-
-        {/* Sort */}
-        <Grid size={{ xs: 12, md: 2 }}>
-          <TextField
-            select
-            fullWidth
-            size="small"
-            label="Sort by"
-            value={`${filters.sortBy}:${filters.sortOrder}`}
-            onChange={(e) => handleFilterChange('sortBy', e.target.value)}
-            InputProps={{
-              startAdornment: (
-                <InputAdornment position="start">
-                  <SortIcon fontSize="small" color="action" />
-                </InputAdornment>
-              ),
-            }}
-          >
-            {sortOptions.map((option) => (
+            {ORDER_STATUS_OPTIONS.map((option) => (
               <MenuItem key={option.value} value={option.value}>
                 {option.label}
               </MenuItem>
@@ -208,20 +196,96 @@ const OrderFilter: React.FC<OrderFilterProps> = ({ onFilterChange }) => {
           </TextField>
         </Grid>
 
-        {/* Clear Filters */}
-        <Grid size={{ xs: 12, md: 2 }}>
-          <Button
-            variant="outlined"
+        <Grid size={{ xs: 12, md: 3 }}>
+          <TextField
+            select
             fullWidth
-            onClick={handleClearFilters}
-            sx={{ height: '40px' }}
+            size="small"
+            label="Filter by Payment"
+            value={paymentMethod}
+            onChange={handlePaymentMethodChange}
+            inputProps={{ 'aria-label': 'Filter by payment method' }}
           >
-            Clear
-          </Button>
+            {PAYMENT_METHOD_OPTIONS.map((option) => (
+              <MenuItem key={option.value} value={option.value}>
+                {option.label}
+              </MenuItem>
+            ))}
+          </TextField>
+        </Grid>
+
+        <Grid size={{ xs: 12, md: 3 }}>
+          <TextField
+            select
+            fullWidth
+            size="small"
+            label="Sort by"
+            value={sort}
+            onChange={handleSortChange}
+            inputProps={{ 'aria-label': 'Sort Orders' }}
+          >
+            {ORDER_SORT_OPTIONS.map((option) => (
+              <MenuItem key={option.value} value={option.value}>
+                {option.label}
+              </MenuItem>
+            ))}
+          </TextField>
         </Grid>
       </Grid>
+
+      <Box
+        sx={{
+          display: 'flex',
+          alignItems: 'center',
+          gap: 1,
+          mt: 1,
+          flexWrap: 'wrap',
+        }}
+      >
+        {search && (
+          <Chip
+            label={`Search: "${localSearch}"`}
+            size="small"
+            onDelete={handleClearSearch}
+            color="default"
+          />
+        )}
+
+        {status && status !== 'all' && (
+          <Chip
+            label={`Status: ${String(status).charAt(0).toUpperCase() + String(status).slice(1)}`}
+            size="small"
+            onDelete={() => onStatusChange('all')}
+            color="default"
+          />
+        )}
+
+        {paymentMethod && paymentMethod !== 'all' && (
+          <Chip
+            label={`Payment: ${String(paymentMethod)
+              .split('_')
+              .map((s) => s.charAt(0).toUpperCase() + s.slice(1))
+              .join(' ')}`}
+            size="small"
+            onDelete={() => onPaymentMethodChange('all')}
+            color="default"
+          />
+        )}
+
+        {sort && sort !== DEFAULT_SORT && (
+          <Chip
+            label={`Sort: ${
+              ORDER_SORT_OPTIONS.find((option) => option.value === sort)
+                ?.label || sort
+            }`}
+            size="small"
+            onDelete={() => onSortChange(DEFAULT_SORT)}
+            color="default"
+          />
+        )}
+      </Box>
     </Paper>
   );
 };
 
-export default OrderFilter;
+export default OrderFilters;

@@ -109,12 +109,9 @@ const Employees: React.FC = () => {
       <EmployeeForm
         mode={formMode}
         employee={selectedEmployee ?? undefined}
-        // isCreating={isCreating}
         isTableLoading={isLoading}
         onRefresh={handleRefresh}
         onClose={handleCloseForm}
-        // onUpdateSubmit={handleUpdateEmployeeSubmit}
-        // onCreateSubmit={handleCreateEmployeeSubmit}
       />
 
       <EmployeeFilters

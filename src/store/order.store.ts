@@ -25,7 +25,6 @@ type State = {
   isDeleting: boolean;
   error: string | null;
 
-  // Autocomplete data
   customers: CustomerAutocomplete[];
   products: ProductForOrder[];
   isLoadingCustomers: boolean;
@@ -43,13 +42,9 @@ type Actions = {
   setSort: (sort: string) => void;
 
   createOrder: (payload: OrderPayload) => Promise<Order>;
-  updateOrder: (
-    id: string,
-    payload: Partial<Pick<Order, 'status' | 'paymentStatus' | 'notes'>>,
-  ) => Promise<Order>;
+  updateOrder: (id: string, payload: Partial<Order>) => Promise<Order>;
   deleteOrder: (id: string) => Promise<void>;
 
-  // Autocomplete actions
   fetchCustomers: (search?: string) => Promise<void>;
   fetchProducts: (search?: string) => Promise<void>;
 
@@ -72,7 +67,6 @@ export const useOrderStore = create<State & Actions>((set, get) => ({
   isDeleting: false,
   error: null,
 
-  // Autocomplete data
   customers: [],
   products: [],
   isLoadingCustomers: false,
@@ -153,7 +147,7 @@ export const useOrderStore = create<State & Actions>((set, get) => ({
     set({ isCreating: true, error: null });
     try {
       const newOrder = await orderRepository.create(payload);
-      await get().fetchOrders(); // Refresh list
+      await get().fetchOrders();
       return newOrder;
     } catch (error: unknown) {
       let msg = 'Failed to create order';

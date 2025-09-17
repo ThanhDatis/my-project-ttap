@@ -34,7 +34,7 @@ export interface Order {
   customerPhone?: string;
   items: OrderItem[];
   subtotal: number;
-  tax?: number;
+  // tax?: number;
   total: number;
   status: OrderStatus;
   paymentMethod: PaymentMethod;
@@ -51,14 +51,16 @@ export interface Order {
 }
 
 export interface OrderPayload {
+  orderId: string;
   customerId: string;
   customerName: string;
   customerEmail?: string;
   customerPhone?: string;
+  subtotal: number;
+  total: number;
   items: Omit<OrderItem, 'id' | 'lineTotal'>[];
   paymentMethod: PaymentMethod;
   notes?: string;
-  tax?: number;
 }
 
 export interface OrderListParams {
@@ -114,9 +116,12 @@ function extractOrder(raw: any): Order | null {
 
 function sanitizePayload(p: OrderPayload): OrderPayload {
   const out: OrderPayload = {
+    orderId: p.orderId.trim(),
     customerId: p.customerId,
     customerName: p.customerName.trim(),
     paymentMethod: p.paymentMethod,
+    subtotal: Number(p.subtotal),
+    total: Number(p.total),
     items: p.items.map((item) => ({
       productId: item.productId,
       productName: item.productName.trim(),
@@ -129,7 +134,7 @@ function sanitizePayload(p: OrderPayload): OrderPayload {
   if (p.customerEmail?.trim()) out.customerEmail = p.customerEmail.trim();
   if (p.customerPhone?.trim()) out.customerPhone = p.customerPhone.trim();
   if (p.notes?.trim()) out.notes = p.notes.trim();
-  if (typeof p.tax === 'number') out.tax = Number(p.tax);
+  // if (typeof p.tax === 'number') out.tax = Number(p.tax);
 
   return out;
 }
@@ -165,6 +170,7 @@ class OrderRepository {
   }
 
   async create(payload: OrderPayload): Promise<Order> {
+    // console.log('Creating order with payload:', payload);
     try {
       const res = await axiosInstance.post(base, sanitizePayload(payload));
       const order = extractOrder(res?.data);

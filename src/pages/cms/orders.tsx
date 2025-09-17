@@ -1,5 +1,8 @@
 import AddIcon from '@mui/icons-material/Add';
 import CloseIcon from '@mui/icons-material/Close';
+import DeleteRoundedIcon from '@mui/icons-material/DeleteRounded';
+import EditRoundedIcon from '@mui/icons-material/EditRounded';
+import VisibilityRoundedIcon from '@mui/icons-material/VisibilityRounded';
 import {
   Box,
   Typography,
@@ -7,66 +10,109 @@ import {
   Card,
   Collapse,
   IconButton,
-  // Divider,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
+  Menu,
+  MenuItem,
+  ListItemIcon,
+  ListItemText,
+  useMediaQuery,
+  CircularProgress,
+  DialogContentText,
 } from '@mui/material';
-import { useState, useEffect } from 'react';
 
 import { brand } from '../../common/color';
+import theme from '../../common/theme/themes';
 import CustomTable from '../../components/tables/customTable';
+import type { Order } from '../../lib/order.repo';
 
+import OrderDetailDialog from './components/orderDetailDialog';
 import OrderFilter from './components/orderFilter';
 import OrderForm from './components/orderForm';
-import { orderColumns } from './tableColumns/ordersColumn';
+import useOrders from './hooks/useOrders';
 
 const Orders = () => {
-  const [showOrderForm, setShowOrderForm] = useState(false);
-  const [orders, setOrders] = useState([]);
-  const [isLoading, setIsLoading] = useState(false);
-  const [pagination, setPagination] = useState({
-    page: 0,
-    pageSize: 10,
-    total: 0,
-  });
+  const {
+    search,
+    status,
+    paymentMethod,
+    sort,
+    orders,
+    total,
+    page,
+    limit,
+    isLoading,
+    isCreating,
+    isDeleting,
 
-  // Mock data for demonstration (replace with real API calls later)
-  const mockOrders = [];
+    selectedOrder,
+    orderToDelete,
+    showForm,
+    showDetail,
+    showDeleteDialog,
+    anchorEl,
+    columns,
 
-  useEffect(() => {
-    // TODO: Fetch orders from API
-    setOrders(mockOrders);
-  }, []);
+    handleCreateOrder,
+    // handleEditOrder,
+    // handleDeleteOrder,
+    handleViewOrder,
+    handleConfirmDelete,
+    handleOrderSubmit,
 
-  const handleNewOrder = () => {
-    setShowOrderForm(true);
-  };
+    // handleMenuClick,
+    handleMenuClose,
+    handleMenuEdit,
+    handleMenuDelete,
+    handleMenuView,
 
-  const handleCloseForm = () => {
-    setShowOrderForm(false);
-  };
+    handlePageChange,
+    // handleFilterChange,
+    handleSearchChange,
+    handleStatusChange,
+    handlePaymentMethodChange,
+    handleSortChange,
+    handleSortModelChange,
+    // handleRefresh,
 
-  const handlePageChange = (page: number, pageSize: number) => {
-    setPagination((prev) => ({ ...prev, page, pageSize }));
-    // TODO: Fetch data with new pagination
-  };
+    handleCloseForm,
+    handleCloseDetail,
+    handleCloseDeleteDialog,
+    handleEditFromDetail,
+    handleDeleteFromDetail,
 
-  const handleOrderSubmit = async (orderData: any) => {
-    try {
-      // TODO: Create order via API
-      console.log('Creating order:', orderData);
+    // clearError,
+  } = useOrders();
 
-      // Close form after successful creation
-      setShowOrderForm(false);
+  const isMobile = useMediaQuery(theme.breakpoints.down('md'));
 
-      // Refresh orders list
-      // TODO: Refresh data from API
-    } catch (error) {
-      console.error('Error creating order:', error);
-    }
-  };
+  if (isLoading && (!orders || orders.length === 0)) {
+    return (
+      <Box
+        sx={{
+          display: 'flex',
+          height: '100vh',
+          width: '100%',
+          flexDirection: 'column',
+          alignItems: 'center',
+          justifyContent: 'center',
+          overflow: 'hidden',
+        }}
+      >
+        <CircularProgress />
+        <Typography sx={{ mt: 2 }}>Loading orders...</Typography>
+      </Box>
+    );
+  }
 
   return (
-    <Box>
-      <Typography variant="h4" sx={{ fontWeight: 'bold', mb: 3 }}>
+    <Box sx={{ width: '100%', height: '100%', overflow: 'hidden' }}>
+      <Typography
+        variant={isMobile ? 'h6' : 'h3'}
+        sx={{ fontWeight: 'bold', mb: 3, letterSpacing: 1 }}
+      >
         ORDER MANAGEMENT
       </Typography>
 
@@ -74,7 +120,8 @@ const Orders = () => {
         <Button
           variant="contained"
           startIcon={<AddIcon />}
-          onClick={handleNewOrder}
+          onClick={handleCreateOrder}
+          disabled={isCreating}
           sx={{
             bgcolor: brand[450],
             '&:hover': { bgcolor: brand[600] },
@@ -86,13 +133,13 @@ const Orders = () => {
         </Button>
       </Box>
 
-      <Collapse in={showOrderForm} timeout={300}>
+      <Collapse in={showForm} timeout={300}>
         <Card sx={{ mb: 3, p: 3, border: '1px solid #e0e0e0' }}>
           <Box
             sx={{
               display: 'flex',
               justifyContent: 'flex-end',
-              // mb: 3,
+              mb: 2,
             }}
           >
             <IconButton onClick={handleCloseForm} size="small">
@@ -100,26 +147,206 @@ const Orders = () => {
             </IconButton>
           </Box>
 
-          <OrderForm onSubmit={handleOrderSubmit} onCancel={handleCloseForm} />
+          <OrderForm
+            onSubmit={handleOrderSubmit}
+            onCancel={handleCloseForm}
+            initialData={
+              selectedOrder
+                ? {
+                    customerId: selectedOrder.customerId,
+                    customerName: selectedOrder.customerName,
+                    customerEmail: selectedOrder.customerEmail || '',
+                    customerPhone: selectedOrder.customerPhone || '',
+                    paymentMethod: selectedOrder.paymentMethod,
+                    // tax: selectedOrder.tax || 0,
+                    notes: selectedOrder.notes || '',
+                  }
+                : undefined
+            }
+          />
         </Card>
       </Collapse>
 
       <OrderFilter
-        onFilterChange={(filters) => console.log('Filters:', filters)}
+        search={search}
+        status={status}
+        paymentMethod={paymentMethod}
+        sort={sort}
+        totalCount={total}
+        onSearchChange={handleSearchChange}
+        onStatusChange={handleStatusChange}
+        onPaymentMethodChange={handlePaymentMethodChange}
+        onSortChange={handleSortChange}
       />
 
-      <Card sx={{ p: 0, overflow: 'hidden' }}>
-        <CustomTable
-          items={orders}
-          columnHeaders={orderColumns}
-          totalCount={pagination.total}
-          currentPage={pagination.page}
-          maxPageSize={pagination.pageSize}
-          onPageChange={handlePageChange}
+      <Box
+        sx={{
+          flex: 1,
+          px: { xs: 1, md: 2 },
+          width: '100%',
+          maxWidth: '100vw',
+          overflow: 'hidden',
+          pb: 2,
+        }}
+      >
+        <CustomTable<Order>
+          rowHeight={isMobile ? 60 : 90}
+          columnHeaders={columns}
           isLoading={isLoading}
+          checkboxSelection={true}
+          items={orders}
+          totalCount={total}
+          currentPage={page}
+          maxPageSize={limit}
+          onPageChange={handlePageChange}
+          handleSortModelChange={handleSortModelChange}
+          onRowClick={(params) => {
+            handleViewOrder(params.row);
+          }}
           noDataMessage="No orders found. Create your first order by clicking 'New Order' button."
+          sx={{
+            width: '100%',
+            height: '100%',
+            '& .MuiDataGrid-root': {
+              '& .MuiDataGrid-columnHeaders': {
+                backgroundColor: '#f5f5f5',
+                fontSize: isMobile ? '0.75rem' : '0.875rem',
+              },
+              '& .MuiDataGrid-cell': {
+                fontSize: isMobile ? '0.75rem' : '0.875rem',
+              },
+            },
+            '& .MuiDataGrid-row': {
+              cursor: 'pointer',
+              '&:hover': { backgroundColor: 'action.hover' },
+            },
+            ...(isMobile && {
+              '& .MuiDataGrid-virtualScroller': { overflow: 'auto !important' },
+            }),
+          }}
         />
-      </Card>
+      </Box>
+
+      <Menu
+        anchorEl={anchorEl}
+        open={Boolean(anchorEl)}
+        onClose={handleMenuClose}
+        transformOrigin={{ horizontal: 'left', vertical: 'top' }}
+        anchorOrigin={{ horizontal: 'left', vertical: 'bottom' }}
+        PaperProps={{
+          sx: {
+            minWidth: 150,
+            boxShadow: '0px 4px 20px rgba(0, 0, 0, 0.1)',
+            ...(!isMobile && {
+              minWidth: 120,
+            }),
+          },
+        }}
+      >
+        <MenuItem onClick={handleMenuView}>
+          <ListItemIcon>
+            <VisibilityRoundedIcon
+              fontSize="small"
+              sx={{ color: brand[500] }}
+            />
+          </ListItemIcon>
+          <ListItemText>View Details</ListItemText>
+        </MenuItem>
+
+        <MenuItem onClick={handleMenuEdit}>
+          <ListItemIcon>
+            <EditRoundedIcon fontSize="small" />
+          </ListItemIcon>
+          <ListItemText>Edit</ListItemText>
+        </MenuItem>
+
+        <MenuItem onClick={handleMenuDelete} sx={{ color: 'error.main' }}>
+          <ListItemIcon>
+            <DeleteRoundedIcon fontSize="small" sx={{ color: 'error.main' }} />
+          </ListItemIcon>
+          <ListItemText>Delete</ListItemText>
+        </MenuItem>
+      </Menu>
+
+      <OrderDetailDialog
+        open={showDetail}
+        onClose={handleCloseDetail}
+        order={selectedOrder}
+        onEdit={handleEditFromDetail}
+        onDelete={handleDeleteFromDetail}
+      />
+
+      <Dialog
+        open={showDeleteDialog}
+        onClose={handleCloseDeleteDialog}
+        aria-labelledby="delete-dialog-title"
+        aria-describedby="delete-dialog-description"
+        maxWidth="sm"
+        fullWidth
+        fullScreen={isMobile}
+        PaperProps={{
+          sx: { ...(isMobile && { margin: 0, borderRadius: 0 }) },
+        }}
+      >
+        <DialogTitle id="delete-dialog-title">Confirm Delete Order</DialogTitle>
+
+        <DialogContent>
+          <DialogContentText id="delete-dialog-description">
+            Are you sure you want to delete order "#{orderToDelete?.orderId}"?
+            This action cannot be undone.
+            {orderToDelete && (
+              <Box
+                component="span"
+                sx={{ display: 'block', mt: 1, color: 'warning.main' }}
+              >
+                ⚠️ This will permanently remove all order data and cannot be
+                recovered.
+              </Box>
+            )}
+          </DialogContentText>
+          {orderToDelete && (
+            <Box sx={{ mt: 2, p: 2, bgcolor: 'grey.50', borderRadius: 1 }}>
+              <Typography variant="body2">
+                <strong>Customer:</strong> {orderToDelete.customerName}
+              </Typography>
+              <Typography variant="body2">
+                <strong>Total:</strong>{' '}
+                {new Intl.NumberFormat('vi-VN', {
+                  style: 'currency',
+                  currency: 'VND',
+                }).format(orderToDelete.total)}
+              </Typography>
+              <Typography variant="body2">
+                <strong>Status:</strong> {orderToDelete.status}
+              </Typography>
+              <Typography variant="body2">
+                <strong>Items:</strong> {orderToDelete.items?.length || 0} items
+              </Typography>
+            </Box>
+          )}
+        </DialogContent>
+
+        <DialogActions>
+          <Button
+            onClick={handleCloseDeleteDialog}
+            disabled={isDeleting}
+            fullWidth={isMobile}
+            variant={isMobile ? 'text' : 'outlined'}
+          >
+            Cancel
+          </Button>
+          <Button
+            onClick={handleConfirmDelete}
+            color="error"
+            variant="contained"
+            disabled={isDeleting}
+            autoFocus={isMobile}
+            fullWidth={isMobile}
+          >
+            {isDeleting ? 'Deleting...' : 'Delete Order'}
+          </Button>
+        </DialogActions>
+      </Dialog>
     </Box>
   );
 };
