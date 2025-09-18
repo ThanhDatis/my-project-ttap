@@ -25,6 +25,13 @@ export interface OrderItem {
   lineTotal: number;
 }
 
+export interface ShippingAddress {
+  street: string;
+  ward: string;
+  district: string;
+  city: string;
+  note?: string;
+}
 export interface Order {
   id: string;
   orderId: string;
@@ -32,6 +39,7 @@ export interface Order {
   customerName: string;
   customerEmail?: string;
   customerPhone?: string;
+  shippingAddress: ShippingAddress;
   items: OrderItem[];
   subtotal: number;
   // tax?: number;
@@ -39,7 +47,7 @@ export interface Order {
   status: OrderStatus;
   paymentMethod: PaymentMethod;
   paymentStatus?: PaymentStatus;
-  notes?: string;
+  // notes?: string;
   isActive: boolean;
   createdAt: string;
   updatedAt?: string;
@@ -56,6 +64,7 @@ export interface OrderPayload {
   customerName: string;
   customerEmail?: string;
   customerPhone?: string;
+  shippingAddress: ShippingAddress;
   subtotal: number;
   total: number;
   items: Omit<OrderItem, 'id' | 'lineTotal'>[];
@@ -83,6 +92,12 @@ export interface CustomerAutocomplete {
   name: string;
   email?: string;
   phone?: string;
+  address?: {
+    street?: string;
+    ward?: string;
+    district?: string;
+    city?: string;
+  };
 }
 
 export interface ProductForOrder {
@@ -120,6 +135,13 @@ function sanitizePayload(p: OrderPayload): OrderPayload {
     customerId: p.customerId,
     customerName: p.customerName.trim(),
     paymentMethod: p.paymentMethod,
+    shippingAddress: {
+      street: p.shippingAddress.street.trim(),
+      ward: p.shippingAddress.ward.trim(),
+      district: p.shippingAddress.district.trim(),
+      city: p.shippingAddress.city.trim(),
+      note: p.shippingAddress.note?.trim() || '',
+    },
     subtotal: Number(p.subtotal),
     total: Number(p.total),
     items: p.items.map((item) => ({
@@ -134,7 +156,6 @@ function sanitizePayload(p: OrderPayload): OrderPayload {
   if (p.customerEmail?.trim()) out.customerEmail = p.customerEmail.trim();
   if (p.customerPhone?.trim()) out.customerPhone = p.customerPhone.trim();
   if (p.notes?.trim()) out.notes = p.notes.trim();
-  // if (typeof p.tax === 'number') out.tax = Number(p.tax);
 
   return out;
 }
@@ -192,7 +213,7 @@ class OrderRepository {
 
   async update(
     id: string,
-    payload: Partial<Pick<Order, 'status' | 'paymentStatus' | 'notes'>>,
+    payload: Partial<Pick<Order, 'status' | 'paymentStatus'>>,
   ): Promise<Order> {
     try {
       const res = await axiosInstance.put(`${base}/${id}`, payload);
@@ -227,7 +248,6 @@ class OrderRepository {
     }
   }
 
-  // Autocomplete methods
   async getCustomersForAutocomplete(
     search?: string,
   ): Promise<CustomerAutocomplete[]> {

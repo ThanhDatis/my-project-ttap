@@ -41,6 +41,28 @@ function validateOrder(data = {}) {
     errors.paymentMethod = 'Valid payment method is required';
   }
 
+  if (!data.shippingAddress || typeof data.shippingAddress !== 'object') {
+    errors.shippingAddress = 'Shipping address is required';
+  } else {
+    const { street, ward, district, city } = data.shippingAddress;
+
+    if (!street || street.trim().length === 0) {
+      errors['shippingAddress.street'] = 'Street is required';
+    }
+
+    if (!ward || ward.trim().length === 0) {
+      errors['shippingAddress.ward'] = 'Ward is required';
+    }
+
+    if (!district || district.trim().length === 0) {
+      errors['shippingAddress.district'] = 'District is required';
+    }
+
+    if (!city || city.trim().length === 0) {
+      errors['shippingAddress.city'] = 'City is required';
+    }
+  }
+
   if (!data.items || !Array.isArray(data.items) || data.items.length === 0) {
     errors.items = 'At least one item is required';
   } else {
@@ -87,6 +109,10 @@ const orderController = {
         { customerName: regex },
         { customerEmail: regex },
         { customerPhone: regex },
+        { 'shippingAddress.street': regex },
+        // { 'shippingAddress.ward': regex },
+        { 'shippingAddress.district': regex },
+        { 'shippingAddress.city': regex },
       ];
     }
 
@@ -128,6 +154,7 @@ const orderController = {
       customerName: order.customerName,
       customerEmail: order.customerEmail,
       customerPhone: order.customerPhone,
+      shippingAddress: order.shippingAddress,
       items: order.items.map(item => ({
         id: item._id?.toString(),
         productId: item.productId?._id?.toString(),
@@ -138,7 +165,7 @@ const orderController = {
         lineTotal: item.lineTotal,
       })),
       subtotal: order.subtotal,
-      tax: order.tax,
+      // tax: order.tax,
       total: order.total,
       status: order.status,
       paymentMethod: order.paymentMethod,
@@ -226,11 +253,17 @@ const orderController = {
         customerEmail: data.customerEmail?.trim() || undefined,
         customerPhone: data.customerPhone?.trim() || undefined,
         paymentMethod: data.paymentMethod,
+        shippingAddress: {
+          street: String(data.shippingAddress.street || '').trim(),
+          ward: String(data.shippingAddress.ward || '').trim(),
+          district: String(data.shippingAddress.district || '').trim(),
+          city: String(data.shippingAddress.city || '').trim(),
+          note: data.shippingAddress.note?.trim() || undefined,
+        },
         items: processedItems,
         subtotal,
         total,
         notes: data.notes?.trim() || undefined,
-        // tax,
         createdBy: req.user._id,
       };
 
@@ -286,11 +319,11 @@ const orderController = {
         return fail(res, 404, 'Order not found');
       }
 
-      // Only allow certain fields to be updated
       const allowed = pick(data, [
         'status',
         'paymentStatus',
         'notes',
+        'shippingAddress',
       ]);
 
       allowed.updatedBy = req.user._id;
@@ -333,7 +366,6 @@ const orderController = {
       return fail(res, 404, 'Order not found');
     }
 
-    // Only allow deletion if order is in certain states
     if (!['pending', 'cancelled'].includes(order.status)) {
       return fail(res, 400, 'Cannot delete order in current status');
     }
@@ -357,7 +389,6 @@ const orderController = {
     return ok(res, { item: deleted });
   }),
 
-  // Get customers for autocomplete
   getCustomersForAutocomplete: asyncHandler(async (req, res) => {
     const { search = '' } = req.query;
 
@@ -379,7 +410,6 @@ const orderController = {
     return ok(res, { items: customers });
   }),
 
-  // Get products for order items
   getProductsForOrder: asyncHandler(async (req, res) => {
     const { search = '' } = req.query;
 

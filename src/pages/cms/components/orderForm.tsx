@@ -35,6 +35,7 @@ import {
   type OrderPayload,
   type CustomerAutocomplete,
   type ProductForOrder,
+  type ShippingAddress,
 } from '../../../lib/order.repo';
 import { useOrderStore } from '../../../store';
 
@@ -49,16 +50,23 @@ interface OrderItem {
 }
 
 interface OrderFormData {
+  orderId: string;
   customerId: string;
   customerName: string;
   customerEmail: string;
   customerPhone: string;
   paymentMethod: string;
+  shippingAddress: {
+    street: string;
+    ward: string;
+    district: string;
+    city: string;
+    note?: string;
+  };
   items: OrderItem[];
   subtotal: number;
   tax: number;
   total: number;
-  notes: string;
 }
 
 interface OrderFormProps {
@@ -73,6 +81,13 @@ const validationSchema = Yup.object({
   customerEmail: Yup.string().email('Invalid email'),
   customerPhone: Yup.string(),
   paymentMethod: Yup.string().required('Payment method is required'),
+  shippingAddress: Yup.object({
+    street: Yup.string().required('Street is required'),
+    ward: Yup.string().required('Ward is required'),
+    district: Yup.string().required('District is required'),
+    city: Yup.string().required('City is required'),
+    note: Yup.string(),
+  }),
   tax: Yup.number().min(0, 'Tax must be positive').default(0),
   notes: Yup.string(),
 });
@@ -90,6 +105,7 @@ const OrderForm: React.FC<OrderFormProps> = ({
     fetchCustomers,
     fetchProducts,
   } = useOrderStore();
+  console.log('initialData:', initialData);
 
   const uniqueCustomers = React.useMemo(() => {
     const map = new Map<string, CustomerAutocomplete>();
@@ -138,17 +154,24 @@ const OrderForm: React.FC<OrderFormProps> = ({
   ];
 
   const initialValues: OrderFormData = {
-    customerId: selectedCustomer?._id || '',
-    customerName: selectedCustomer?.name || '',
-    customerEmail: selectedCustomer?.email || '',
-    customerPhone: selectedCustomer?.phone || '',
+    orderId: initialData?.orderId ?? '',
+    customerId: initialData?.customerId ?? selectedCustomer?._id ?? '',
+    customerName: initialData?.customerName ?? selectedCustomer?.name ?? '',
+    customerEmail: initialData?.customerEmail ?? selectedCustomer?.email ?? '',
+    customerPhone: initialData?.customerPhone ?? selectedCustomer?.phone ?? '',
     paymentMethod: initialData?.paymentMethod ?? '',
+    shippingAddress: {
+      street: initialData?.shippingAddress?.street ?? '',
+      ward: initialData?.shippingAddress?.ward ?? '',
+      district: initialData?.shippingAddress?.district ?? '',
+      city: initialData?.shippingAddress?.city ?? '',
+      note: initialData?.shippingAddress?.note ?? '',
+    },
     items: initialData?.items ?? [],
     subtotal: 0,
     total: 0,
     tax: initialData?.tax ?? 0,
-    notes: initialData?.notes ?? '',
-    // ...initialData,
+    // notes: initialData?.notes ?? '',
   };
 
   const calculateSubtotal = useCallback(
@@ -160,7 +183,14 @@ const OrderForm: React.FC<OrderFormProps> = ({
     [],
   );
 
-  const [orderId] = useState(() => `ORD-${dayjs().format('YYMMDDHHmmssSSS')}`);
+  const [orderId, setOrderId] = useState('');
+  useEffect(() => {
+    if (initialData?.orderId) {
+      setOrderId(initialData.orderId);
+    } else {
+      setOrderId(`ORD-${dayjs().format('YYMMDDHHmmssSSS')}`);
+    }
+  }, [initialData]);
 
   const addOrderItem = () => {
     const newItem: OrderItem = {
@@ -236,9 +266,15 @@ const OrderForm: React.FC<OrderFormProps> = ({
     }
 
     try {
-      // const tax = Number(values.tax) || 0;
       const { subtotal, total } = calculateSubtotal(orderItems, 0);
 
+      const shippingAddress: ShippingAddress = {
+        street: values.shippingAddress.street,
+        ward: values.shippingAddress.ward,
+        district: values.shippingAddress.district,
+        city: values.shippingAddress.city,
+        note: values.shippingAddress.note ?? '',
+      };
       const orderData: OrderPayload = {
         orderId,
         customerId: values.customerId,
@@ -246,9 +282,9 @@ const OrderForm: React.FC<OrderFormProps> = ({
         customerEmail: values.customerEmail || undefined,
         customerPhone: values.customerPhone || undefined,
         paymentMethod: values.paymentMethod as any,
+        shippingAddress,
         subtotal,
         total,
-        notes: values.notes || undefined,
         items: orderItems.map((item) => ({
           productId: item.productId!,
           productName: item.productName,
@@ -296,15 +332,26 @@ const OrderForm: React.FC<OrderFormProps> = ({
                 mb: 2,
                 display: 'flex',
                 justifyContent: 'flex-start',
+                color: 'text.secondary',
               }}
             >
               Order ID:&nbsp;{orderId}
+            </Typography>
+            <Typography
+              variant="h4"
+              fontWeight="bold"
+              sx={{
+                mb: 1,
+                textAlign: 'left',
+              }}
+            >
+              Shipping Information
             </Typography>
 
             <Grid container spacing={3} sx={{ mb: 4 }}>
               <Grid size={{ xs: 12, md: 4 }}>
                 <FormControl fullWidth>
-                  <FormLabel>Customer</FormLabel>
+                  <FormLabel>Customer Name</FormLabel>
                   <Autocomplete
                     options={uniqueCustomers}
                     getOptionLabel={(option) => option.name || ''}
@@ -377,12 +424,128 @@ const OrderForm: React.FC<OrderFormProps> = ({
                 </FormControl>
               </Grid>
             </Grid>
+
+            <Divider sx={{ my: 2 }} />
+            <Typography
+              variant="h4"
+              fontWeight="bold"
+              sx={{
+                mb: 1,
+                textAlign: 'left',
+              }}
+            >
+              Shipping Address
+            </Typography>
+            <Grid container spacing={3} sx={{ mb: 4 }}>
+              <Grid size={{ xs: 12, md: 4 }}>
+                <FormControl sx={{ width: '100%', mb: 2 }}>
+                  <FormLabel>Street</FormLabel>
+                  <Input
+                    label={''}
+                    name="shippingAddress.street"
+                    value={values.shippingAddress.street}
+                    onChange={handleChange}
+                    onBlur={handleBlur}
+                    isError={
+                      !!(
+                        errors.shippingAddress?.street &&
+                        touched.shippingAddress?.street
+                      )
+                    }
+                    errorText={errors.shippingAddress?.street}
+                    disabled={isSubmitting}
+                  />
+                </FormControl>
+                <FormControl sx={{ width: '100%', mb: 2 }}>
+                  <FormLabel>Ward</FormLabel>
+                  <Input
+                    label={''}
+                    name="shippingAddress.ward"
+                    value={values.shippingAddress.ward}
+                    onChange={handleChange}
+                    onBlur={handleBlur}
+                    isError={
+                      !!(
+                        errors.shippingAddress?.ward &&
+                        touched.shippingAddress?.ward
+                      )
+                    }
+                    errorText={errors.shippingAddress?.ward}
+                    disabled={isSubmitting}
+                  />
+                </FormControl>
+              </Grid>
+              <Grid size={{ xs: 12, md: 4 }}>
+                <FormControl sx={{ width: '100%', mb: 2 }}>
+                  <FormLabel>District</FormLabel>
+                  <Input
+                    label={''}
+                    name="shippingAddress.district"
+                    value={values.shippingAddress.district}
+                    onChange={handleChange}
+                    onBlur={handleBlur}
+                    isError={
+                      !!(
+                        errors.shippingAddress?.district &&
+                        touched.shippingAddress?.district
+                      )
+                    }
+                    errorText={errors.shippingAddress?.district}
+                    disabled={isSubmitting}
+                  />
+                </FormControl>
+                <FormControl sx={{ width: '100%', mb: 2 }}>
+                  <FormLabel>City/Province</FormLabel>
+                  <Input
+                    label={''}
+                    name="shippingAddress.city"
+                    value={values.shippingAddress.city}
+                    onChange={handleChange}
+                    onBlur={handleBlur}
+                    isError={
+                      !!(
+                        errors.shippingAddress?.city &&
+                        touched.shippingAddress?.city
+                      )
+                    }
+                    errorText={errors.shippingAddress?.city}
+                    disabled={isSubmitting}
+                  />
+                </FormControl>
+              </Grid>
+              <Grid size={{ xs: 12, md: 4 }}>
+                <FormControl sx={{ width: '100%', mb: 2 }}>
+                  <FormLabel>Notes</FormLabel>
+                  <Input
+                    label={''}
+                    name="shippingAddress.note"
+                    multiline
+                    minRows={4}
+                    value={values.shippingAddress.note}
+                    onChange={handleChange}
+                    onBlur={handleBlur}
+                    disabled={isSubmitting}
+                    isError={false}
+                  />
+                </FormControl>
+              </Grid>
+            </Grid>
+            <Divider sx={{ my: 3 }} />
+            <Typography
+              variant="h4"
+              fontWeight="bold"
+              sx={{
+                mb: 1,
+                textAlign: 'left',
+              }}
+            >
+              Payment Method
+            </Typography>
             <Grid container spacing={3} sx={{ mb: 4 }}>
               <Grid size={{ xs: 12, md: 4 }}>
                 <FormControl fullWidth>
-                  <FormLabel>Payment Method *</FormLabel>
+                  <FormLabel>Payment Method</FormLabel>
                   <TextField
-                    // size="medium"
                     select
                     name="paymentMethod"
                     value={values.paymentMethod}
@@ -400,38 +563,7 @@ const OrderForm: React.FC<OrderFormProps> = ({
                   </TextField>
                 </FormControl>
               </Grid>
-              {/* <Grid size={{ xs: 12, md: 4 }}>
-                <FormControl fullWidth>
-                  <FormLabel>Tax Amount (VND)</FormLabel>
-                  <Input
-                    name="tax"
-                    typeInput="number"
-                    value={values.tax || 0}
-                    onChange={(e) => {
-                      handleChange(e);
-                      // Recalculate totals when tax changes
-                    }}
-                    onBlur={handleBlur}
-                    isError={!!(errors.tax && touched.tax)}
-                    errorText={errors.tax}
-                    disabled={isSubmitting}
-                  />
-                </FormControl>
-              </Grid> */}
-              <Grid size={{ xs: 12, md: 4 }}>
-                <FormControl fullWidth>
-                  <FormLabel>Notes</FormLabel>
-                  <Input
-                    label={''}
-                    name="notes"
-                    value={values.notes}
-                    onChange={handleChange}
-                    onBlur={handleBlur}
-                    disabled={isSubmitting}
-                    isError={false}
-                  />
-                </FormControl>
-              </Grid>
+              <Grid size={{ xs: 12, md: 4 }}></Grid>
             </Grid>
 
             <Divider sx={{ my: 3 }} />

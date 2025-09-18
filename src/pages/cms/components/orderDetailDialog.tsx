@@ -6,10 +6,10 @@ import DateRangeRoundedIcon from '@mui/icons-material/DateRangeRounded';
 import DeleteRoundedIcon from '@mui/icons-material/DeleteRounded';
 import EditRoundedIcon from '@mui/icons-material/EditRounded';
 import EmailRoundedIcon from '@mui/icons-material/EmailRounded';
+import LocationOnRoundedIcon from '@mui/icons-material/LocationOnRounded';
 import PaymentRoundedIcon from '@mui/icons-material/PaymentRounded';
 import PersonRoundedIcon from '@mui/icons-material/PersonRounded';
 import PhoneRoundedIcon from '@mui/icons-material/PhoneRounded';
-import ShoppingCartRoundedIcon from '@mui/icons-material/ShoppingCartRounded';
 import {
   Dialog,
   DialogTitle,
@@ -125,6 +125,12 @@ export const OrderDetailDialog: React.FC<OrderDetailDialogProps> = ({
     }).format(price);
   };
 
+  const formatShippingAddress = () => {
+    if (!order.shippingAddress) return 'No shipping address';
+    const { street, ward, district, city } = order.shippingAddress;
+    return `${street}, ${ward}, ${district}, ${city}`;
+  };
+
   return (
     <Dialog
       open={open}
@@ -144,10 +150,10 @@ export const OrderDetailDialog: React.FC<OrderDetailDialogProps> = ({
         }}
       >
         <Box>
-          <Typography variant="h6" component="div">
+          <Typography variant="h4" component="div">
             Order Details
           </Typography>
-          <Typography variant="body2" color="text.secondary">
+          <Typography variant="body1" color="text.secondary">
             Order ID: #{order.orderId}
           </Typography>
         </Box>
@@ -157,21 +163,11 @@ export const OrderDetailDialog: React.FC<OrderDetailDialogProps> = ({
       </DialogTitle>
 
       <DialogContent>
-        <Typography variant="h6" gutterBottom>
+        <Typography variant="h5" gutterBottom>
           Order Information
         </Typography>
         <Grid container spacing={3}>
           <Grid size={{ xs: 12, md: 6 }}>
-            <InfoItem
-              icon={<ShoppingCartRoundedIcon />}
-              label="Order ID"
-              value={
-                <Typography variant="h6" color="primary">
-                  #{order.orderId}
-                </Typography>
-              }
-            />
-
             <InfoItem
               icon={<AttachMoneyRoundedIcon />}
               label="Total Amount"
@@ -248,6 +244,37 @@ export const OrderDetailDialog: React.FC<OrderDetailDialogProps> = ({
           <Grid size={{ xs: 12 }}>
             <Divider sx={{ mb: 2 }} />
             <Typography variant="h6" gutterBottom>
+              Shipping Address
+            </Typography>
+
+            <Card sx={{ p: 2, bgcolor: 'grey.50' }}>
+              <InfoItem
+                icon={<LocationOnRoundedIcon />}
+                label="Delivery Address"
+                value={
+                  <Typography variant="body2">
+                    {formatShippingAddress()}
+                  </Typography>
+                }
+              />
+
+              {order.shippingAddress?.note && (
+                <InfoItem
+                  icon={<LocationOnRoundedIcon />}
+                  label="Delivery Note"
+                  value={
+                    <Typography variant="body2" sx={{ fontStyle: 'italic' }}>
+                      {order.shippingAddress.note}
+                    </Typography>
+                  }
+                />
+              )}
+            </Card>
+          </Grid>
+
+          <Grid size={{ xs: 12 }}>
+            <Divider sx={{ mb: 2 }} />
+            <Typography variant="h6" gutterBottom>
               Order Items ({order.items?.length || 0} items)
             </Typography>
 
@@ -306,18 +333,6 @@ export const OrderDetailDialog: React.FC<OrderDetailDialogProps> = ({
           <Grid size={{ xs: 12 }}>
             <Card sx={{ p: 2, bgcolor: 'grey.50' }}>
               <Grid container spacing={2}>
-                <Grid size={{ xs: 6, md: 8 }}>
-                  {order.notes && (
-                    <Box>
-                      <Typography variant="subtitle2" gutterBottom>
-                        Notes
-                      </Typography>
-                      <Typography variant="body2" color="text.secondary">
-                        {order.notes}
-                      </Typography>
-                    </Box>
-                  )}
-                </Grid>
                 <Grid size={{ xs: 6, md: 4 }}>
                   <Box sx={{ textAlign: 'right' }}>
                     <Box
@@ -327,25 +342,11 @@ export const OrderDetailDialog: React.FC<OrderDetailDialogProps> = ({
                         mb: 1,
                       }}
                     >
-                      <Typography variant="body2">Subtotal:</Typography>
-                      <Typography variant="body2">
+                      <Typography variant="h6">Subtotal:</Typography>
+                      <Typography variant="h6">
                         {formatPrice(order.subtotal)}
                       </Typography>
                     </Box>
-                    {/* {order.tax && order.tax > 0 && (
-                      <Box
-                        sx={{
-                          display: 'flex',
-                          justifyContent: 'space-between',
-                          mb: 1,
-                        }}
-                      >
-                        <Typography variant="body2">Tax:</Typography>
-                        <Typography variant="body2">
-                          {formatPrice(order.tax)}
-                        </Typography>
-                      </Box>
-                    )} */}
                     <Divider sx={{ my: 1 }} />
                     <Box
                       sx={{

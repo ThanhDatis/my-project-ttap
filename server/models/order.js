@@ -1,5 +1,32 @@
 import mongoose from 'mongoose';
 
+const shippingAddressSchema = new mongoose.Schema({
+  street: {
+    type: String,
+    required: true,
+    trim: true
+  },
+  ward: {
+    type: String,
+    required: true,
+    trim: true
+  },
+  district: {
+    type: String,
+    required: true,
+    trim: true
+  },
+  city: {
+    type: String,
+    required: true,
+    trim: true
+  },
+  note: {
+    type: String,
+    trim: true
+  }
+});
+
 const orderItemSchema = new mongoose.Schema({
   productId: {
     type: mongoose.Schema.Types.ObjectId,
@@ -56,6 +83,10 @@ const orderSchema = new mongoose.Schema({
     type: String,
     trim: true
   },
+  shippingAddress: {
+    type: shippingAddressSchema,
+    required: true
+  },
   items: [orderItemSchema],
   subtotal: {
     type: Number,
@@ -108,7 +139,6 @@ const orderSchema = new mongoose.Schema({
   timestamps: true
 });
 
-// Generate unique order ID
 orderSchema.pre('save', async function(next) {
   if (!this.orderId) {
     const date = new Date();
@@ -116,7 +146,6 @@ orderSchema.pre('save', async function(next) {
     const month = String(date.getMonth() + 1).padStart(2, '0');
     const day = String(date.getDate()).padStart(2, '0');
 
-    // Find the last order of today
     const startOfDay = new Date(date.getFullYear(), date.getMonth(), date.getDate());
     const endOfDay = new Date(date.getFullYear(), date.getMonth(), date.getDate() + 1);
 
@@ -135,7 +164,6 @@ orderSchema.pre('save', async function(next) {
   next();
 });
 
-// Calculate totals before saving
 orderSchema.pre('save', function(next) {
   if (this.items && this.items.length > 0) {
     this.subtotal = this.items.reduce((sum, item) => sum + item.lineTotal, 0);
@@ -144,7 +172,6 @@ orderSchema.pre('save', function(next) {
   next();
 });
 
-// Index for better performance
 orderSchema.index({ orderId: 1 });
 orderSchema.index({ customerId: 1 });
 orderSchema.index({ status: 1 });

@@ -1,18 +1,14 @@
 /* eslint-disable no-unused-vars */
-import AttachMoneyRoundedIcon from '@mui/icons-material/AttachMoneyRounded';
-import CreditCardRoundedIcon from '@mui/icons-material/CreditCardRounded';
 import MoreVertRoundedIcon from '@mui/icons-material/MoreVertRounded';
-import PaymentRoundedIcon from '@mui/icons-material/PaymentRounded';
-import WalletRoundedIcon from '@mui/icons-material/WalletRounded';
 import { Box, Chip, IconButton, Typography } from '@mui/material';
 import { type GridColDef } from '@mui/x-data-grid';
 
 import type {
   Order,
   OrderStatus,
-  PaymentMethod,
+  ShippingAddress,
 } from '../../../lib/order.repo';
-import { formatDateTime, formatNumber } from '../../../utils';
+import { formatDateTime } from '../../../utils';
 
 export const getOrderColumns = ({
   onMenuClick,
@@ -27,7 +23,7 @@ export const getOrderColumns = ({
     headerName: 'Order ID',
     type: 'string',
     flex: 1,
-    minWidth: 140,
+    maxWidth: 200,
     align: 'center',
     headerAlign: 'center',
     renderCell: (params) => {
@@ -61,7 +57,7 @@ export const getOrderColumns = ({
     headerName: 'Customer',
     type: 'string',
     flex: 1,
-    minWidth: 200,
+    maxWidth: 200,
     align: 'center',
     headerAlign: 'center',
     renderCell: (params) => {
@@ -93,6 +89,53 @@ export const getOrderColumns = ({
     },
   },
   {
+    field: 'shippingAddress',
+    headerName: 'Shipping Address',
+    type: 'string',
+    flex: 1,
+    minWidth: 240,
+    align: 'center',
+    headerAlign: 'center',
+    renderCell: (params) => {
+      const address = params.value as ShippingAddress | undefined;
+
+      const fullAddress = address
+        ? [address.street, address.ward, address.district, address.city]
+            .filter(Boolean)
+            .join(', ')
+        : '';
+
+      return (
+        <Box sx={{ py: 2 }}>
+          <Typography
+            variant="body2"
+            sx={{
+              color: fullAddress ? 'text.primary' : 'text.secondary',
+              fontStyle: fullAddress ? 'normal' : 'italic',
+            }}
+            title={fullAddress || 'No address provided'}
+          >
+            {fullAddress || 'No address'}
+          </Typography>
+
+          {address?.note && (
+            <Typography
+              variant="caption"
+              sx={{
+                color: 'text.secondary',
+                fontStyle: 'italic',
+                display: 'block',
+              }}
+              title={address.note}
+            >
+              Note: {address.note}
+            </Typography>
+          )}
+        </Box>
+      );
+    },
+  },
+  {
     field: 'items',
     headerName: 'Items',
     type: 'string',
@@ -116,35 +159,6 @@ export const getOrderColumns = ({
             },
           }}
         />
-      );
-    },
-  },
-  {
-    field: 'total',
-    headerName: 'Total Amount',
-    type: 'number',
-    minWidth: 150,
-    align: 'center',
-    headerAlign: 'center',
-    renderCell: (params) => {
-      const total = params.value || 0;
-      return (
-        <Box
-          sx={{
-            py: 2,
-          }}
-        >
-          <Typography
-            variant="body2"
-            sx={{
-              fontWeight: 600,
-              color: 'success.main',
-              fontFamily: 'monospace',
-            }}
-          >
-            {formatNumber(total)} ₫
-          </Typography>
-        </Box>
       );
     },
   },
@@ -200,7 +214,6 @@ export const getOrderColumns = ({
           label={config.label}
           size="small"
           color={config.color}
-          // icon={config.icon}
           variant="filled"
           sx={{
             fontWeight: 600,
@@ -214,76 +227,11 @@ export const getOrderColumns = ({
     },
   },
   {
-    field: 'paymentMethod',
-    headerName: 'Payment',
-    type: 'string',
-    minWidth: 140,
-    align: 'center',
-    headerAlign: 'center',
-    renderCell: (params) => {
-      const method = params.value as PaymentMethod;
-
-      const getPaymentConfig = (method: PaymentMethod) => {
-        switch (method) {
-          case 'cash':
-            return {
-              label: 'Cash',
-              color: 'success' as const,
-              icon: <AttachMoneyRoundedIcon sx={{ fontSize: 16 }} />,
-            };
-          case 'credit_card':
-            return {
-              label: 'Credit Card',
-              color: 'primary' as const,
-              icon: <CreditCardRoundedIcon sx={{ fontSize: 16 }} />,
-            };
-          case 'bank_transfer':
-            return {
-              label: 'Bank Transfer',
-              color: 'info' as const,
-              icon: <PaymentRoundedIcon sx={{ fontSize: 16 }} />,
-            };
-          case 'e_wallet':
-            return {
-              label: 'E-Wallet',
-              color: 'warning' as const,
-              icon: <WalletRoundedIcon sx={{ fontSize: 16 }} />,
-            };
-          default:
-            return {
-              label: 'Unknown',
-              color: 'default' as const,
-              icon: <PaymentRoundedIcon sx={{ fontSize: 16 }} />,
-            };
-        }
-      };
-
-      const config = getPaymentConfig(method);
-
-      return (
-        <Chip
-          label={config.label}
-          size="small"
-          color={config.color}
-          icon={config.icon}
-          variant="outlined"
-          sx={{
-            fontWeight: 500,
-            fontSize: '11px',
-            '& .MuiChip-icon': {
-              color: 'inherit',
-            },
-          }}
-        />
-      );
-    },
-  },
-  {
     field: 'createdAt',
     headerName: 'Created At',
     type: 'string',
     flex: 1,
-    minWidth: 180,
+    maxWidth: 180,
     align: 'center',
     headerAlign: 'center',
     renderCell: (params) => {

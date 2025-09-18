@@ -133,7 +133,7 @@ const Orders = () => {
         </Button>
       </Box>
 
-      <Collapse in={showForm} timeout={300}>
+      <Collapse in={showForm} timeout={300} unmountOnExit>
         <Card sx={{ mb: 3, p: 3, border: '1px solid #e0e0e0' }}>
           <Box
             sx={{
@@ -153,13 +153,22 @@ const Orders = () => {
             initialData={
               selectedOrder
                 ? {
+                    orderId: selectedOrder.orderId,
                     customerId: selectedOrder.customerId,
                     customerName: selectedOrder.customerName,
                     customerEmail: selectedOrder.customerEmail || '',
                     customerPhone: selectedOrder.customerPhone || '',
                     paymentMethod: selectedOrder.paymentMethod,
+                    shippingAddress: selectedOrder.shippingAddress || {
+                      street: '',
+                      ward: '',
+                      district: '',
+                      city: '',
+                      note: '',
+                    },
+
                     // tax: selectedOrder.tax || 0,
-                    notes: selectedOrder.notes || '',
+                    // notes: selectedOrder.notes || '',
                   }
                 : undefined
             }

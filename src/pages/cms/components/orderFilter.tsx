@@ -21,7 +21,6 @@ import {
   ORDER_SORT_OPTIONS,
 } from '../tableColumns/ordersColumn';
 
-
 const DEFAULT_SORT = 'createdAt:desc';
 
 interface OrderFiltersProps {
