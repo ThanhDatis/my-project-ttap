@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import AddIcon from '@mui/icons-material/Add';
 import CloseIcon from '@mui/icons-material/Close';
 import DeleteRoundedIcon from '@mui/icons-material/DeleteRounded';
@@ -49,6 +50,7 @@ const Orders = () => {
 
     selectedOrder,
     orderToDelete,
+    formMode,
     showForm,
     showDetail,
     showDeleteDialog,
@@ -56,26 +58,21 @@ const Orders = () => {
     columns,
 
     handleCreateOrder,
-    // handleEditOrder,
-    // handleDeleteOrder,
     handleViewOrder,
     handleConfirmDelete,
     handleOrderSubmit,
 
-    // handleMenuClick,
     handleMenuClose,
     handleMenuEdit,
     handleMenuDelete,
     handleMenuView,
 
     handlePageChange,
-    // handleFilterChange,
     handleSearchChange,
     handleStatusChange,
     handlePaymentMethodChange,
     handleSortChange,
     handleSortModelChange,
-    // handleRefresh,
 
     handleCloseForm,
     handleCloseDetail,
@@ -150,6 +147,7 @@ const Orders = () => {
           <OrderForm
             onSubmit={handleOrderSubmit}
             onCancel={handleCloseForm}
+            formMode={formMode}
             initialData={
               selectedOrder
                 ? {
@@ -166,9 +164,21 @@ const Orders = () => {
                       city: '',
                       note: '',
                     },
-
-                    // tax: selectedOrder.tax || 0,
-                    // notes: selectedOrder.notes || '',
+                    items: (selectedOrder.items || []).map((it, idx) => ({
+                      id:
+                        (it as any).id ||
+                        `item-${idx}-${(it as any).productId?._id ?? (it as any).productId}`,
+                      productId:
+                        (it as any).productId?._id ??
+                        (it as any).productId ??
+                        '',
+                      productName: it.productName,
+                      sku: it.sku,
+                      quantity: it.quantity,
+                      price: it.price,
+                      lineTotal:
+                        (it as any).lineTotal ?? it.quantity * it.price,
+                    })),
                   }
                 : undefined
             }

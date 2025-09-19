@@ -171,11 +171,12 @@ export default function useOrders() {
       try {
         if (formMode === 'edit' && selectedOrder) {
           const updateData = {
+            ...orderData,
             status: orderData.paymentMethod
               ? 'processing'
               : selectedOrder.status,
-            notes: orderData.notes,
           };
+          console.log('updateData', updateData);
           await updateOrder(selectedOrder.id, updateData);
           ToastMessage('success', 'Order updated successfully!');
         } else {

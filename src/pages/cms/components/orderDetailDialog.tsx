@@ -163,11 +163,11 @@ export const OrderDetailDialog: React.FC<OrderDetailDialogProps> = ({
       </DialogTitle>
 
       <DialogContent>
-        <Typography variant="h5" gutterBottom>
-          Order Information
-        </Typography>
         <Grid container spacing={3}>
           <Grid size={{ xs: 12, md: 6 }}>
+            <Typography variant="h5" gutterBottom>
+              Order Information
+            </Typography>
             <InfoItem
               icon={<AttachMoneyRoundedIcon />}
               label="Total Amount"
@@ -208,7 +208,7 @@ export const OrderDetailDialog: React.FC<OrderDetailDialogProps> = ({
           </Grid>
 
           <Grid size={{ xs: 12, md: 6 }}>
-            <Typography variant="h6" gutterBottom>
+            <Typography variant="h5" gutterBottom>
               Customer Information
             </Typography>
 
@@ -243,7 +243,7 @@ export const OrderDetailDialog: React.FC<OrderDetailDialogProps> = ({
 
           <Grid size={{ xs: 12 }}>
             <Divider sx={{ mb: 2 }} />
-            <Typography variant="h6" gutterBottom>
+            <Typography variant="h5" gutterBottom>
               Shipping Address
             </Typography>
 
@@ -252,7 +252,7 @@ export const OrderDetailDialog: React.FC<OrderDetailDialogProps> = ({
                 icon={<LocationOnRoundedIcon />}
                 label="Delivery Address"
                 value={
-                  <Typography variant="body2">
+                  <Typography variant="body1">
                     {formatShippingAddress()}
                   </Typography>
                 }
@@ -263,7 +263,7 @@ export const OrderDetailDialog: React.FC<OrderDetailDialogProps> = ({
                   icon={<LocationOnRoundedIcon />}
                   label="Delivery Note"
                   value={
-                    <Typography variant="body2" sx={{ fontStyle: 'italic' }}>
+                    <Typography variant="body1" sx={{ fontStyle: 'italic' }}>
                       {order.shippingAddress.note}
                     </Typography>
                   }

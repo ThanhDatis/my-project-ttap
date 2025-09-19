@@ -42,12 +42,11 @@ export interface Order {
   shippingAddress: ShippingAddress;
   items: OrderItem[];
   subtotal: number;
-  // tax?: number;
   total: number;
   status: OrderStatus;
   paymentMethod: PaymentMethod;
   paymentStatus?: PaymentStatus;
-  // notes?: string;
+  notes?: string;
   isActive: boolean;
   createdAt: string;
   updatedAt?: string;
@@ -191,12 +190,10 @@ class OrderRepository {
   }
 
   async create(payload: OrderPayload): Promise<Order> {
-    // console.log('Creating order with payload:', payload);
     try {
       const res = await axiosInstance.post(base, sanitizePayload(payload));
       const order = extractOrder(res?.data);
       if (!order) {
-        console.error('create: unexpected response shape', res?.data);
         throw new Error('Failed to create order');
       }
       return order;
@@ -206,14 +203,15 @@ class OrderRepository {
         error?.response?.data?.error ||
         error?.message ||
         'Failed to create order';
-      console.error('Error creating order:', error?.response?.data || error);
       throw new Error(msg);
     }
   }
 
   async update(
     id: string,
-    payload: Partial<Pick<Order, 'status' | 'paymentStatus'>>,
+    payload: Partial<
+      Pick<Order, 'status' | 'paymentStatus' | 'notes' | 'shippingAddress'>
+    >,
   ): Promise<Order> {
     try {
       const res = await axiosInstance.put(`${base}/${id}`, payload);
@@ -243,7 +241,6 @@ class OrderRepository {
       'success' in raw &&
       raw.success === false
     ) {
-      console.error('Invalid response data:', raw?.data);
       throw new Error(raw?.message || 'Invalid response from server');
     }
   }

@@ -195,7 +195,7 @@ export const useOrderStore = create<State & Actions>((set, get) => ({
     set({ isDeleting: true, error: null });
     try {
       await orderRepository.softDelete(id);
-      await get().fetchOrders(); // Refresh list
+      await get().fetchOrders();
     } catch (error) {
       set({ error: (error as Error).message });
       throw error;

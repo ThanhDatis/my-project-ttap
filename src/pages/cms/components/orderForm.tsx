@@ -24,7 +24,7 @@ import {
 } from '@mui/material';
 import dayjs from 'dayjs';
 import { Formik, Form, type FormikHelpers } from 'formik';
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState, useRef } from 'react';
 import * as Yup from 'yup';
 
 import { Input } from '../../../components/fields';
@@ -73,6 +73,7 @@ interface OrderFormProps {
   onSubmit: (data: OrderPayload) => void;
   onCancel: () => void;
   initialData?: Partial<OrderFormData>;
+  formMode?: 'create' | 'edit';
 }
 
 const validationSchema = Yup.object({
@@ -96,6 +97,7 @@ const OrderForm: React.FC<OrderFormProps> = ({
   onSubmit,
   onCancel,
   initialData,
+  formMode = 'create',
 }) => {
   const {
     customers,
@@ -105,7 +107,6 @@ const OrderForm: React.FC<OrderFormProps> = ({
     fetchCustomers,
     fetchProducts,
   } = useOrderStore();
-  console.log('initialData:', initialData);
 
   const uniqueCustomers = React.useMemo(() => {
     const map = new Map<string, CustomerAutocomplete>();
@@ -125,6 +126,30 @@ const OrderForm: React.FC<OrderFormProps> = ({
   const [selectedCustomer, setSelectedCustomer] =
     useState<CustomerAutocomplete | null>(null);
   const debouncedCustomerSearch = useDebounce(customerSearch, 350);
+
+  const hydrateRef = useRef(false);
+  useEffect(() => {
+    if (hydrateRef.current) return;
+    if (!initialData?.items || initialData.items.length === 0) return;
+
+    setOrderItems(
+      initialData.items.map((it: any, idx: number) => ({
+        id:
+          it.id ||
+          `item-${idx}-${(it.productId && (it.productId._id || it.productId)) || idx}`,
+        productId: (it.productId && (it.productId._id || it.productId)) || '',
+        productName: it.productName || '',
+        sku: it.sku || '',
+        quantity: Number(it.quantity) || 1,
+        price: Number(it.price) || 0,
+        lineTotal:
+          typeof it.lineTotal === 'number'
+            ? it.lineTotal
+            : (Number(it.quantity) || 1) * (Number(it.price) || 0),
+      })),
+    );
+    hydrateRef.current = true;
+  }, [initialData]);
 
   useEffect(() => {
     fetchCustomers();
@@ -176,7 +201,10 @@ const OrderForm: React.FC<OrderFormProps> = ({
 
   const calculateSubtotal = useCallback(
     (items: OrderItem[], tax: number = 0) => {
-      const subtotal = items.reduce((sum, item) => sum + item.lineTotal, 0);
+      const subtotal = items.reduce(
+        (sum, item) => sum + (item.lineTotal || 0),
+        0,
+      );
       const total = subtotal + tax;
       return { subtotal, total };
     },
@@ -194,7 +222,7 @@ const OrderForm: React.FC<OrderFormProps> = ({
 
   const addOrderItem = () => {
     const newItem: OrderItem = {
-      id: `item-${Date.now()}`,
+      id: `item-${Date.now()}-${Math.random()}`,
       productId: '',
       productName: '',
       sku: '',
@@ -698,7 +726,7 @@ const OrderForm: React.FC<OrderFormProps> = ({
 
                           <TableCell align="right">
                             <Typography sx={{ fontWeight: 600, minWidth: 100 }}>
-                              {formatCurrency(item.lineTotal)}
+                              {formatCurrency(item.lineTotal || 0)}
                             </Typography>
                           </TableCell>
 
@@ -767,7 +795,9 @@ const OrderForm: React.FC<OrderFormProps> = ({
 
             <Box sx={{ display: 'flex', gap: 2, justifyContent: 'center' }}>
               <LoadingButton
-                textButton="Create Order"
+                textButton={
+                  formMode === 'edit' ? 'Update Order' : 'Create Order'
+                }
                 loading={isSubmitting}
                 type="submit"
                 variant="contained"

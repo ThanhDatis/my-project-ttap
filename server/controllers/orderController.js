@@ -242,7 +242,6 @@ const orderController = {
         });
       }
 
-      // const tax = Number(data.tax) || 0;
       const subtotal = processedItems.reduce((sum, item) => sum + item.lineTotal, 0);
       const total = subtotal;
 
@@ -288,12 +287,9 @@ const orderController = {
 
       return ok(res, { item: order });
     } catch (error) {
-      console.error('Error creating order:', error);
-
       if (error.code === 11000) {
         return fail(res, 400, 'Order ID already exists');
       }
-
       if (error.name === 'ValidationError') {
         const validationErrors = {};
         Object.keys(error.errors).forEach(key => {
@@ -319,14 +315,63 @@ const orderController = {
         return fail(res, 404, 'Order not found');
       }
 
-      const allowed = pick(data, [
-        'status',
-        'paymentStatus',
-        'notes',
-        'shippingAddress',
-      ]);
+      const isItemsUpdate = data.items && Array.isArray(data.items);
 
-      allowed.updatedBy = req.user._id;
+      if (isItemsUpdate) {
+        const errors = validateOrder(data);
+        if (Object.keys(errors).length > 0) {
+          return fail(res, 400, 'Validation errors', errors);
+        }
+        for (const item of existingOrder.items) {
+          await Product.findByIdAndUpdate(
+            item.productId,
+            { $inc: { stock: item.quantity } }
+          );
+        }
+
+      const processedItems = [];
+        for (const item of data.items) {
+          const product = await Product.findById(item.productId);
+          if (!product || !product.isActive) {
+            return fail(res, 400, `Product ${item.productName || item.productId} not found`);
+          }
+
+          if (product.stock < item.quantity) {
+            return fail(res, 400, `Insufficient stock for ${product.name}. Available: ${product.stock}, Requested: ${item.quantity}`);
+          }
+
+          const lineTotal = Number(item.quantity) * Number(item.price);
+          processedItems.push({
+            productId: item.productId,
+            productName: product.name,
+            sku: product.sku,
+            quantity: Number(item.quantity),
+            price: Number(item.price),
+            lineTotal,
+          });
+        }
+
+      for (const item of processedItems) {
+        await Product.findByIdAndUpdate(
+          item.productId,
+          { $inc: { stock: -item.quantity } }
+        );
+      }
+
+      const subtotal = processedItems.reduce((sum, item) => sum + item.lineTotal, 0);
+      const total = subtotal;
+
+      const allowed = {
+          items: processedItems,
+          subtotal,
+          total,
+          status: data.status || existingOrder.status,
+          paymentStatus: data.paymentStatus || existingOrder.paymentStatus,
+          paymentMethod: data.paymentMethod || existingOrder.paymentMethod,
+          notes: data.notes || existingOrder.notes,
+          shippingAddress: data.shippingAddress || existingOrder.shippingAddress,
+          updatedBy: req.user._id,
+        };
 
       const updated = await Order.findByIdAndUpdate(
         id,
@@ -340,9 +385,29 @@ const orderController = {
       ]);
 
       return ok(res, { item: updated });
-    } catch (error) {
-      console.error('Error updating order:', error);
+    } else {
+      const allowed = pick(data, [
+          'status',
+          'paymentStatus',
+          'notes',
+          'shippingAddress',
+          'paymentMethod',
+        ]);
 
+        allowed.updatedBy = req.user._id;
+      const updated = await Order.findByIdAndUpdate(
+        id,
+        allowed,
+        { new: true, runValidators: true }
+      ).populate([
+        { path: 'customerId', select: 'name email phone address' },
+        { path: 'createdBy', select: 'name email' },
+        { path: 'updatedBy', select: 'name email' },
+        { path: 'items.productId', select: 'name sku' }
+      ]);
+        return ok(res, { item: updated });
+      }
+    } catch (error) {
       if (error.name === 'ValidationError') {
         const validationErrors = {};
         Object.keys(error.errors).forEach(key => {
@@ -370,7 +435,6 @@ const orderController = {
       return fail(res, 400, 'Cannot delete order in current status');
     }
 
-    // Restore product stock if order is being deleted
     if (order.status === 'pending') {
       for (const item of order.items) {
         await Product.findByIdAndUpdate(
