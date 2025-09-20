@@ -184,11 +184,6 @@ export const getOrderColumns = ({
               label: 'Processing',
               color: 'info' as const,
             };
-          case 'shipped':
-            return {
-              label: 'Shipped',
-              color: 'primary' as const,
-            };
           case 'delivered':
             return {
               label: 'Delivered',
@@ -277,7 +272,6 @@ export const ORDER_STATUS_OPTIONS = [
   { value: 'all', label: 'All Status' },
   { value: 'pending', label: 'Pending' },
   { value: 'processing', label: 'Processing' },
-  { value: 'shipped', label: 'Shipped' },
   { value: 'delivered', label: 'Delivered' },
   { value: 'cancelled', label: 'Cancelled' },
 ] as const;
@@ -293,12 +287,12 @@ export const PAYMENT_METHOD_OPTIONS = [
 export const ORDER_SORT_OPTIONS = [
   { value: 'createdAt:desc', label: 'Newest First' },
   { value: 'createdAt:asc', label: 'Oldest First' },
-  { value: 'total:desc', label: 'Highest Amount' },
-  { value: 'total:asc', label: 'Lowest Amount' },
+  // { value: 'total:desc', label: 'Highest Amount' },
+  // { value: 'total:asc', label: 'Lowest Amount' },
   { value: 'customerName:asc', label: 'Customer (A-Z)' },
   { value: 'customerName:desc', label: 'Customer (Z-A)' },
-  { value: 'orderId:asc', label: 'Order ID (A-Z)' },
-  { value: 'orderId:desc', label: 'Order ID (Z-A)' },
-  { value: 'status:asc', label: 'Status (A-Z)' },
-  { value: 'status:desc', label: 'Status (Z-A)' },
+  // { value: 'orderId:asc', label: 'Order ID (A-Z)' },
+  // { value: 'orderId:desc', label: 'Order ID (Z-A)' },
+  // { value: 'status:asc', label: 'Status (A-Z)' },
+  // { value: 'status:desc', label: 'Status (Z-A)' },
 ] as const;

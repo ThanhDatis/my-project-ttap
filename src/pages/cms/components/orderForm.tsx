@@ -46,7 +46,7 @@ interface OrderItem {
   sku: string;
   quantity: number;
   price: number;
-  lineTotal: number;
+  lineTotal?: number;
 }
 
 interface OrderFormData {

@@ -83,10 +83,10 @@ export const ProductFiltersComponent: React.FC<ProductFiltersProps> = ({
     onFiltersChange?.({ ...localFilters, ...newFilters });
   };
 
-  const handlePriceChange = (field: 'minPrice' | 'maxPrice', value: string) => {
-    const numValue = value === '' ? undefined : Number(value);
-    handleFilterChange(field, numValue);
-  };
+  // const handlePriceChange = (field: 'minPrice' | 'maxPrice', value: string) => {
+  //   const numValue = value === '' ? undefined : Number(value);
+  //   handleFilterChange(field, numValue);
+  // };
 
   const handleClearFilters = () => {
     clearFilters();
@@ -97,9 +97,7 @@ export const ProductFiltersComponent: React.FC<ProductFiltersProps> = ({
     return (
       (filters.search && filters.search.length > 0) ||
       (filters.category && filters.category !== 'all') ||
-      (filters.status && filters.status !== 'all') ||
-      filters.minPrice !== undefined ||
-      filters.maxPrice !== undefined
+      (filters.status && filters.status !== 'all')
     );
   };
 
@@ -108,8 +106,6 @@ export const ProductFiltersComponent: React.FC<ProductFiltersProps> = ({
     if (filters.search && filters.search.length > 0) count++;
     if (filters.category && filters.category !== 'all') count++;
     if (filters.status && filters.status !== 'all') count++;
-    if (filters.minPrice !== undefined) count++;
-    if (filters.maxPrice !== undefined) count++;
     return count;
   };
 
@@ -173,7 +169,7 @@ export const ProductFiltersComponent: React.FC<ProductFiltersProps> = ({
           />
         </Grid>
 
-        <Grid size={{ xs: 12, sm: 6, md: 2 }}>
+        <Grid size={{ xs: 12, sm: 6, md: 3 }}>
           <TextField
             select
             fullWidth
@@ -191,7 +187,7 @@ export const ProductFiltersComponent: React.FC<ProductFiltersProps> = ({
           </TextField>
         </Grid>
 
-        <Grid size={{ xs: 12, sm: 6, md: 2 }}>
+        <Grid size={{ xs: 12, sm: 6, md: 3 }}>
           <TextField
             select
             fullWidth
@@ -207,38 +203,6 @@ export const ProductFiltersComponent: React.FC<ProductFiltersProps> = ({
               </MenuItem>
             ))}
           </TextField>
-        </Grid>
-
-        <Grid size={{ xs: 6, sm: 6, md: 2 }}>
-          <TextField
-            fullWidth
-            size="small"
-            type="number"
-            label="Min Price"
-            value={filters.minPrice || ''}
-            onChange={(e) => handlePriceChange('minPrice', e.target.value)}
-            disabled={isLoading}
-            InputProps={{
-              inputProps: { min: 0 },
-              endAdornment: <InputAdornment position="end">₫</InputAdornment>,
-            }}
-          />
-        </Grid>
-
-        <Grid size={{ xs: 6, sm: 6, md: 2 }}>
-          <TextField
-            fullWidth
-            size="small"
-            type="number"
-            label="Max Price"
-            value={filters.maxPrice || ''}
-            onChange={(e) => handlePriceChange('maxPrice', e.target.value)}
-            disabled={isLoading}
-            InputProps={{
-              inputProps: { min: 0 },
-              endAdornment: <InputAdornment position="end">₫</InputAdornment>,
-            }}
-          />
         </Grid>
       </Grid>
     </Paper>

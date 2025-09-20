@@ -154,15 +154,8 @@ export default function useOrders() {
       setShowDeleteDialog(false);
       setOrderToDelete(null);
       void fetchOrders();
-    } catch (error: unknown) {
-      let msg = 'Failed to delete order';
-      if (isAxiosError(error)) {
-        const data = error.response?.data as { message?: string };
-        msg = data.message || msg;
-      } else if (error instanceof Error) {
-        msg = error.message || msg;
-      }
-      ToastMessage('error', msg);
+    } catch (error) {
+      console.error('Failed to delete order', error);
     }
   }, [orderToDelete, deleteOrder, fetchOrders]);
 

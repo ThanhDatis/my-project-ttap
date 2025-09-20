@@ -2,12 +2,7 @@
 import axiosInstance from './axios';
 import type { Pagination } from './base.repository';
 
-export type OrderStatus =
-  | 'pending'
-  | 'processing'
-  | 'shipped'
-  | 'delivered'
-  | 'cancelled';
+export type OrderStatus = 'pending' | 'processing' | 'delivered' | 'cancelled';
 export type PaymentMethod =
   | 'cash'
   | 'credit_card'
@@ -22,7 +17,7 @@ export interface OrderItem {
   sku: string;
   quantity: number;
   price: number;
-  lineTotal: number;
+  lineTotal?: number;
 }
 
 export interface ShippingAddress {

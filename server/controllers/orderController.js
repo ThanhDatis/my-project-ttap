@@ -165,7 +165,6 @@ const orderController = {
         lineTotal: item.lineTotal,
       })),
       subtotal: order.subtotal,
-      // tax: order.tax,
       total: order.total,
       status: order.status,
       paymentMethod: order.paymentMethod,

@@ -265,23 +265,6 @@ export const CustomerForm: React.FC<CustomerFormProps> = ({
                   />
                 </FormControl>
                 <FormControl sx={{ width: '100%', mb: 2 }}>
-                  <FormLabel htmlFor="district">District</FormLabel>
-                  <Input
-                    id="district"
-                    name="district"
-                    label=""
-                    value={values.district}
-                    placeholder=""
-                    isError={!!(touched.district && errors.district)}
-                    errorText={errors.district}
-                    onChange={handleChange}
-                    onBlur={handleBlur}
-                    disabled={isCreating}
-                  />
-                </FormControl>
-              </Grid>
-              <Grid size={{ xs: 12, md: 4 }}>
-                <FormControl sx={{ width: '100%', mb: 2 }}>
                   <FormLabel htmlFor="ward">Ward</FormLabel>
                   <Input
                     id="ward"
@@ -296,25 +279,23 @@ export const CustomerForm: React.FC<CustomerFormProps> = ({
                     disabled={isCreating}
                   />
                 </FormControl>
-                <FormControl fullWidth>
-                  <FormLabel htmlFor="note">Note</FormLabel>
+              </Grid>
+              <Grid size={{ xs: 12, md: 4 }}>
+                <FormControl sx={{ width: '100%', mb: 2 }}>
+                  <FormLabel htmlFor="district">District</FormLabel>
                   <Input
-                    id="note"
-                    name="note"
+                    id="district"
+                    name="district"
                     label=""
-                    value={values.note}
+                    value={values.district}
                     placeholder=""
-                    // multiline
-                    // rows={3}
-                    isError={!!(touched.note && errors.note)}
-                    errorText={errors.note}
+                    isError={!!(touched.district && errors.district)}
+                    errorText={errors.district}
                     onChange={handleChange}
                     onBlur={handleBlur}
                     disabled={isCreating}
                   />
                 </FormControl>
-              </Grid>
-              <Grid size={{ xs: 12, md: 4 }}>
                 <FormControl sx={{ width: '100%', mb: 2 }}>
                   <FormLabel htmlFor="city">City/Province</FormLabel>
                   <Input
@@ -325,6 +306,25 @@ export const CustomerForm: React.FC<CustomerFormProps> = ({
                     placeholder=""
                     isError={!!(touched.city && errors.city)}
                     errorText={errors.city}
+                    onChange={handleChange}
+                    onBlur={handleBlur}
+                    disabled={isCreating}
+                  />
+                </FormControl>
+              </Grid>
+              <Grid size={{ xs: 12, md: 4 }}>
+                <FormControl sx={{ width: '100%', mb: 2 }}>
+                  <FormLabel htmlFor="note">Note</FormLabel>
+                  <Input
+                    id="note"
+                    name="note"
+                    label=""
+                    value={values.note}
+                    placeholder=""
+                    multiline
+                    rows={4}
+                    isError={!!(touched.note && errors.note)}
+                    errorText={errors.note}
                     onChange={handleChange}
                     onBlur={handleBlur}
                     disabled={isCreating}

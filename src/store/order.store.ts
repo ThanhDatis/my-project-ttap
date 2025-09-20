@@ -196,8 +196,16 @@ export const useOrderStore = create<State & Actions>((set, get) => ({
     try {
       await orderRepository.softDelete(id);
       await get().fetchOrders();
-    } catch (error) {
-      set({ error: (error as Error).message });
+    } catch (error: unknown) {
+      let msg = 'Failed to delete order';
+      if (typeof error === 'object' && error !== null) {
+        const e = error as {
+          response?: { data?: { message?: string } };
+          message?: string;
+        };
+        msg = e.response?.data?.message || e.message || msg;
+      }
+      set({ error: msg });
       throw error;
     } finally {
       set({ isDeleting: false });
