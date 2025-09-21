@@ -1,6 +1,7 @@
+/* eslint-disable no-unused-vars */
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import AddIcon from '@mui/icons-material/Add';
-import DeleteIcon from '@mui/icons-material/Delete';
+import AddBoxRoundedIcon from '@mui/icons-material/AddBoxRounded';
+import DeleteRoundedIcon from '@mui/icons-material/DeleteRounded';
 import {
   Box,
   Grid,
@@ -606,7 +607,7 @@ const OrderForm: React.FC<OrderFormProps> = ({
               >
                 <Button
                   variant="outlined"
-                  startIcon={<AddIcon />}
+                  startIcon={<AddBoxRoundedIcon />}
                   onClick={addOrderItem}
                   size="small"
                 >
@@ -736,7 +737,7 @@ const OrderForm: React.FC<OrderFormProps> = ({
                               color="error"
                               onClick={() => removeOrderItem(item.id)}
                             >
-                              <DeleteIcon fontSize="small" />
+                              <DeleteRoundedIcon fontSize="small" />
                             </IconButton>
                           </TableCell>
                         </TableRow>

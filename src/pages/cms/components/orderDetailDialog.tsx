@@ -320,7 +320,7 @@ export const OrderDetailDialog: React.FC<OrderDetailDialogProps> = ({
                       </TableCell>
                       <TableCell align="right">
                         <Typography variant="body2" sx={{ fontWeight: 600 }}>
-                          {formatPrice(item.lineTotal)}
+                          {formatPrice(item.lineTotal ?? 0)}
                         </Typography>
                       </TableCell>
                     </TableRow>

@@ -13,6 +13,7 @@ import { SidebarUserMenu } from './sidebarUserMenu';
 
 interface SidebarProps {
   open: boolean;
+  // eslint-disable-next-line no-unused-vars
   setOpen: (v: boolean) => void;
 }
 

@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import AddIcon from '@mui/icons-material/Add';
-import CloseIcon from '@mui/icons-material/Close';
+import AddBoxRoundedIcon from '@mui/icons-material/AddBoxRounded';
+// import AddIcon from '@mui/icons-material/Add';
+import CloseRoundedIcon from '@mui/icons-material/CloseRounded';
 import DeleteRoundedIcon from '@mui/icons-material/DeleteRounded';
 import EditRoundedIcon from '@mui/icons-material/EditRounded';
 import VisibilityRoundedIcon from '@mui/icons-material/VisibilityRounded';
@@ -116,7 +117,7 @@ const Orders = () => {
       <Box sx={{ mb: 3, display: 'flex', justifyContent: 'center' }}>
         <Button
           variant="contained"
-          startIcon={<AddIcon />}
+          startIcon={<AddBoxRoundedIcon />}
           onClick={handleCreateOrder}
           disabled={isCreating}
           sx={{
@@ -140,7 +141,7 @@ const Orders = () => {
             }}
           >
             <IconButton onClick={handleCloseForm} size="small">
-              <CloseIcon />
+              <CloseRoundedIcon />
             </IconButton>
           </Box>
 

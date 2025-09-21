@@ -3,7 +3,6 @@ import { Box, IconButton, useMediaQuery, useTheme } from '@mui/material';
 import { useEffect, useState } from 'react';
 import { Outlet } from 'react-router-dom';
 
-// import { DRAWER_WIDTH } from '../../common/constant';
 import { AuthGuard } from '../auth';
 import BreadcrumbPage from '../breadcrumbPage';
 
@@ -17,11 +16,6 @@ const LayoutDashboard = () => {
   useEffect(() => {
     setSidebarOpen(!isMobile);
   }, [isMobile]);
-
-  const handleSidebarToggle = () => {
-    setSidebarOpen((prev) => !prev);
-  };
-  // console.log('Layout - isMobile:', isMobile, 'sidebarOpen:', sidebarOpen);
 
   return (
     <AuthGuard>
@@ -40,13 +34,6 @@ const LayoutDashboard = () => {
             minHeight: '100vh',
             display: 'flex',
             flexDirection: 'column',
-            // width: {
-            //   xs: '100vw',
-            //   md: sidebarOpen
-            //     ? `calc(100vw - ${DRAWER_WIDTH}px)`
-            //     : `calc(100vw - 64px)`,
-            // },
-            // transition: 'width 0.3s',
             overflow: 'hidden',
             width: isMobile ? '100vw' : 'auto',
           }}
@@ -61,14 +48,15 @@ const LayoutDashboard = () => {
                 backgroundColor: '#ffffff',
                 position: 'sticky',
                 top: 0,
-                zIndex: (t) => (sidebarOpen ? t.zIndex.appBar : t.zIndex.drawer + 1),
+                zIndex: (t) =>
+                  sidebarOpen ? t.zIndex.appBar : t.zIndex.drawer + 1,
               }}
             >
               <IconButton
                 edge="start"
                 color="inherit"
                 aria-label="menu"
-                onClick={() => setSidebarOpen(v => !v)}
+                onClick={() => setSidebarOpen((v) => !v)}
                 sx={{
                   mr: 1,
                   color: 'text.primary',
