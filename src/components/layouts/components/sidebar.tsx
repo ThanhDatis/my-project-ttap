@@ -1,15 +1,8 @@
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
 import ChevronRightIcon from '@mui/icons-material/ChevronRight';
 import MenuIcon from '@mui/icons-material/Menu';
-import { Box, Divider, IconButton, useMediaQuery } from '@mui/material';
-import MuiDrawer from '@mui/material/Drawer';
-import {
-  type CSSObject,
-  styled,
-  useTheme,
-  type Theme,
-} from '@mui/material/styles';
-import { useState } from 'react';
+import { Box, Divider, IconButton, useMediaQuery, Drawer } from '@mui/material';
+import { useTheme } from '@mui/material/styles';
 
 import { primaryBackgroundSidebar, borderLine } from '../../../common/color';
 import { DRAWER_WIDTH } from '../../../common/constant';
@@ -18,91 +11,108 @@ import { SidebarHeader } from './sidebarHeader';
 import { SidebarNavigation } from './sidebarNavigation';
 import { SidebarUserMenu } from './sidebarUserMenu';
 
-const openedMixin = (theme: Theme): CSSObject => ({
-  width: DRAWER_WIDTH,
-  transition: theme.transitions.create('width', {
-    easing: theme.transitions.easing.sharp,
-    duration: theme.transitions.duration.enteringScreen,
-  }),
-  overflowX: 'hidden',
-});
+interface SidebarProps {
+  open: boolean;
+  setOpen: (v: boolean) => void;
+}
 
-const closedMixin = (theme: Theme): CSSObject => ({
-  transition: theme.transitions.create('width', {
-    easing: theme.transitions.easing.sharp,
-    duration: theme.transitions.duration.leavingScreen,
-  }),
-  overflowX: 'hidden',
-  width: `calc(${theme.spacing(7)} + 1px)`,
-  [theme.breakpoints.up('sm')]: {
-    width: `calc(${theme.spacing(8)} + 1px)`,
-  },
-});
-
-const DrawerHeader = styled('div')(({ theme }) => ({
-  display: 'flex',
-  alignItems: 'center',
-  justifyContent: 'flex-end',
-  padding: theme.spacing(0, 1),
-  ...theme.mixins.toolbar,
-  minHeight: '70px !important',
-}));
-
-const Drawer = styled(MuiDrawer, {
-  shouldForwardProp: (prop) => prop !== 'open',
-})(({ theme }) => ({
-  width: DRAWER_WIDTH,
-  flexShrink: 0,
-  whiteSpace: 'nowrap',
-  boxSizing: 'border-box',
-  '& .MuiDrawer-paper': {
-    backgroundColor: primaryBackgroundSidebar,
-    borderRight: `1px solid ${borderLine}`,
-  },
-  variants: [
-    {
-      props: ({ open }) => open,
-      style: {
-        ...openedMixin(theme),
-        '& .MuiDrawer-paper': openedMixin(theme),
-      },
-    },
-    {
-      props: ({ open }) => !open,
-      style: {
-        ...closedMixin(theme),
-        '& .MuiDrawer-paper': closedMixin(theme),
-      },
-    },
-  ],
-}));
-
-const Sidebar = () => {
+const Sidebar = ({ open, setOpen }: SidebarProps) => {
+  console.log('Sidebar - open:', open);
   const theme = useTheme();
-  const [open, setOpen] = useState(false);
-
   const isMobile = useMediaQuery(theme.breakpoints.down('md'));
 
-  const handleDrawerOpen = () => {
-    setOpen(true);
+  const handleDrawerToggle = () => {
+    setOpen(!open);
   };
 
   const handleDrawerClose = () => {
     setOpen(false);
   };
 
+  if (isMobile) {
+    return (
+      <Drawer
+        variant="temporary"
+        anchor="left"
+        open={open}
+        onClose={handleDrawerClose}
+        ModalProps={{
+          keepMounted: true,
+        }}
+        sx={{
+          '& .MuiDrawer-paper': {
+            width: DRAWER_WIDTH,
+            backgroundColor: primaryBackgroundSidebar,
+            borderRight: `1px solid ${borderLine}`,
+          },
+        }}
+      >
+        <Box
+          sx={{
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            p: 2,
+            minHeight: 70,
+          }}
+        >
+          <SidebarHeader open={true} />
+          <IconButton onClick={handleDrawerClose}>
+            <ChevronLeftIcon />
+          </IconButton>
+        </Box>
+
+        <Divider />
+
+        <Box
+          sx={{
+            flex: 1,
+            display: 'flex',
+            flexDirection: 'column',
+          }}
+        >
+          <SidebarNavigation open={true} />
+        </Box>
+
+        <Divider />
+        <SidebarUserMenu open={true} />
+      </Drawer>
+    );
+  }
+
   return (
     <Drawer
-      variant={isMobile ? 'temporary' : 'permanent'}
-      open={open}
-      onClose={isMobile ? () => setOpen(false) : undefined}
-      ModalProps={{
-        keepMounted: true,
+      variant="permanent"
+      sx={{
+        width: open ? DRAWER_WIDTH : 64,
+        flexShrink: 0,
+        transition: theme.transitions.create('width', {
+          easing: theme.transitions.easing.sharp,
+          duration: theme.transitions.duration.enteringScreen,
+        }),
+        '& .MuiDrawer-paper': {
+          width: open ? DRAWER_WIDTH : 64,
+          backgroundColor: primaryBackgroundSidebar,
+          borderRight: `1px solid ${borderLine}`,
+          transition: theme.transitions.create('width', {
+            easing: theme.transitions.easing.sharp,
+            duration: theme.transitions.duration.enteringScreen,
+          }),
+          overflowX: 'hidden',
+        },
       }}
     >
-      <DrawerHeader>
+      <Box
+        sx={{
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'flex-end',
+          p: 1,
+          minHeight: 70,
+        }}
+      >
         <SidebarHeader open={open} />
-        <IconButton onClick={open ? handleDrawerClose : handleDrawerOpen}>
+        <IconButton onClick={handleDrawerToggle}>
           {open ? (
             theme.direction === 'rtl' ? (
               <ChevronRightIcon />
@@ -113,7 +123,7 @@ const Sidebar = () => {
             <MenuIcon />
           )}
         </IconButton>
-      </DrawerHeader>
+      </Box>
 
       <Divider />
 

@@ -1,6 +1,7 @@
 /* eslint-disable prettier/prettier */
+// import { viVN as coreViVN } from '@mui/material/locale';
 import { createTheme } from '@mui/material/styles';
-
+// import { viVN as pickersViVN } from '@mui/x-date-pickers/locales';
 
 import {
   brand,
@@ -15,124 +16,127 @@ import {
   labelColor,
 } from '../color';
 
-const theme = createTheme({
-  palette: {
-    mode: 'light',
-    primary: {
-      main: primaryTextColor,
-      light: '#42a5f5',
-      dark: '#1565c0',
-      contrastText: '#9e9e9e',
+// import { datePickers } from './datePickerThemes';
+
+const theme = createTheme(
+  {
+    palette: {
+      mode: 'light',
+      primary: {
+        main: primaryTextColor,
+        light: '#42a5f5',
+        dark: '#1565c0',
+        contrastText: '#9e9e9e',
+      },
+      secondary: {
+        main: secondaryTextColor,
+        light: '#ff5983',
+        dark: '#9a0036',
+        contrastText: '#757575',
+      },
+      error: { main: errorColor },
+      warning: { main: warningColor },
+      info: { main: infoTextColor },
+      success: { main: successColor },
+      background: {
+        default: primaryBackground,
+        paper: primaryBackground,
+      },
+      text: {
+        primary: '#000000',
+        secondary: '#757575',
+      },
     },
-    secondary: {
-      main: secondaryTextColor,
-      light: '#ff5983',
-      dark: '#9a0036',
-      contrastText: '#757575',
+    typography: {
+      fontFamily: " 'Inter', san-serif",
+      h1: { fontSize: '2.5rem', fontWeight: 700 },
+      h2: { fontSize: '2rem', fontWeight: 600 },
+      h3: { fontSize: '1.75rem', fontWeight: 600 },
+      h4: { fontSize: '1.5rem', fontWeight: 500 },
+      h5: { fontSize: '1.25rem', fontWeight: 500 },
+      h6: { fontSize: '1rem', fontWeight: 500 },
+      body1: { fontSize: '1rem', fontWeight: 500 },
+      body2: { fontSize: '0.875rem', fontWeight: 500, lineHeight: 2 },
+      subtitle1: { fontSize: '1rem', fontWeight: 400, lineHeight: 2 },
+      subtitle2: { fontSize: '0.875rem', fontWeight: 400, lineHeight: 2 },
+      button: {
+        fontSize: '0.875rem',
+        fontWeight: 500,
+        lineHeight: 2,
+        textTransform: 'none',
+      },
     },
-    error: { main: errorColor },
-    warning: { main: warningColor },
-    info: { main: infoTextColor },
-    success: { main: successColor },
-    background: {
-      default: primaryBackground,
-      paper: primaryBackground,
-    },
-    text: {
-      primary: '#000000',
-      secondary: '#757575',
-    },
-  },
-  typography: {
-    fontFamily: " 'Inter', san-serif",
-    h1: { fontSize: '2.5rem', fontWeight: 700 },
-    h2: { fontSize: '2rem', fontWeight: 600 },
-    h3: { fontSize: '1.75rem', fontWeight: 600 },
-    h4: { fontSize: '1.5rem', fontWeight: 500 },
-    h5: { fontSize: '1.25rem', fontWeight: 500 },
-    h6: { fontSize: '1rem', fontWeight: 500 },
-    body1: { fontSize: '1rem', fontWeight: 500 },
-    body2: { fontSize: '0.875rem', fontWeight: 500, lineHeight: 2 },
-    subtitle1: { fontSize: '1rem', fontWeight: 400, lineHeight: 2 },
-    subtitle2: { fontSize: '0.875rem', fontWeight: 400, lineHeight: 2 },
-    button: {
-      fontSize: '0.875rem',
-      fontWeight: 500,
-      lineHeight: 2,
-      textTransform: 'none',
-    },
-  },
-  shape: { borderRadius: 8 },
-  components: {
-    MuiTypography: {
-      styleOverrides: {
-        root: {
-          a: { color: labelColor },
+    shape: { borderRadius: 8 },
+    components: {
+      MuiTypography: {
+        styleOverrides: {
+          root: {
+            a: { color: labelColor },
+          },
+        },
+        defaultProps: {
+          variant: 'body1',
         },
       },
-      defaultProps: {
-        variant: 'body1',
-      },
-    },
-    MuiButton: {
-      styleOverrides: {
-        root: {
-          borderRadius: 8,
-          textTransform: "none",
-          padding: "8px 16px",
-          boxShadow: "none",
-          "&:hover": {
+      MuiButton: {
+        styleOverrides: {
+          root: {
+            borderRadius: 8,
+            textTransform: "none",
+            padding: "8px 16px",
             boxShadow: "none",
+            "&:hover": {
+              boxShadow: "none",
+            },
           },
-        },
-        contained: {
-          backgroundColor: brand[450],
-          color: '#ffffff',
-          '&:hover': {
-            backgroundColor: brand[600],
+          contained: {
+            backgroundColor: brand[450],
+            color: '#ffffff',
+            '&:hover': {
+              backgroundColor: brand[600],
+            },
           },
-        },
-        outlined: {
-          borderColor: gray[700],
-          fontWeight: 'bold',
-          color: primaryTextColor,
-          "&:hover": {
-            backgroundColor: gray[100],
+          outlined: {
+            borderColor: gray[700],
+            fontWeight: 'bold',
+            color: primaryTextColor,
+            "&:hover": {
+              backgroundColor: gray[100],
+            },
           },
         },
       },
-    },
-    MuiIconButton: {
-      styleOverrides: {
-        root: {
-          borderRadius: "8px",
-          width: "max-content",
-          background: "transparent",
-          padding: "4px",
+      MuiIconButton: {
+        styleOverrides: {
+          root: {
+            borderRadius: "8px",
+            width: "max-content",
+            background: "transparent",
+            padding: "4px",
+          }
         }
-      }
-    },
-    MuiCard: {
-      styleOverrides: {
-        root: {
-          boxShadow: "0px 2px 4px rgba(0, 0, 0, 0.1)",
-          border: `1px solid ${gray[300]}`,
-          borderRadius: 12,
-          padding: "24px",
-        },
       },
-    },
-    MuiLink: {
-      styleOverrides: {
-        root: {
-          fontWeight: 600,
-          ':hover': {
-            color: `${gray[900]}`,
-            textDecoration: 'underline'
+      MuiCard: {
+        styleOverrides: {
+          root: {
+            boxShadow: "0px 2px 4px rgba(0, 0, 0, 0.1)",
+            border: `1px solid ${gray[300]}`,
+            borderRadius: 12,
+            padding: "24px",
           },
         },
       },
-    },
+      MuiLink: {
+        styleOverrides: {
+          root: {
+            fontWeight: 600,
+            ':hover': {
+              color: `${gray[900]}`,
+              textDecoration: 'underline'
+            },
+          },
+        },
+      },
 
     MuiTextField: {
       styleOverrides: {
