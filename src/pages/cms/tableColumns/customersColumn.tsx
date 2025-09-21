@@ -110,6 +110,8 @@ export const getCustomerColumns = ({
           <Typography
             variant="body2"
             sx={{
+              color: customer.address ? 'text.primary' : 'text.secondary',
+              fontStyle: customer.address ? 'normal' : 'italic',
               py: 1,
             }}
             title={fullAddress}
@@ -138,6 +140,8 @@ export const getCustomerColumns = ({
         <Typography
           variant="body2"
           sx={{
+            color: city ? 'text.primary' : 'text.secondary',
+            fontStyle: city ? 'normal' : 'italic',
             py: 2,
           }}
         >

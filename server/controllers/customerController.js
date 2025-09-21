@@ -61,8 +61,8 @@ const customerController = {
   getAll: asyncHandler(async (req, res) => {
     const {
       search = '',
-      // tier,
-      sort = 'createdAt:desc',
+      sortBy = 'createdAt',
+      sortOrder = 'desc',
       page = 1,
       limit = 10,
     } = req.query;
@@ -81,17 +81,8 @@ const customerController = {
       ];
     }
 
-    // if (tier && tier !== 'all') {
-    //   filters.tier = tier;
-    // }
-
-    let sortField = 'createdAt';
-    let sortOrder = -1;
-    if (typeof sort === 'string') {
-      const [field, direction] = sort.split(':');
-      if (field) sortField = field;
-      if (direction === 'asc') sortOrder = 1;
-    }
+    const sortField = sortBy;
+    const sortOrderNum = sortOrder === 'asc' ? 1 : -1;
 
     const pageNum = parseInt(page, 10) || 1;
     const limitNum = parseInt(limit, 10) || 10;
@@ -99,7 +90,7 @@ const customerController = {
 
     const [items, total] = await Promise.all([
       Customer.find(filters)
-        .sort({ [sortField]: sortOrder })
+        .sort({ [sortField]: sortOrderNum })
         .skip(skip)
         .limit(limitNum),
       Customer.countDocuments(filters),
